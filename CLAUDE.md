@@ -115,3 +115,10 @@ Claude Code는 다음 원칙을 최우선으로 따른다.
 - 배포목록은 `05_FINAL/RELEASED/배포목록.csv` 에 누적(append)되고, 실행마다 `최종보고서.md` 가 생성된다. 기존 보고서는 덮어쓰지 않는다(`_vN`).
 - 이전 Rev 의 릴리스 폴더와 구 최종본은 삭제하지 않고 `06_HISTORY/이전버전/<문서번호>/` 로 이동한다.
 - PDF 변환이 불가능한 환경에서는 PDF/배포본이 생성되지 않는다.
+
+## 14. 최종 배포 운영 규칙 (FINAL 패키지 반영)
+- FINAL 배포는 Release Gate PASS + 승인 표시 파일(`APPROVED.txt`, 설정 `final_operation.approval_marker`)이 모두 충족된 경우에만 수행한다.
+- `APPROVED.txt` 는 사람이 `sign`(`/qms-approve`)을 실행했을 때만 승인 패키지에 생성된다. 사용자의 실제 승인 없이 자동 생성하지 않는다.
+- 기존 FINAL 동일 문서번호는 `06_HISTORY` 로 이동하며, 이동 전에 `06_HISTORY/ROLLBACK_BACKUP` 에 사본을 만든다. 롤백은 자동 실행하지 않고 `rollbackcheck` 로 후보만 제시한다.
+- 배포목록(`05_FINAL/RELEASED/배포목록.csv`)·변경이력·워크플로우 로그를 기록하고, 배포 후 SHA-256 무결성 검사를 수행한다. 스냅샷은 `05_FINAL/DISTRIBUTION/` 에 저장한다.
+- 명령: `/qms-approve`, `/qms-final-release`, `/qms-final-verify`, `/qms-final-report`, `/qms-rollback-check`, `/qms-diff`, `/qms-approval-package`, `/qms-autofix-plan`, `/qms-create-drafts`, `/qms-full-cycle`.

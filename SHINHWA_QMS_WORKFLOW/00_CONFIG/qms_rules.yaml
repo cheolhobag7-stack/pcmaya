@@ -107,3 +107,13 @@ required_notice: ["FM-066", "FM-067", "FM-068", "FM-069", "FM-078", "FM-079", "F
 # ACTIVE 표기된 대장/집계표형 양식(예: FM-066~069, 078~080, 094, 096)은 개별 결재란을 요구하지 않는다.
 approval_by_header_marker:
   skip_label_check: true
+
+# FINAL 배포 운영 (FINAL 패키지 반영)
+final_operation:
+  approval_marker: "APPROVED.txt"   # 사람이 sign 을 실행하면 승인 패키지에 생성됨 (자동 생성 금지)
+  require_release_gate_pass: true
+  archive_previous_revision: true
+  create_rollback_backup: true
+  create_distribution_list: true
+  create_integrity_hash: true
+  create_final_report: true

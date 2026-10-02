@@ -18,6 +18,8 @@
   python3 scripts/qms_workflow.py scan       # 신규 문서 검색
   python3 scripts/qms_workflow.py status     # 04_APPROVAL 문서별 FINAL 가능 여부
   python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식 존재 확인
+  python3 scripts/qms_workflow.py finalreport # 릴리스 현황 + 무결성 → 05_FINAL/DISTRIBUTION/FINAL_RELEASE_REPORT_*.md
+  python3 scripts/qms_workflow.py rollbackcheck # 롤백 백업 후보 목록(자동 복원 없음)
   python3 scripts/qms_workflow.py integrity  # 05_FINAL/RELEASED 전체 SHA-256 무결성 검사
   python3 scripts/qms_workflow.py finalize   # 승인완료 재검증 → 05_FINAL + PDF + 배포본 + 06_HISTORY
 
@@ -41,7 +43,7 @@ ERR_DIR = {"문서번호": "문서번호오류", "개정번호": "개정번호�
 DEFAULT_ERR_DIR = "내용보완필요"
 TEXT_EXT = {".docx", ".xlsx", ".txt", ".md", ".csv"}
 UNCONFIRMED = "[확인 필요]"
-AUX_DIRS = [D["edit"] / "AUTO_DRAFT", D["edit"] / "DIFF", D["appr"] / "PACKAGES", D["final"] / "RELEASED"]   # 문서 레지스트리/중복검사에서 제외
+AUX_DIRS = [D["edit"] / "AUTO_DRAFT", D["edit"] / "DIFF", D["appr"] / "PACKAGES", D["final"] / "RELEASED", D["final"] / "DISTRIBUTION"]   # 문서 레지스트리/중복검사에서 제외
 MASTER = "MASTER_REF"   # SH_ 로 시작하는 관리자료(대장/마스터/계획) 분류 폴더
 
 
@@ -478,6 +480,7 @@ def write_candidate(p: Path, docno, issues):
     out = D["edit"] / "AUTO_DRAFT" / f"{p.stem}_수정필요사항_{ts}.md"
     safe_copy(p, D["edit"] / "AUTO_DRAFT", f"{p.stem}_DRAFT{p.suffix}")
     lines = [f"# 수정후보: {p.name}", f"- 생성: {now()}", f"- 원본: {p} (변경 없음)",
+             f"- 자동 수정: 금지 (auto_edit_allowed=NO) — 사람이 `_DRAFT` 사본을 직접 수정",
              f"- 주의: '{UNCONFIRMED}' 표시는 담당자 확정 전에는 임의 값을 넣지 않음", "", "| # | 분류 | 문제 | 수정 제안 |", "|---|---|---|---|"]
     for i, (c, m, f) in enumerate(issues, 1):
         lines.append(f"| {i} | {c} | {m} | {f or '-'} |")
@@ -966,7 +969,17 @@ def gate_check(p: Path, folder=""):
     hits = [ap for ap, gt in cfg("gate_rules.yaml")["gate"].items() if {norm(f) for f in (gt.get("forms") or [gt.get("form")])} & set(ids)]
     bad = [ap for ap in hits if cfg("gate_rules.yaml")["gate"][ap]["status"] != "APPROVED"]
     g.append(("G7 AP 게이트(AP-01~04)", "N/A" if not hits else ("FAIL" if bad else "PASS"), ", ".join(hits) + (" 미승인: " + ", ".join(bad) if bad else "") if hits else "해당 없음"))
-    g.append(("G8 사람 승인 단계 완료", "PASS" if folder == "승인완료" else "FAIL", f"현재 {folder or '?'}"))
+    mk = approval_marker()
+    pks = package_dirs(p.stem)
+    if folder != "승인완료":
+        g8 = ("FAIL", f"현재 {folder or '?'}")
+    elif not pks:
+        g8 = ("FAIL", "승인 패키지 없음")
+    elif not any((d / mk).exists() for d in pks):
+        g8 = ("FAIL", f"{mk} 없음 (실제 승인 후 sign 으로 생성)")
+    else:
+        g8 = ("PASS", f"승인완료 + {mk}")
+    g.append(("G8 사람 승인 단계 완료", g8[0], g8[1]))
     return g
 
 def print_gate(p: Path, folder):
@@ -1064,10 +1077,19 @@ def advance(name, src, dst, note):
     log("workflow_log.csv", [now(), name, "", f"04_APPROVAL/{src}", f"04_APPROVAL/{dst}", "human", note])
     print(f"{name}: {src} → {dst}")
     stem = Path(name).stem
-    for st in (D["appr"] / "PACKAGES").glob(f"{stem}*"):
-        if st.is_dir() and (st / "STATUS.md").exists():
+    if dst == "승인완료" and not package_dirs(stem):   # 패키지가 없으면 먼저 생성
+        f_ = D["appr"] / dst / name
+        build_package(f_, cfg("qms_rules.yaml")["classify"].get(prefix_of(name), ""), dst)
+    for st in package_dirs(stem):
+        if (st / "STATUS.md").exists():
             with open(st / "STATUS.md", "a", encoding="utf-8") as f:
                 f.write(f"- {now()} {src} → {dst} ({note})\n")
+        if dst == "승인완료":   # 사람이 sign 을 실행한 경우에만 승인 표시 파일 생성 (자동 생성 금지)
+            mkf = st / approval_marker()
+            if not mkf.exists():
+                mkf.write_text(f"APPROVED\napproved_at={dt.datetime.now().isoformat(timespec='seconds')}\n"
+                               f"document={name}\nnote=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일\n", encoding="utf-8")
+                print(f"  → 승인 표시 파일 생성: {mkf.relative_to(ROOT)}")
 
 def gates():
     reg = registry(cfg("document_number_rules.yaml")["doc_pattern"])
@@ -1096,6 +1118,32 @@ def to_pdf(src: Path, outdir: Path):
     return out
 
 RELEASED = D["final"] / "RELEASED"
+DISTRIBUTION = D["final"] / "DISTRIBUTION"          # 배포목록·최종보고서·무결성 CSV 스냅샷
+ROLLBACK = D["hist"] / "ROLLBACK_BACKUP"            # 기존 FINAL 교체 전 롤백용 백업 (자동 복원은 하지 않음)
+
+def approval_marker():
+    return (cfg("qms_rules.yaml").get("final_operation") or {}).get("approval_marker", "APPROVED.txt")
+
+def package_dirs(stem):
+    return [d for d in sorted((D["appr"] / "PACKAGES").glob(f"{stem}*")) if d.is_dir()]
+
+def rollback_backup(path: Path):
+    """기존 FINAL 을 이동하기 전에 06_HISTORY/ROLLBACK_BACKUP 에 사본 보관."""
+    ROLLBACK.mkdir(parents=True, exist_ok=True)
+    dst = unique_path(ROLLBACK / f"{dt.datetime.now():%Y%m%d_%H%M%S}_{path.name}")
+    shutil.copytree(path, dst) if path.is_dir() else shutil.copy2(path, dst)
+    return dst
+
+def rollbackcheck():
+    """롤백 백업 후보만 제시한다 (자동 롤백/복원 없음)."""
+    bk = sorted(ROLLBACK.glob("*"), key=lambda q: q.stat().st_mtime, reverse=True) if ROLLBACK.exists() else []
+    if not bk:
+        print("[ROLLBACK] 롤백 백업이 없습니다.")
+        return
+    print("[ROLLBACK] 롤백은 자동 실행하지 않습니다. 최근 백업 후보:")
+    for q in bk[:10]:
+        print("  -", q.relative_to(ROOT))
+    print("필요 시 해당 백업을 검토한 뒤 사람이 수동 복원하세요.")
 
 def verify_release(rel: Path):
     """RELEASED/<문서>/Rev<NN>/MANIFEST.json 의 SHA-256 을 다시 계산해 변조·누락 검사. 반환 [(파일, PASS/FAIL, 비고)]"""
@@ -1128,6 +1176,11 @@ def integrity_check(write_report=True):
                  "| 릴리스 | 파일 | 결과 | 비고 |", "|---|---|---|---|"] + [f"| {a} | {b} | {c} | {d} |" for a, b, c, d in rows]
         RELEASED.mkdir(parents=True, exist_ok=True)
         unique_path(RELEASED / "무결성검사.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        DISTRIBUTION.mkdir(parents=True, exist_ok=True)
+        with open(unique_path(DISTRIBUTION / f"final_integrity_{dt.datetime.now():%Y%m%d_%H%M%S}.csv"), "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.writer(f)
+            w.writerow(["release", "file", "result", "note"])
+            w.writerows(rows)
     return not bad
 
 def release_record(p: Path, docno, rev, pdf, dist, gate_rows):
@@ -1155,6 +1208,7 @@ def release_record(p: Path, docno, rev, pdf, dist, gate_rows):
         if old.is_dir() and old != rel:
             dest = unique_path(D["hist"] / "이전버전" / docno / f"RELEASED_{old.name}")
             dest.parent.mkdir(parents=True, exist_ok=True)
+            rollback_backup(old)
             shutil.move(str(old), dest)
             moved.append(f"{old.name} → 06_HISTORY/이전버전/{docno}/{dest.name}")
     return rel, entries, moved
@@ -1205,8 +1259,10 @@ def finalize():
             old_rev = om.group(1) if om else ""
             obsolete_dir = D["hist"] / "이전버전" / docno   # 구버전은 삭제하지 않고 이동
             obsolete_dir.mkdir(parents=True, exist_ok=True)
+            rollback_backup(old)
             old.rename(obsolete_dir / f"{old.stem}__superseded{old.suffix}")
             for oldpdf in (D["final"] / "PDF").glob(f"{old.stem}.pdf"):
+                rollback_backup(oldpdf)
                 oldpdf.rename(obsolete_dir / f"{oldpdf.stem}__superseded.pdf")
         safe_copy(p, D["final"] / sub)
         pdf = to_pdf(p, D["final"] / "PDF")
@@ -1253,7 +1309,26 @@ def finish_report(released, blocked):
               "- 승인 전 문서는 배포본을 만들지 않는다. 구버전(이전 Rev)은 삭제하지 않고 06_HISTORY 로 이동한다."]
     out = unique_path(RELEASED / "최종보고서.md")
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"[REPORT ] 배포목록 {lst.relative_to(ROOT)} / 최종보고서 {out.relative_to(ROOT)}")
+    DISTRIBUTION.mkdir(parents=True, exist_ok=True)   # 배치별 스냅샷 (DISTRIBUTION)
+    stamp = f"{dt.datetime.now():%Y%m%d_%H%M%S}"
+    shutil.copy2(lst, unique_path(DISTRIBUTION / f"distribution_list_{stamp}.csv"))
+    shutil.copy2(out, unique_path(DISTRIBUTION / f"FINAL_RELEASE_REPORT_{stamp}.md"))
+    print(f"[REPORT ] 배포목록 {lst.relative_to(ROOT)} / 최종보고서 {out.relative_to(ROOT)} (+ 05_FINAL/DISTRIBUTION 스냅샷)")
+
+def final_report_cmd():
+    """현재까지의 릴리스 현황(RELEASED 매니페스트)과 무결성 결과로 최종 보고서를 다시 생성."""
+    ok = integrity_check(write_report=True)
+    rel = []
+    for mf in sorted(RELEASED.rglob("MANIFEST.json")):
+        m = json.loads(mf.read_text(encoding="utf-8"))
+        rel.append((m["document_no"], m["revision"], m["released_at"], len(m["files"])))
+    lines = ["# SHINHWA QMS FINAL RELEASE REPORT (현황)", f"- 생성: {now()}", f"- 릴리스 {len(rel)}건 / 무결성 {'PASS' if ok else 'FAIL'}", "",
+             "| 문서번호 | Rev | 릴리스 일시 | 파일 수 |", "|---|---|---|---|"] + [f"| {a} | {b} | {c} | {d} |" for a, b, c, d in rel]
+    lines += ["", "## 운영 원칙", "- 원본은 보존", "- 이전 Rev는 06_HISTORY 보관, 교체 전 롤백 백업 생성", "- 배포 전 Release Gate PASS + 승인 표시 파일 확인", "- 변경이력 및 배포목록 유지"]
+    DISTRIBUTION.mkdir(parents=True, exist_ok=True)
+    out = unique_path(DISTRIBUTION / f"FINAL_RELEASE_REPORT_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"[REPORT ] {out.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
@@ -1274,5 +1349,7 @@ if __name__ == "__main__":
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()
     elif cmd == "finalize": finalize()
+    elif cmd == "rollbackcheck": rollbackcheck()
+    elif cmd == "finalreport": final_report_cmd()
     elif cmd == "integrity": sys.exit(0 if integrity_check() else 1)
     else: print(__doc__)
