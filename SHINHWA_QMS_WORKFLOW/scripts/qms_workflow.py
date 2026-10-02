@@ -12,6 +12,7 @@
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
   python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
+  python3 scripts/qms_workflow.py drivescan <폴더>   # 분류 키워드 조정용 현황 조사(읽기 전용, 이름만 집계)
   python3 scripts/qms_workflow.py foldertree <루트>                       # 정리용 표준 폴더 구조 생성
   python3 scripts/qms_workflow.py organizeplan <원본폴더> <루트> [--apply]  # 파일을 표준 구조로 복사 계획(기본 미리보기, 원본 유지)
   python3 scripts/qms_workflow.py mcphealth | mcpsafestart   # MCP 상태·보안 점검(읽기 전용) / 점검 후 전체 운영
@@ -2140,6 +2141,66 @@ def mcp_safe_start():
         print("[MCP SAFE START] FAIL 항목이 있어 외부 연동(MCP) 사용은 보류합니다. 로컬 QMS 운영은 계속합니다.")
     full_operation()
 
+def classify_module(rel_parts, fn, kw):
+    """모듈 분류: ① 가까운 상위 폴더부터 올라가며 '한 모듈'만 맞는 폴더 이름 ② 파일명 ③ 상위 폴더 전체. 반환 (모듈|None, 사유)"""
+    mods_of = lambda text: [k for k, ws in kw.items() if any(w.lower() in text.lower() for w in ws)]
+    for d in reversed(rel_parts):
+        m = mods_of(d)
+        if len(m) == 1:
+            return m[0], f"폴더({d})"
+    m = mods_of(fn)
+    if len(m) == 1:
+        return m[0], "파일명"
+    if len(m) > 1:
+        return None, "여러 모듈(파일명): " + "/".join(m)
+    allm = mods_of(" ".join(rel_parts))
+    if len(allm) == 1:
+        return allm[0], "상위 폴더 전체"
+    return None, ("여러 모듈(폴더): " + "/".join(allm)) if allm else "키워드 없음"
+
+def drive_scan(src):
+    """분류 키워드 조정용 현황 조사(읽기 전용): 확장자별·최상위 폴더별 파일 수, 자주 나오는 이름 토큰, 현재 규칙의 분류 결과·미분류 토큰.
+    파일 내용은 읽지 않으며 이름만 집계한다. → 12_OUTPUT/REPORTS/drivescan_*.md"""
+    base = Path(src).expanduser()
+    if not base.exists():
+        sys.exit(f"폴더를 찾을 수 없음: {src}")
+    kw = cfg("integrated_rules.yaml")["input_sync"]["keywords"]
+    skip = {"$recycle.bin", "system volume information", "windows", "program files", "program files (x86)", ".git", "node_modules", "__pycache__", "appdata"}
+    ext_c, top_c, res_c, tok_all, tok_un, total = collections.Counter(), collections.Counter(), collections.Counter(), collections.Counter(), collections.Counter(), 0
+    sample_un = []
+    for dp, dns, fns in os.walk(base):
+        dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
+        for fn in fns:
+            if fn.startswith("~$") or fn.lower() in ("thumbs.db", "desktop.ini"):
+                continue
+            f = Path(dp) / fn
+            rel = f.relative_to(base).parts
+            total += 1
+            ext_c[f.suffix.lower() or "(없음)"] += 1
+            top_c[rel[0] if len(rel) > 1 else "(루트 직하)"] += 1
+            mod, why = classify_module(rel[:-1], fn, kw)
+            res_c[mod or "미분류"] += 1
+            toks = set(re.findall(r"[가-힣A-Za-z]{2,}", Path(fn).stem)) | {t for d in rel[:-1] for t in re.findall(r"[가-힣A-Za-z]{2,}", d)}
+            for t in toks:
+                tok_all[t] += 1
+                if not mod:
+                    tok_un[t] += 1
+            if not mod and len(sample_un) < 25:
+                sample_un.append(f"{f.relative_to(base)}  ({why})")
+    L = ["# 드라이브 현황 조사(분류 키워드 조정용)", f"- 생성: {now()}", f"- 대상: {base} (이름만 집계, 내용은 읽지 않음)", f"- 파일 {total}개", "",
+         "## 현재 키워드 규칙의 분류 결과", "", "| 분류 | 파일 수 |", "|---|---|"] + [f"| {k} | {v} |" for k, v in sorted(res_c.items())]
+    L += ["", "## 확장자별", ""] + [f"- {k}: {v}" for k, v in ext_c.most_common(12)]
+    L += ["", "## 최상위 폴더별 파일 수 (상위 25)", ""] + [f"- {k}: {v}" for k, v in top_c.most_common(25)]
+    L += ["", "## 미분류 파일에 자주 나온 이름 토큰 (키워드 후보, 상위 40)", ""] + [f"- {k} ({v})" for k, v in tok_un.most_common(40)]
+    L += ["", "## 전체에서 자주 나온 토큰 (상위 40)", ""] + [f"- {k} ({v})" for k, v in tok_all.most_common(40)]
+    L += ["", "## 미분류 예시 (최대 25)", ""] + [f"- {x}" for x in sample_un]
+    L += ["", "※ 위 '키워드 후보'를 보고 `00_CONFIG/integrated_rules.yaml` 의 `input_sync.keywords` 에 어느 모듈인지 정해 추가합니다(모듈을 임의로 추정해 넣지 않음)."]
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    out = unique_path(OUT_DIR / "REPORTS" / f"drivescan_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"[DRIVE SCAN] 파일 {total}개 / 분류 " + ", ".join(f"{k} {v}" for k, v in sorted(res_c.items())) + f" → {out.relative_to(ROOT)}")
+    return out
+
 def input_sync(src, apply=False):
     """로컬 폴더(예: E:\\)의 현장 파일을 모듈별로 11_INPUT 에 '복사'한다. 원본 폴더는 읽기만 한다(수정·삭제·이동 없음).
     기본은 미리보기(dry-run)이며 --apply 일 때만 복사한다. 같은 내용은 건너뛰고, 같은 이름·다른 내용은 _vN 으로 새로 저장한다.
@@ -2163,12 +2224,12 @@ def input_sync(src, apply=False):
                 continue
             if size > limit:
                 too_big.append(str(f)); continue
-            hay = (fn + " " + " ".join(f.relative_to(base).parts[:-1])).lower()
-            mods = [k for k, kws in rules["keywords"].items() if any(w.lower() in hay for w in kws)]
-            if len(mods) == 1:
-                plan.append((mods[0], f))
-            elif len(mods) > 1:
-                ambiguous.append((f, mods))
+            rel = f.relative_to(base).parts
+            mod, why = classify_module(rel[:-1], fn, rules["keywords"])
+            if mod:
+                plan.append((mod, f))
+            elif why.startswith("여러"):
+                ambiguous.append((f, [why.split(": ", 1)[1]]))
             else:
                 unmatched += 1
     L = ["# 로컬 폴더 → 11_INPUT 복사 " + ("(실행)" if apply else "(미리보기, 복사 안 함)"), f"- 생성: {now()}", f"- 원본: {base} (읽기만 함)", ""]
@@ -2233,19 +2294,17 @@ def organize_plan(src, dest_root, apply=False):
                 big.append(str(f)); continue
             hay = (fn + " " + " ".join(f.relative_to(srcp).parts[:-1]))
             low = hay.lower()
-            mods = [k for k, ws in kw.items() if any(w.lower() in low for w in ws)]
+            mod, mwhy = classify_module(f.relative_to(srcp).parts[:-1], fn, kw)
             if fn.upper().startswith(("SH-", "SH_")) or any(w.lower() in low for w in lay["qms_keywords"]):
                 cat, why = "qms", "QMS 문서(SH-/키워드)"
             elif any(re.search(rf"(?<![A-Za-z]){w}(?![A-Za-z])", hay) for w in lay["sq_keywords"]):
                 cat, why = "sq", "SQ 심사 자료"
-            elif len(mods) == 1:
-                cat, why = mods[0], f"키워드({mods[0]})"
-            elif len(mods) > 1:
-                cat, why = "unsorted", "여러 모듈 키워드: " + "/".join(mods)
+            elif mod:
+                cat, why = mod, mwhy
             elif any(w.lower() in low for w in lay["customer_keywords"]):
                 cat, why = "customer", "고객사(한온시스템)"
             else:
-                cat, why = "unsorted", "키워드 없음"
+                cat, why = "unsorted", mwhy
             year = dt.datetime.fromtimestamp(st.st_mtime).strftime("%Y")
             plan.append((f, cat, why, dest / lay[cat] / year / fn, st.st_size, dt.datetime.fromtimestamp(st.st_mtime).date()))
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
@@ -2299,6 +2358,7 @@ if __name__ == "__main__":
     elif cmd == "fulloperation": full_operation()
     elif cmd == "mcphealth": mcp_health_check()
     elif cmd == "foldertree" and len(sys.argv) > 2: folder_tree(sys.argv[2])
+    elif cmd == "drivescan" and len(sys.argv) > 2: drive_scan(sys.argv[2])
     elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv)
     elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv)
     elif cmd == "mcpsafestart": mcp_safe_start()
