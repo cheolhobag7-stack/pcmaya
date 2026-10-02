@@ -75,3 +75,11 @@ lot_traceability:
   keyword: "LOT 추적"
   # 본문에 LOT 추적 언급 시 보존기간(3년)과 목표시간(1시간)을 명시해야 함
 obsolete_docs: []                       # 폐기된 문서번호 목록 (06_HISTORY/폐기문서 폴더 파일명도 자동 반영)
+
+# 폐기/참조금지 문서 (범위 표기 가능: FM-030~039). 참조 시 오류 처리, 시스템 어디에 있어도 FINAL 금지.
+prohibited_references: ["FM-030~039"]
+final_release_rules:
+  require_document_number_match: true
+  require_revision_match: true
+  require_approval_complete: true
+  block_if_prohibited_reference_found: true

@@ -128,8 +128,21 @@ def registry(docpat):
         reg.update(norm(x) for x in re.findall(docpat, p.name))
     return reg
 
+def expand_ids(entries):
+    """'FM-030~039' → FM-030..FM-039, 단일 번호는 그대로."""
+    out = set()
+    for e in entries or []:
+        m = re.match(r"^((?:SH-)?[A-Z]+-)(\d+)~(\d+)", str(e))
+        if m:
+            w = len(m.group(2))
+            out.update(norm(f"{m.group(1)}{n:0{w}d}") for n in range(int(m.group(2)), int(m.group(3)) + 1))
+        else:
+            out.add(norm(str(e).split()[0]))
+    return out
+
 def obsolete_set(docpat):
-    obs = {norm(x) for x in (cfg("qms_rules.yaml").get("obsolete_docs") or [])}
+    c = cfg("qms_rules.yaml")
+    obs = expand_ids(c.get("obsolete_docs")) | expand_ids(c.get("prohibited_references"))
     for p in (D["hist"] / "폐기문서").rglob("*"):
         if p.is_file() and p.name != ".gitkeep":
             obs.update(norm(x) for x in re.findall(docpat, p.name))
@@ -234,7 +247,7 @@ def validate(p: Path, typ: str, final_stage=False):
     refs = {norm(x) for x in re.findall(num["doc_pattern"], text)} - {norm(docno)}
     for ref in sorted(refs):
         if ref in obs:
-            add("상호참조", f"폐기 문서 {ref} 를 참조함", "대체 문서로 교체 (대체 문서번호 " + UNCONFIRMED + ")")
+            add("상호참조", f"폐기/참조금지 문서 {ref} 를 참조함", "대체 문서로 교체 (대체 문서번호 " + UNCONFIRMED + ")")
         elif ref not in reg:
             add("상호참조", f"참조 문서 {ref} 가 시스템에 존재하지 않음", "참조 문서번호 확인 또는 해당 문서 등록")
 
@@ -341,6 +354,8 @@ def summary_table(p: Path, docno, issues, approved, stage="검토"):
     if others:
         rows.append(("기타 검사", "FAIL", f"{len(others)}건 (상세: 자동검토결과 JSON)"))
     fails = [r for r in rows if r[1] == "FAIL"]
+    verdict = "FAIL" if fails else ("PASS" if approved else "HOLD")
+    rows.append(("종합 판정", verdict, {"FAIL": "수정 필요", "HOLD": "확인 또는 승인 필요", "PASS": "승인 및 배포 가능"}[verdict]))
     if fails:
         mv = ("불가", "검사 FAIL 해결 후 재검증")
     elif not approved:
