@@ -81,3 +81,4 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 07:05:56,SH-FM-308-312_SQ낮음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_낮음_초안/SH-FM-308-312_SQ낮음_양식초안_Rev00.xlsx,system,양식 초안 5종 생성(AUTO_DRAFT)
 2026-10-02 07:05:56,SH-FM-323-326_SQ낮음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_낮음_초안/SH-FM-323-326_SQ낮음_양식초안_Rev00.xlsx,system,양식 초안 4종 생성(AUTO_DRAFT)
 2026-10-02 07:05:56,SH-FM-337-356_SQ낮음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_낮음_초안/SH-FM-337-356_SQ낮음_양식초안_Rev00.xlsx,system,양식 초안 20종 생성(AUTO_DRAFT)
+2026-10-02 07:09:56,SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.xlsx,,FM Master,01_ORIGINAL/MASTER_REF/SH_FM_Master_Rev00_20260929_수정본_SQ중복통합.xlsx,system,SQ 중복 통합 18건 반영(이전 파일 유지)

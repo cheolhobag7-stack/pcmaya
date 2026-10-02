@@ -59,3 +59,5 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-02,SH-FM-308-312_SQ낮음_양식초안_Rev00,00,,"SQ 낮음 양식 초안 5종 생성(SH-FM-308~SH-FM-312, 초안·미승인)",system,
 2026-10-02,SH-FM-323-326_SQ낮음_양식초안_Rev00,00,,"SQ 낮음 양식 초안 4종 생성(SH-FM-323~SH-FM-326, 초안·미승인)",system,
 2026-10-02,SH-FM-337-356_SQ낮음_양식초안_Rev00,00,,"SQ 낮음 양식 초안 20종 생성(SH-FM-337~SH-FM-356, 초안·미승인)",system,
+2026-10-02,SH_FM_Master_Rev00_20260929_수정본_SQ중복통합,,,"SQ 중복 통합 18건 확정(사용자 지시): 계측기관리대장 SH-FM-173→023, 설비일상점검표 126/141→101, 장기재고점검 269→118, 같은 서류명 반복 14건 통합. 결정표 SQ_중복검토_결정.csv / 새 파일 SH_FM_Master_Rev00_20260929_수정본_SQ중복통합.xlsx",system,
+2026-10-02,SH_FM_Master_Rev00_20260929_수정본_SQ중복통합,00,00,원본↔수정본 DIFF 생성 +18/-18: SH_FM_Master_Rev00_20260929_수정본_SQ중복통합__vs__SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.md,system,
