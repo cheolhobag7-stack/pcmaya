@@ -1,6 +1,16 @@
 # QMS 일반 규칙 (회사 실제 규정에 맞게 수정)
 company:
-  names: [신화, SHINHWA]        # 문서 본문에 하나 이상 있어야 함
+  name: "(주)신화에이치앤티"
+  prefix: "SH"
+  names: ["(주)신화에이치앤티", "신화에이치앤티"]   # 본문에 하나 이상 있어야 함
+
+base_standard: ["ISO 9001:2015", "IATF 16949:2016"]
+main_customer: "한온시스템"
+quality_manager: "김흥수"
+customer_approver: "이은주"
+revision_initial: "Rev.00"
+lot_trace_target_time: "1시간"
+lot_traceability_retention: "3년"
 
 # 파일명 접두어 → 문서 유형 폴더
 classify:
@@ -38,7 +48,7 @@ standards_check:
 # 보존기간 (FM/QP/WI 에 '보존기간' 표기 필요, 허용값)
 retention:
   required_for: [QP, WI, FM]
-  allowed: ["1년", "3년", "5년", "10년", "영구"]
+  allowed: ["1년", "3년", "5년", "10년", "영구"]   # LOT 추적성 기록은 3년
 
 # 결재 상태 검사: 본문에 아래 라벨이 모두 있어야 승인대기로 이동
 approval_labels: [작성, 검토, 승인]

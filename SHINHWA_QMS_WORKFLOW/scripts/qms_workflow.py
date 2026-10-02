@@ -6,6 +6,7 @@
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
   python3 scripts/qms_workflow.py approve F  # (사람) 04_APPROVAL/승인대기 의 F → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
+  python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식(FM) 존재 확인
   python3 scripts/qms_workflow.py finalize   # 승인완료 → 05_FINAL + PDF + 배포본 + 06_HISTORY 백업
 """
 import csv, json, re, shutil, subprocess, sys, zipfile, datetime as dt
@@ -23,6 +24,13 @@ TEXT_EXT = {".docx", ".xlsx", ".txt", ".md", ".csv"}
 
 def cfg(name):
     return yaml.safe_load((D["cfg"] / name).read_text(encoding="utf-8"))
+
+def norm(no):
+    """SH- 접두어 제거: SH-FM-066 == FM-066"""
+    return re.sub(r"^SH-", "", no) if no else no
+
+def prefix_of(name):
+    return re.split(r"[-_ ]", norm(name.upper()))[0]
 
 def now():
     return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -62,7 +70,7 @@ def registry(docpat):
     """현재 시스템에 존재하는 문서번호 집합 (상호참조 검사용)."""
     reg = set()
     for p in stages_files():
-        reg.update(re.findall(docpat, p.name))
+        reg.update(norm(x) for x in re.findall(docpat, p.name))
     return reg
 
 # ---------------- 1) 자동 분류 ----------------
@@ -72,8 +80,7 @@ def classify():
     for p in list(D["orig"].iterdir()):
         if not p.is_file() or p.name == ".gitkeep":
             continue
-        prefix = re.split(r"[-_ ]", p.name.upper())[0]
-        typ = rules.get(prefix)
+        typ = rules.get(prefix_of(p.name))
         if not typ:
             log("error_log.csv", [now(), p.name, "분류불가", "파일명 접두어 미등록", "OPEN"])
             dest = D["rev"] / DEFAULT_ERR_DIR; dest.mkdir(exist_ok=True)
@@ -124,7 +131,7 @@ def validate(p: Path, typ: str):
             issues.append(("내용보완", f"등록되지 않은 고객사 '{c}' (customer_rules.yaml)"))
     # QP-WI-FM 상호참조
     reg = registry(num["doc_pattern"])
-    for ref in sorted(set(re.findall(num["doc_pattern"], text)) - {docno}):
+    for ref in sorted({norm(x) for x in re.findall(num["doc_pattern"], text)} - {norm(docno)}):
         if ref not in reg:
             issues.append(("상호참조", f"참조 문서 {ref} 가 시스템에 존재하지 않음"))
     # 필수 항목 + ISO/IATF
@@ -189,14 +196,21 @@ def recheck():
     for p in sorted((D["edit"] / "수정완료").iterdir()):
         if not p.is_file() or p.name == ".gitkeep":
             continue
-        typ = next((t for k, t in cfg("qms_rules.yaml")["classify"].items()
-                    if p.name.upper().startswith(k)), None)
+        typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name))
         for old in D["rev"].glob(f"*/{p.name}"):   # 이전 검토본 정리
             old.unlink()
         if route(p, typ or ""):
             shutil.move(str(p), D["hist"] / "이전버전" / f"{p.stem}_수정본_{dt.datetime.now():%Y%m%d%H%M%S}{p.suffix}")
         else:
             p.unlink()
+
+def gates():
+    """승인 게이트(AP) 충족 여부: 필요한 양식(FM)이 시스템에 있는지 확인."""
+    reg = registry(cfg("document_number_rules.yaml")["doc_pattern"])
+    for ap, g in cfg("gate_rules.yaml")["gate"].items():
+        forms = g.get("forms") or [g.get("form")]
+        miss = [f for f in forms if norm(f) not in reg]
+        print(f"{ap} [{g['status']}] " + ("충족" if not miss else f"미비: {', '.join(miss)}"))
 
 def advance(name, src, dst, who_note):
     s = D["appr"] / src / name
@@ -258,4 +272,5 @@ if __name__ == "__main__":
     elif cmd == "approve" and len(sys.argv) > 2: advance(sys.argv[2], "승인대기", "검토완료", "검토 완료")
     elif cmd == "sign" and len(sys.argv) > 2: advance(sys.argv[2], "검토완료", "승인완료", "승인")
     elif cmd == "finalize": finalize()
+    elif cmd == "gates": gates()
     else: print(__doc__)

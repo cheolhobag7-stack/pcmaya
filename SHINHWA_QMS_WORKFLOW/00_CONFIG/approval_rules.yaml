@@ -1,6 +1,9 @@
-# 승인 규칙 (역할은 회사 조직에 맞게 수정)
+# 승인 규칙
+quality_manager: "김흥수"
+customer_approver: "이은주"
 approval:
-  QM: {author: QMS담당, reviewer: 품질팀장, approver: 대표이사}
-  QP: {author: QMS담당, reviewer: 품질팀장, approver: 대표이사}
-  WI: {author: 작성자, reviewer: 팀장, approver: 품질팀장}
-  FM: {author: 작성자, reviewer: 팀장, approver: 품질팀장}
+  QM: {reviewer: 김흥수, approver: 대표이사}
+  QP: {reviewer: 김흥수, approver: 대표이사}
+  WI: {reviewer: 팀장,   approver: 김흥수}
+  FM: {reviewer: 팀장,   approver: 김흥수}
+  # 고객(한온시스템) 승인이 필요한 문서는 customer_approver 확인

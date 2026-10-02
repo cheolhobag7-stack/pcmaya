@@ -1,0 +1,6 @@
+# 승인 게이트(AP). 해당 양식(FM)이 시스템(01~05 폴더)에 존재해야 게이트 충족.
+gate:
+  AP-01: {status: APPROVED, forms: ["FM-066", "FM-067", "FM-068", "FM-069"]}
+  AP-02: {status: APPROVED, forms: ["FM-078", "FM-079", "FM-080"]}
+  AP-03: {status: APPROVED, forms: ["FM-096"]}
+  AP-04: {status: APPROVED, forms: ["FM-094"]}
