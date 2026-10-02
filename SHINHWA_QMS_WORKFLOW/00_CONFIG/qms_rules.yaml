@@ -1,7 +1,44 @@
-# QMS 일반 규칙
-qms:
-  company: SHINHWA
-  standards: [IATF16949, ISO9001]
-  document_types: [QM, QP, WI, FM, APQP, PPAP, PFMEA, CONTROL_PLAN, SPC_MSA]
-  review_checks: [document_number, revision_number, cross_reference, content_completeness]
-  flow: [ORIGINAL, REVIEW, EDIT, APPROVAL, FINAL]
+# QMS 일반 규칙 (회사 실제 규정에 맞게 수정)
+company:
+  names: [신화, SHINHWA]        # 문서 본문에 하나 이상 있어야 함
+
+# 파일명 접두어 → 문서 유형 폴더
+classify:
+  QM: QM
+  QP: QP
+  WI: WI
+  FM: FM
+  APQP: APQP
+  PPAP: PPAP
+  PFMEA: PFMEA
+  CP: CONTROL_PLAN
+  SPC: SPC_MSA
+  MSA: SPC_MSA
+
+# 유형별 필수 항목(본문에 포함되어야 하는 키워드)
+required_sections:
+  QM: [목적, 적용범위, 품질방침]
+  QP: [목적, 적용범위, 책임과 권한, 절차]
+  WI: [목적, 적용범위, 작업방법]
+  FM: []
+  APQP: []
+  PPAP: []
+  PFMEA: []
+  CONTROL_PLAN: []
+  SPC_MSA: []
+
+# ISO 9001 / IATF 16949 요구사항 체크: 문서 유형별로 본문에 있어야 할 조항 키워드(하나 이상)
+standards_check:
+  QP:
+    - {clause: "ISO9001 7.5 문서화된 정보", any_of: ["문서관리", "기록관리", "문서화된 정보"], applies_to_prefix: "QP-0"}
+  QM:
+    - {clause: "ISO9001 5.2 품질방침", any_of: ["품질방침"]}
+    - {clause: "IATF16949 4.3.2 고객 특정 요구사항", any_of: ["고객 특정 요구사항", "CSR"]}
+
+# 보존기간 (FM/QP/WI 에 '보존기간' 표기 필요, 허용값)
+retention:
+  required_for: [QP, WI, FM]
+  allowed: ["1년", "3년", "5년", "10년", "영구"]
+
+# 결재 상태 검사: 본문에 아래 라벨이 모두 있어야 승인대기로 이동
+approval_labels: [작성, 검토, 승인]

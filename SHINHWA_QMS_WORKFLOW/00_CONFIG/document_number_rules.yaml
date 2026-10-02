@@ -1,9 +1,9 @@
-# 문서번호 규칙 (예: QP-07-01, WI-07-01-01, FM-07-01-01)
-# 실제 회사 규정에 맞게 pattern을 수정하세요.
-rules:
+# 문서번호 규칙 (회사 규정에 맞게 수정)
+# doc_pattern: 파일명/본문에서 문서번호를 찾는 정규식
+doc_pattern: '(?:QM|QP|WI|FM)-\d{2}(?:-\d{2}){0,2}|(?:APQP|PPAP|PFMEA|CP|SPC|MSA)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*'
+by_type:
   QM: '^QM-\d{2}$'
   QP: '^QP-\d{2}(-\d{2})?$'
   WI: '^WI-\d{2}-\d{2}(-\d{2})?$'
   FM: '^FM-\d{2}-\d{2}(-\d{2})?$'
-revision:
-  pattern: '^Rev\.\d{2}$'
+revision_pattern: 'Rev\.?\s?(\d{2})'
