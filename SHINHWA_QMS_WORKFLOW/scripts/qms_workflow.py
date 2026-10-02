@@ -1490,7 +1490,7 @@ def scan():
     """1. 신규 문서 검색: 아직 검토되지 않은 파일 목록."""
     done, new = processed(), []
     for p in sorted(D["orig"].rglob("*")):
-        if p.is_file() and p.name != ".gitkeep" and sha(p) not in done:
+        if p.is_file() and p.name != ".gitkeep" and MASTER not in p.parts and sha(p) not in done:   # 관리자료(MASTER_REF)는 검토 대상 아님
             new.append(p)
     print(f"신규 문서 {len(new)}건")
     for p in new:
