@@ -311,10 +311,51 @@ def write_candidate(p: Path, docno, issues):
     log("revision_history.csv", [dt.date.today(), docno or p.stem, rv, "", f"수정후보 생성(미확정, {len(issues)}건): {out.name}", "system", ""])
     return out
 
+def summary_table(p: Path, docno, issues, approved, stage="검토"):
+    """검사 | 결과 | 조치 요약표 (markdown). 문서별로 02_REVIEW/자동검토결과 에 저장."""
+    num, qms = cfg("document_number_rules.yaml"), cfg("qms_rules.yaml")
+    text = extract_text(p)
+    def hit(cat=None, kw=None):
+        return [m for c, m, _ in issues if (cat is None or c == cat) and (kw is None or any(k in m for k in kw))]
+    rows = []
+    def row(name, bad, ok_note="-", bad_note=""):
+        rows.append((name, "FAIL" if bad else "PASS", bad_note if bad else ok_note))
+    row("문서번호", hit("문서번호"), bad_note="; ".join(hit("문서번호"))[:80])
+    row("Rev", hit("개정번호"), bad_note="; ".join(hit("개정번호"))[:80])
+    row("회사명", hit(kw=["회사명"]), bad_note="회사명 표기")
+    row("고객사", hit(kw=["고객사", "CSR"]), bad_note="; ".join(hit(kw=["고객사", "CSR"]))[:80])
+    refs = sorted({norm(x) for m in hit("상호참조") for x in re.findall(num["doc_pattern"], m)})
+    row("QP-WI-FM 연계", hit("상호참조"), bad_note=(", ".join(refs) + " 참조 확인") if refs else "연계 확인")
+    ret = re.search(r"보존기간\s*[:：]?\s*(\S+)", text)
+    row("보존기간", hit(kw=["보존기간"]) and not hit(kw=["LOT"]), ok_note=ret.group(1) if ret else "해당 없음", bad_note="; ".join(hit(kw=["보존기간"]))[:80])
+    lot = qms["lot_traceability"]["keyword"] in text
+    if lot:
+        row("LOT 추적 목표", hit(kw=["LOT 추적"]), ok_note=qms["lot_trace_target_time"], bad_note="; ".join(hit(kw=["LOT 추적"]))[:80])
+    else:
+        rows.append(("LOT 추적 목표", "N/A", "LOT 추적 언급 없음"))
+    st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
+    rows.append(("승인상태", "PASS" if approved else "HOLD", (st.group(1) if st else "") if approved else "승인 전"))
+    others = [m for c, m, _ in issues if m not in sum([hit("문서번호"), hit("개정번호"), hit("상호참조"), hit(kw=["회사명", "고객사", "CSR", "보존기간", "LOT 추적"])], [])]
+    if others:
+        rows.append(("기타 검사", "FAIL", f"{len(others)}건 (상세: 자동검토결과 JSON)"))
+    fails = [r for r in rows if r[1] == "FAIL"]
+    if fails:
+        mv = ("불가", "검사 FAIL 해결 후 재검증")
+    elif not approved:
+        mv = ("불가", "승인 완료 후 이동")
+    else:
+        mv = ("가능", "04_APPROVAL/승인완료 → finalize")
+    rows.append(("FINAL 이동", mv[0], mv[1]))
+    md = f"### {p.name} ({docno or '문서번호 미확인'}) — {stage}\n\n| 검사 | 결과 | 조치 |\n|---|---|---|\n" + "\n".join(f"| {a} | {b} | {c} |" for a, b, c in rows) + "\n"
+    rep = D["rev"] / "자동검토결과"; rep.mkdir(exist_ok=True)
+    (rep / f"{p.stem}_요약.md").write_text(md, encoding="utf-8")
+    print(md)
+
 def route(p: Path, typ: str):
     """검토 후 02_REVIEW 또는 04_APPROVAL/승인대기 로 '복사'. 반환: 통과 여부"""
     docno, issues, approved = validate(p, typ)
     name = docno or p.stem
+    summary_table(p, docno, issues, approved)
     if issues:
         cats = {c for c, _, _ in issues}
         folder = next((ERR_DIR[c] for c in ERR_DIR if c in cats), DEFAULT_ERR_DIR)
@@ -420,6 +461,7 @@ def finalize():
             continue
         # FINAL 직전 재검증 (문서상태 승인완료 필수)
         docno, issues, approved = validate(p, typ, final_stage=True)
+        summary_table(p, docno, issues, approved, stage="FINAL 직전 재검증")
         if issues:
             cats = {c for c, _, _ in issues}
             tag = "문서번호 불일치로 FINAL 이동 금지" if "문서번호" in cats else "검토 이슈로 FINAL 이동 금지"
