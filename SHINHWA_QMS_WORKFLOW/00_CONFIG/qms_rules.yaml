@@ -49,6 +49,7 @@ standards_check:
 # 보존기간 (FM/QP/WI 에 '보존기간' 표기 필요, 허용값)
 retention:
   required_for: [QP, WI, FM]
+  allow_blank_for: [FM]          # 양식(FM) 단계에서는 보존기간 공란/미표기 허용 (허용값 외 구체값을 적으면 오류)
   allowed: ["1년", "3년", "5년", "10년", "영구"]   # LOT 추적성 기록은 3년
 
 # 결재 상태 검사: 본문에 아래 라벨이 모두 있어야 승인대기로 이동

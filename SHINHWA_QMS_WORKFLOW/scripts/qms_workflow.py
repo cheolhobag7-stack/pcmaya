@@ -364,7 +364,13 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
     # (11) 보존기간
     r = qms["retention"]
     spans = [text[m.end():m.end() + 25] for m in re.finditer("보존기간", text)]
-    if typ in r["required_for"]:
+    if typ in r.get("allow_blank_for", []):
+        # 양식 단계: 보존기간 공란/미표기 허용. 허용값이 아닌 '구체적 값'(예: 7년)을 적었을 때만 오류.
+        for sp in spans:
+            val = re.match(r"\s*[:：은는을를]?\s*(\d+\s*년|영구)", sp)
+            if val and not any(val.group(1).replace(" ", "").startswith(a) for a in r["allowed"]):
+                add("내용보완", f"보존기간 '{val.group(1)}' 허용값 아님 {r['allowed']}", "허용값 중 선택")
+    elif typ in r["required_for"]:
         if not spans:
             add("내용보완", "보존기간 미표기", f"보존기간 기재 (허용값 {r['allowed']})")
         elif not any(a in sp for sp in spans for a in r["allowed"]):
@@ -453,7 +459,10 @@ def summary_table(p: Path, docno, issues, approved, stage="검토", text=None, l
     refs = sorted({norm(x) for m in hit("상호참조") for x in re.findall(num["doc_pattern"], m)})
     row("QP-WI-FM 연계", hit("상호참조"), bad_note=(", ".join(refs) + " 참조 확인") if refs else "연계 확인")
     ret = re.search(r"보존기간\s*[:：]?\s*(\S+)", text)
-    row("보존기간", hit(kw=["보존기간"]) and not hit(kw=["LOT"]), ok_note=ret.group(1) if ret else "해당 없음", bad_note="; ".join(hit(kw=["보존기간"]))[:80])
+    allowed_ret = qms["retention"]["allowed"]
+    has_val = any(a in text[m.end():m.end() + 25] for m in re.finditer("보존기간", text) for a in allowed_ret)
+    ok_ret = (ret.group(1) if has_val and ret else "공란 (양식 단계 허용)") if "보존기간" in text or not has_val else "해당 없음"
+    row("보존기간", hit(kw=["보존기간"]) and not hit(kw=["LOT"]), ok_note=ok_ret, bad_note="; ".join(hit(kw=["보존기간"]))[:80])
     lot = qms["lot_traceability"]["keyword"] in text
     if lot:
         row("LOT 추적 목표", hit(kw=["LOT 추적"]), ok_note=qms["lot_trace_target_time"], bad_note="; ".join(hit(kw=["LOT 추적"]))[:80])
