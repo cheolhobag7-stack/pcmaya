@@ -87,3 +87,6 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 07:13:59,AUDIT_PACKAGE_20261002_071359,,심사 패키지,14_AUDIT/CERTIFICATION/AUDIT_PACKAGE_20261002_071359,system,CERTIFICATION 패키지 생성(35개 파일)
 2026-10-02 07:13:59,HANON_RESPONSE_20261002_071359,,고객 대응,15_CUSTOMER_RESPONSE/HANON_RESPONSE_20261002_071359,system,고객 대응자료 템플릿 생성
 2026-10-02 07:13:59,SHINHWA_BACKUP_20261002_071359.zip,,백업,16_BACKUP/SHINHWA_BACKUP_20261002_071359.zip,system,976개 파일 백업
+2026-10-02 07:29:14,/tmp/claude-0/-home-user-pcmaya/0dd4b906-3204-5780-afc8-a35da5d3aa53/scratchpad/fakeE,,inputsync,11_INPUT,system,"3개 복사, 0개 동일(건너뜀)"
+2026-10-02 07:29:14,/tmp/claude-0/-home-user-pcmaya/0dd4b906-3204-5780-afc8-a35da5d3aa53/scratchpad/fakeE,,inputsync,11_INPUT,system,"0개 복사, 3개 동일(건너뜀)"
+2026-10-02 07:29:30,inputsync 시험,,inputsync,11_INPUT,system,시험용 더미 파일 3개(작업일보·불량현황·LOT_추적)와 시험 보고서 3개를 삭제함 — 실제 현장 데이터 아님

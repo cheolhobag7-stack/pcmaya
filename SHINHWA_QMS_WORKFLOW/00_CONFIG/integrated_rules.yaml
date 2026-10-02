@@ -54,3 +54,17 @@ customer_response:
     - "영구대책"
     - "재발방지"
     - "증빙자료"
+
+# 로컬 폴더 → 11_INPUT 복사(inputsync) 분류 키워드: 파일명 또는 상위 폴더명에 포함되면 해당 모듈로 분류.
+# 두 모듈 이상에 걸리거나 하나도 안 맞으면 복사하지 않고 목록으로 알려준다.
+input_sync:
+  extensions: [".xlsx", ".xlsm", ".xls", ".csv", ".docx", ".pdf"]
+  max_file_mb: 50
+  keywords:
+    lot: ["LOT", "로트", "추적"]
+    safety: ["안전", "위험성", "위험"]
+    equipment: ["설비", "트라이얼", "시운전", "점검"]
+    training: ["교육"]
+    production: ["생산", "작업일보"]
+    inventory: ["재고", "입고", "출고", "수불"]
+    quality: ["품질", "PPM", "불량", "클레임"]

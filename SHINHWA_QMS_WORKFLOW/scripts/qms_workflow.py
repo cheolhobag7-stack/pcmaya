@@ -11,6 +11,7 @@
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
+  python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
   python3 scripts/qms_workflow.py mcphealth | mcpsafestart   # MCP 상태·보안 점검(읽기 전용) / 점검 후 전체 운영
   python3 scripts/qms_workflow.py qmsaudit | integratedaudit | modulecheck <lot|safety|equipment|training|production|inventory|quality>
   python3 scripts/qms_workflow.py collectactions | dashboarddata | weeklyreport | monthlyreport
@@ -40,7 +41,7 @@
   - 승인(문서상태=승인완료 + 사람의 sign) 전 문서는 배포본을 만들지 않는다.
   - 폐기 문서 참조는 오류. 확정되지 않은 값은 임의로 만들지 않고 '[확인 필요]'로 표시한다.
 """
-import collections, csv, hashlib, html, json, re, shutil, subprocess, sys, zipfile, datetime as dt
+import collections, csv, hashlib, html, os, json, re, shutil, subprocess, sys, zipfile, datetime as dt
 from pathlib import Path
 import yaml
 
@@ -2137,6 +2138,62 @@ def mcp_safe_start():
         print("[MCP SAFE START] FAIL 항목이 있어 외부 연동(MCP) 사용은 보류합니다. 로컬 QMS 운영은 계속합니다.")
     full_operation()
 
+def input_sync(src, apply=False):
+    """로컬 폴더(예: E:\\)의 현장 파일을 모듈별로 11_INPUT 에 '복사'한다. 원본 폴더는 읽기만 한다(수정·삭제·이동 없음).
+    기본은 미리보기(dry-run)이며 --apply 일 때만 복사한다. 같은 내용은 건너뛰고, 같은 이름·다른 내용은 _vN 으로 새로 저장한다.
+    두 모듈 이상에 걸리거나 분류할 수 없는 파일은 복사하지 않고 목록으로 보고한다."""
+    base = Path(src).expanduser()
+    if not base.exists():
+        sys.exit(f"원본 폴더를 찾을 수 없음: {src}")
+    rules = cfg("integrated_rules.yaml")["input_sync"]
+    exts, limit = {e.lower() for e in rules["extensions"]}, rules["max_file_mb"] * 1024 * 1024
+    skip = {"$recycle.bin", "system volume information", "windows", "program files", "program files (x86)", ".git", "node_modules", "__pycache__", "appdata"}
+    plan, ambiguous, unmatched, too_big = [], [], 0, []
+    for dp, dns, fns in os.walk(base):
+        dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
+        for fn in fns:
+            f = Path(dp) / fn
+            if f.suffix.lower() not in exts or fn.startswith("~$"):
+                continue
+            try:
+                size = f.stat().st_size
+            except OSError:
+                continue
+            if size > limit:
+                too_big.append(str(f)); continue
+            hay = (fn + " " + " ".join(f.relative_to(base).parts[:-1])).lower()
+            mods = [k for k, kws in rules["keywords"].items() if any(w.lower() in hay for w in kws)]
+            if len(mods) == 1:
+                plan.append((mods[0], f))
+            elif len(mods) > 1:
+                ambiguous.append((f, mods))
+            else:
+                unmatched += 1
+    L = ["# 로컬 폴더 → 11_INPUT 복사 " + ("(실행)" if apply else "(미리보기, 복사 안 함)"), f"- 생성: {now()}", f"- 원본: {base} (읽기만 함)", ""]
+    copied = same = 0
+    L += ["## 모듈별 복사 대상", "", "| 모듈 | 파일 | 처리 |", "|---|---|---|"]
+    for mod, f in sorted(plan, key=lambda x: (x[0], str(x[1]))):
+        dest_dir = IN_DIR / OPS_MODULES[mod][1]
+        existing = dest_dir / f.name
+        if existing.exists() and existing.read_bytes() == f.read_bytes():
+            act = "이미 있음(동일)"; same += 1
+        elif apply:
+            dst = safe_copy(f, dest_dir)
+            act = f"복사 → {dst.relative_to(ROOT)}"; copied += 1
+        else:
+            act = "복사 예정"
+        L.append(f"| {mod} | {f} | {act} |")
+    L += ["", f"## 여러 모듈에 걸려 복사하지 않은 파일 ({len(ambiguous)})"] + [f"- {f} ← {', '.join(m)}" for f, m in ambiguous[:50]]
+    L += ["", f"## 크기 제한({rules['max_file_mb']}MB) 초과로 건너뜀 ({len(too_big)})"] + [f"- {x}" for x in too_big[:20]]
+    L += ["", f"- 키워드가 맞지 않아 분류하지 않은 파일: {unmatched}개"]
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    out = unique_path(OUT_DIR / "REPORTS" / f"inputsync_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    if apply:
+        log("workflow_log.csv", [now(), str(base), "", "inputsync", "11_INPUT", "system", f"{copied}개 복사, {same}개 동일(건너뜀)"])
+    print(f"[INPUT SYNC] {'복사 ' + str(copied) + '개' if apply else '복사 예정 ' + str(len(plan) - same) + '개'} / 동일 {same} / 모듈 겹침 {len(ambiguous)} / 미분류 {unmatched} / 용량초과 {len(too_big)} → {out.relative_to(ROOT)}")
+    return out
+
 def full_operation():
     """전체 운영: QMS 사이클(승인 직전까지) → 통합 점검 → 조치사항 → 대시보드 → 주간 보고. 승인/배포는 하지 않는다."""
     fullcycle()
@@ -2164,6 +2221,7 @@ if __name__ == "__main__":
     elif cmd == "sqaudit": sq_audit()
     elif cmd == "fulloperation": full_operation()
     elif cmd == "mcphealth": mcp_health_check()
+    elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv)
     elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
