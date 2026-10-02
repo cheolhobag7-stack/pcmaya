@@ -10,6 +10,7 @@
   python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
+  python3 scripts/qms_workflow.py sqaudit    # SQ mark 필요서류 리스트 ↔ 문서체계 대조 → 07_AUDIT/고객심사/
   python3 scripts/qms_workflow.py fullcycle  # 승인 직전까지 전체 사이클(감사→AUTO_DRAFT→재감사→Gate→패키지). 승인/배포는 사람이
   python3 scripts/qms_workflow.py fullaudit  # 전체 자동감사(신규 검색→점검→상호참조→대장→Release Gate)
   python3 scripts/qms_workflow.py releasegate # 종합 Release Gate(PASS/HOLD/FAIL) → 02_REVIEW/qms_release_gate.md
@@ -1117,6 +1118,89 @@ def fm_master_register():
     print(f"[FM MASTER] {len(added)}건 등록 ({added[0]}~{added[-1]}) → {out.relative_to(ROOT)}  (원본 {master.name} 은 변경하지 않음)")
     return out
 
+def sq_audit():
+    """SQ mark 심사 필요서류 리스트(07_AUDIT/고객심사/SQ*.xlsx) ↔ 현재 문서체계 대조.
+    - 필요서류 FM번호(안)의 번호체계 / 중복 / 공식 번호체계(SH-FM-NNN)와의 충돌
+    - 필요서류명과 비슷한 기존 양식(FM Master, FM-101~121, 공식양식) 후보 (제안일 뿐 확정 아님)
+    - 관련 기존 QP/WI 가 문서관리대장에 있는지
+    결과: 07_AUDIT/고객심사/SQ_필요서류_대조보고서.md, SQ_필요서류_번호대조.csv (원본 SQ 파일은 수정하지 않음)"""
+    from openpyxl import load_workbook
+    import difflib
+    adir = D["root_audit"] if "root_audit" in D else ROOT / "07_AUDIT" / "고객심사"
+    sqs = sorted(adir.glob("SQ*.xlsx"), key=lambda f: f.stat().st_mtime)
+    if not sqs:
+        sys.exit("07_AUDIT/고객심사/ 에 SQ*.xlsx 가 없습니다")
+    wb = load_workbook(sqs[-1], data_only=True)
+    ws = wb["전체_필요서류리스트"]
+    hdr = [c.value for c in ws[4]]
+    ix = {h: i for i, h in enumerate(hdr)}
+    rows = [[c.value for c in r] for r in ws.iter_rows(min_row=5) if r[0].value]
+    # 기존 양식 이름 후보
+    known = {}
+    for f in master_files("FM_Master"):
+        try:
+            mw = load_workbook(f, data_only=True)["01_FM_Master"]
+            for r in mw.iter_rows(min_row=2, values_only=True):
+                if r[0] and r[1]:
+                    known[str(r[0])] = str(r[1])
+        except Exception:
+            pass
+    for f in D["orig"].rglob("*.xlsx"):
+        if MASTER in f.parts:
+            continue
+        for n, t in xlsx_sheets(f).items():
+            m = re.fullmatch(r"SH-FM-\d{3}", n.strip())
+            if m:
+                first = t.splitlines()[0].replace(n.strip(), "").strip() if t else ""
+                if first:
+                    known.setdefault(n.strip(), first)
+    norm_ = lambda x: re.sub(r"[\s\-_/·()\[\]]", "", str(x or ""))
+    ledger = {e[2]: e[3] for e in latest_ledger_entries()} if "latest_ledger_entries" in globals() else {e[2]: e[3] for e in ledger_entries()}
+    scheme = lambda n: ("공식(SH-FM-NNN)" if re.fullmatch(r"SH-FM-\d{3}", n or "") else
+                        "QP/WI 근거형(SH-FM-QP###-NN)" if re.fullmatch(r"SH-FM-(QP|WI)\d{3}-\d{2}", n or "") else
+                        "신규형(SH-FM-XXX-N##)" if re.fullmatch(r"SH-FM-[A-Z]{3}-N\d{2}", n or "") else "기타/없음")
+    cnt_no = collections.Counter(r[ix["FM문서번호"]] for r in rows)
+    out_rows, sc = [], collections.Counter()
+    for r in rows:
+        no, name, fm = r[ix["NO"]], r[ix["필요서류(준비서류)"]], r[ix["FM문서번호"]]
+        best = max(((difflib.SequenceMatcher(None, norm_(name), norm_(v)).ratio(), k, v) for k, v in known.items()), default=(0, "", ""))
+        rel = str(r[ix["확정 연계문서/FM번호"]] or r[ix["관련 기존 문서(참고)"]] or "")
+        refs = re.findall(r"SH-(?:QP|WI)-\d{3}", rel)
+        miss = [x for x in refs if x not in ledger]
+        sc[scheme(fm)] += 1
+        out_rows.append([no, r[ix["구분"]], r[ix["번호"]], r[ix["우선순위"]], name, fm, scheme(fm), "중복" if cnt_no[fm] > 1 else "",
+                         (f"{best[1]} {best[2]} ({best[0]:.2f})" if best[0] >= 0.6 else ""), r[ix["작성구분(자동추정)"]], r[ix["담당부서"]],
+                         r[ix["목표완료월(제안)"]], ", ".join(refs), ", ".join(miss)])
+    csvp = unique_path(adir / "SQ_필요서류_번호대조.csv")
+    with open(csvp, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        w.writerow(["NO", "구분", "번호", "우선순위", "필요서류", "SQ안 FM번호", "번호체계", "번호 중복", "유사 기존 양식 후보(제안, 확정 아님)", "작성구분", "담당부서", "목표완료월", "연계 QP/WI", "대장에 없는 연계 QP/WI"])
+        w.writerows(out_rows)
+    dup = sorted(k for k, v in cnt_no.items() if v > 1)
+    names = collections.Counter(norm_(r[ix["필요서류(준비서류)"]]) for r in rows)
+    same_name = sorted({r[ix["필요서류(준비서류)"]] for r in rows if names[norm_(r[ix["필요서류(준비서류)"]])] > 1})
+    sim = [r for r in out_rows if r[8]]
+    by = lambda k: collections.Counter(r[k] for r in out_rows)
+    L = ["# SQ mark 필요서류 ↔ 현재 문서체계 대조", f"- 생성: {now()}", f"- SQ 파일: {sqs[-1].name} (수정하지 않음)", f"- 필요서류 {len(rows)}건", "",
+         "## 번호체계", "", "| 체계 | 건수 |", "|---|---|"] + [f"| {k} | {v} |" for k, v in sc.most_common()]
+    L += ["", f"- 공식 번호체계(`SH-FM-NNN`: FM Master 001~100 + 신규 배정 101~122)와 다른 SQ안 번호가 {len(rows) - sc['공식(SH-FM-NNN)']}건입니다. 현재 점검 도구(`doc_pattern`)는 SQ안 번호(`SH-FM-QP010-01` 등)를 문서번호로 인식하지 못합니다.",
+          f"- SQ안 번호가 서로 겹치는 경우: {len(dup)}개 번호 ({', '.join(dup[:8])}{' …' if len(dup) > 8 else ''})",
+          f"- 같은 필요서류명이 여러 행에 반복: {len(same_name)}종 ({', '.join(same_name[:8])}{' …' if len(same_name) > 8 else ''})", "",
+          "## 분류별 현황", "", "| 구분 | 건수 | 기존 절차 연계 | 신규 작성 필요 |", "|---|---|---|---|"]
+    for g, n in sorted(by(1).items()):
+        L.append(f"| {g} | {n} | {sum(1 for r in out_rows if r[1] == g and r[9] == '기존 절차 연계')} | {sum(1 for r in out_rows if r[1] == g and r[9] == '신규 작성 필요')} |")
+    L += ["", f"## 기존 양식과 이름이 비슷한 필요서류 ({len(sim)}건, 제안일 뿐 확정 아님)", "", "| NO | 필요서류 | SQ안 번호 | 유사 기존 양식 |", "|---|---|---|---|"]
+    L += [f"| {r[0]} | {r[4]} | {r[5]} | {r[8]} |" for r in sim[:60]] or ["| (없음) | | | |"]
+    bad = [r for r in out_rows if r[13]]
+    L += ["", f"## 문서관리대장에 없는 연계 QP/WI ({len(bad)}건)"] + ([f"- NO {r[0]} {r[4]}: {r[13]}" for r in bad[:30]] or ["- 없음"])
+    L += ["", "## 다음 결정 필요", "- SQ안 번호를 공식 번호(`SH-FM-NNN`)로 새로 배정할지, SQ안 체계를 정식 체계로 채택할지 (번호는 사람이 확정)",
+          "- 같은 서류명의 중복/통합 여부, 기존 양식으로 대체 가능한 항목 확정", "- '관리번호'(기록번호 등)의 정의와 부여 규칙"]
+    rp = unique_path(adir / "SQ_필요서류_대조보고서.md")
+    rp.write_text("\n".join(L) + "\n", encoding="utf-8")
+    log("workflow_log.csv", [now(), sqs[-1].name, "", "07_AUDIT/고객심사", rp.name, "system", f"SQ 필요서류 {len(rows)}건 대조 보고서 생성"])
+    print(f"[SQ AUDIT] {len(rows)}건 | 번호체계 {dict(sc)} | 중복 번호 {len(dup)} | 유사 기존 양식 {len(sim)} → {rp.relative_to(ROOT)}")
+    return rp
+
 def fullcycle():
     """전체 사이클(승인 직전까지): 신규 검색 → 점검(+AUTO_DRAFT) → 수정완료분 재감사(+DIFF) → Release Gate → 승인 패키지.
     승인(approve/sign)과 FINAL 배포(finalize)는 사람이 실제 승인한 뒤 직접 실행한다."""
@@ -1439,6 +1523,7 @@ if __name__ == "__main__":
     elif cmd == "releasegate": release_gate()
     elif cmd == "fullaudit": fullaudit()
     elif cmd == "fullcycle": fullcycle()
+    elif cmd == "sqaudit": sq_audit()
     elif cmd == "fmregister": fm_master_register()
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()
