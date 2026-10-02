@@ -309,12 +309,21 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
     elif title not in text:
         add("내용보완", f"본문에 문서명 '{title}' 없음", "본문 제목과 파일명 문서명 일치 필요")
 
-    # (5) 제정/개정일
+    # 승인 상태 표지: '문서상태: 승인완료' 필드 또는 머리글의 ACTIVE/APPROVED/승인완료 표기 (양식 헤더)
+    st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
+    status = st.group(1) if st else None
+    mk = re.search(qms["document_status"]["header_marker"], text[:600])
+    approved = status in qms["document_status"]["approved_values"] or bool(mk)
+
+    # (5) 제정/개정일: 승인(ACTIVE 등) 표기가 있거나 FINAL 단계에서만 필수. 사용승인 전 양식은 날짜 미기재 허용
     df = qms["date_fields"]
     key = df["initial"] if rev == "00" else df["revised"]
+    date_required = approved or final_stage or not qms["date_fields"].get("optional_before_approval", False)
     dm = re.search(rf"{key}\s*[:：]?\s*(\d{{4}})[.\-/]\s?(\d{{1,2}})[.\-/]\s?(\d{{1,2}})", text) if rev is not None else None
     if rev is not None:
-        if not dm:
+        if not dm and not date_required:
+            pass   # 승인 전 양식: 제정일 공란 허용
+        elif not dm:
             add("내용보완", f"{key} 미표기 또는 날짜 형식 오류 (YYYY-MM-DD)", f"{key} 기재 {UNCONFIRMED}")
         else:
             try:
@@ -325,12 +334,21 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
                 add("내용보완", f"{key} 날짜가 유효하지 않음", f"{key} 확인 {UNCONFIRMED}")
 
     # (6) 작성/검토/승인 상태
-    missing = [l for l in qms["approval_labels"] if l not in text]
+    labels = list(qms["approval_labels"])
+    if unit:
+        # 양식별 결재 방식: 목록(안내) 시트의 '결재 방식'(예: 작성·확인 / 작성·검토·승인)을 따른다.
+        ctx = unit[2] if len(unit) > 2 else ""
+        sm = None
+        for line in ctx.splitlines():
+            if re.search(rf"(?:SH-)?{re.escape(norm(docno or ''))}(?!\d)", line):
+                sm = re.search(r"작성((?:[·/](?:검토|확인|승인))*)\s+Rev\.?\d{2}", line) or sm
+        if sm:
+            labels = ["작성"] + re.findall(r"검토|확인|승인", sm.group(1))
+        elif mk and qms["approval_by_header_marker"].get("skip_label_check"):
+            labels = []   # 대장/집계표형 양식: 개별 결재란 없이 ACTIVE(공식 게이트 승인)로 관리
+    missing = [l for l in labels if l not in text]
     if missing:
-        add("내용보완", f"결재란 항목 누락: {', '.join(missing)}", "결재란(작성/검토/승인) 보완")
-    st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
-    status = st.group(1) if st else None
-    approved = status in qms["document_status"]["approved_values"]
+        add("내용보완", f"결재란 항목 누락: {', '.join(missing)}", f"결재란({'/'.join(labels)}) 보완")
     if final_stage and not approved:
         add("내용보완", f"문서상태가 승인완료가 아님 ({status or '미표기'}) - FINAL/배포 불가", "승인 절차 완료 후 문서상태 갱신")
 
@@ -356,13 +374,18 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
         if not any(k in text for k in chk["any_of"]):
             add("내용보완", f"{chk['clause']}: {'/'.join(chk['any_of'])} 중 하나 필요", "해당 요구사항 반영")
 
-    # (10) APQP/PPAP/PFMEA/CP/SPC/MSA 연계
+    # (10) APQP/PPAP/PFMEA/CP/SPC/MSA 연계 (양식 시트는 목록 시트에 적힌 연계 QP도 인정)
+    link_refs = set(refs)
+    if unit and len(unit) > 2:
+        for line in unit[2].splitlines():
+            if re.search(rf"(?:SH-)?{re.escape(norm(docno or ''))}(?!\d)", line):
+                link_refs |= {norm(x) for x in re.findall(num["doc_pattern"], line)} - {norm(docno)}
     for tool, kws in qms["core_tools"].items():
         if any(k in text for k in kws):
             want = (qms.get("core_tool_docs") or {}).get(tool)
-            if want and norm(want) not in refs:
+            if want and norm(want) not in link_refs:
                 add("상호참조", f"{tool} 언급 - 연계 문서 {want} 참조 없음", f"{want} 참조 추가")
-            elif not want and not refs:
+            elif not want and not link_refs:
                 add("내용보완", f"{tool} 언급 - 연계 문서번호 미명시", f"연계 QP/WI/FM 번호 명시 {UNCONFIRMED}")
 
     # (11) 보존기간
@@ -452,8 +475,10 @@ def check(p: Path, typ: str, final_stage=False):
         issues.append(("문서번호", f"파일명 범위의 {miss} 양식 시트가 없음", "시트 추가 또는 파일명 범위 정정 " + UNCONFIRMED))
     for extra in sorted(have - want) if want else []:
         issues.append(("문서번호", f"파일명 범위에 없는 양식 시트 {extra}", "파일명 범위 정정 " + UNCONFIRMED))
+    unit_names = {n for n, _ in units}
+    ctx = "\n".join(t for n, t in xlsx_sheets(p).items() if n.strip() not in unit_names)
     for name, text in units:
-        d, i, a = validate(p, typ, final_stage, unit=(name, text))
+        d, i, a = validate(p, typ, final_stage, unit=(name, text, ctx))
         results.append((name, i, a, text))
         issues += [(c, f"[{name}] {m}", f) for c, m, f in i]
     return p.stem, issues, all(a for _, _, a, _ in results), results

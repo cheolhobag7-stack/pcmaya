@@ -58,10 +58,12 @@ approval_labels: [작성, 검토, 승인]
 # ---- 확장 검토 규칙 (※ 기본값은 가정치 — 회사 규정 확정 후 수정) ----
 document_status:
   field: '문서상태'                     # 본문 '문서상태: 승인완료' 형태
-  approved_values: ["승인완료", "APPROVED"]
+  approved_values: ["승인완료", "APPROVED", "ACTIVE"]
+  header_marker: '\b(?:ACTIVE|APPROVED)\b|승인완료'   # 양식 머리글(앞 600자)의 승인 표기
 date_fields:
   initial: '제정일'                     # Rev.00 문서에 필수
   revised: '개정일'                     # Rev.01 이상 문서에 필수
+  optional_before_approval: true        # 승인(ACTIVE 등) 표기 전 양식은 제정일 공란 허용 (FINAL 단계에서는 필수)
 page_number_required_for: [QM, QP, WI]
 toc_required_for: [QM, QP]
 csr_required_for: [QM]                  # 고객 특정 요구사항(CSR) 언급 필수 유형
@@ -100,3 +102,8 @@ prohibited_phrases:
   - "※ 실제 승인자 성명·서명·일자 입력 후 관리본 배포"
 # v0.2 설정값(현재 자동 검사에는 미사용 - 용도 확정 후 연결): 반드시 안내되어야 하는 FM 번호
 required_notice: ["FM-066", "FM-067", "FM-068", "FM-069", "FM-078", "FM-079", "FM-080", "FM-096", "FM-094"]
+
+# 양식 결재란: 목록 시트의 '결재 방식'(작성·확인 / 작성·검토·승인)을 따른다.
+# ACTIVE 표기된 대장/집계표형 양식(예: FM-066~069, 078~080, 094, 096)은 개별 결재란을 요구하지 않는다.
+approval_by_header_marker:
+  skip_label_check: true
