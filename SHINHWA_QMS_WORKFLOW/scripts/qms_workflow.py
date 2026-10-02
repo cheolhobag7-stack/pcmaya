@@ -853,10 +853,15 @@ def master_files(keyword):
     return [q for d in (D["orig"] / MASTER, D["cfg"]) for q in sorted(d.glob("*"))
             if q.is_file() and keyword in q.name and "샘플" not in q.name and q.suffix.lower() in (".xlsx", ".xlsm", ".docx")]
 
+def latest_master(keyword):
+    """같은 종류 관리자료가 원본/수정본으로 여러 개면 가장 최근 파일만 사용(중복 등재 방지)."""
+    fs = master_files(keyword)
+    return [max(fs, key=lambda f: f.stat().st_mtime)] if fs else []
+
 def ledger_entries():
     """문서관리대장(01_문서관리대장 시트) → [(번호, 구분, 문서번호, 문서명, Rev)]. 대장이 없으면 빈 리스트."""
     out = []
-    for f in master_files("문서관리대장"):
+    for f in latest_master("문서관리대장"):
         sheets = xlsx_sheets(f)
         sheet = next((t for n, t in sheets.items() if n.startswith("01_")), None)
         for line in (sheet if sheet is not None else "\n".join(sheets.values())).splitlines():
@@ -891,7 +896,7 @@ def ledger_check():
     lines = ["# 문서관리대장 ↔ 실제 파일 대조", f"- 생성: {now()}", f"- 대장 등재 {len(ents)}건", ""]
     # 실제 문서 원천: 개별 파일(파일명 번호) + 통합문서 본문
     src_text, src_rev = {}, {}
-    for f in master_files("통합문서"):
+    for f in latest_master("통합문서"):
         src_text[f.name] = extract_text(f)
         r = re.search(num["revision_pattern"], f.name)
         src_rev[f.name] = f"Rev.{r.group(1)}" if r else None
