@@ -32,3 +32,5 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 06:15:34,SH-FM-101-121_현장작성양식_Rev00,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-101-121_현장작성양식_Rev00,system,승인 패키지 생성
 2026-10-02 06:15:34,SH-FM-122_현장양식목록_작성계획_Rev00,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-122_현장양식목록_작성계획_Rev00,system,승인 패키지 생성
 2026-10-02 06:15:35,SH-FM-066-069_078-080_094_096_공식양식_Rev00,,04_APPROVAL/검토완료,04_APPROVAL/PACKAGES/SH-FM-066-069_078-080_094_096_공식양식_Rev00,system,승인 패키지 생성
+2026-10-02 06:16:22,SH-FM-066-069_078-080_094_096_공식양식_Rev00.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-02 06:16:25,SH-FM-066-069_078-080_094_096_공식양식_Rev00,00,04_APPROVAL/승인완료,05_FINAL,system,PDF 변환 실패(배포본 없음)
