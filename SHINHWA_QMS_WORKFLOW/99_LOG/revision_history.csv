@@ -21,3 +21,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-02,SH_FM_Master,00,00,FM Master 신규 번호 21건 등록(SH-FM-101~SH-FM-121) 새 파일: SH_FM_Master_Rev00_20260929_수정본_FM101-121등록.xlsx,system,
 2026-10-02,SH_FM_Master_Rev00_20260929_수정본_FM101-121등록,00,00,원본↔수정본 DIFF 생성 +121/-100: SH_FM_Master_Rev00_20260929_수정본_FM101-121등록__vs__SH_FM_Master_Rev00_20260929.md,system,
 2026-10-02,FM-122,00,00,원본↔수정본 DIFF 생성 +46/-46: SH-FM-122_현장양식목록_작성계획_Rev00_수정본__vs__SH-FM-122_현장양식목록_작성계획_Rev00.md,system,
+2026-10-02,SH-FM-122,,00,승인 후 최종 발행,,승인완료
