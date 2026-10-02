@@ -711,6 +711,13 @@ def route(p: Path, typ: str):
         log("workflow_log.csv", [now(), name, "", p.parent.name, f"02_REVIEW/{folder}", "system", f"{len(issues)}건 문제, 수정후보 {cand.name}"])
         print(f"[REVIEW ] {p.name}: {len(issues)}건 → 02_REVIEW/{folder} (AUTO_DRAFT: 03_EDIT/AUTO_DRAFT/{cand.name})")
     else:
+        base = re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", p.stem)
+        for old in (D["appr"] / "승인대기").glob(f"{base}*{p.suffix}"):   # 같은 문서의 이전 승인대기본은 삭제하지 않고 이력으로 이동
+            if old.name != p.name and re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", old.stem) == base:
+                dst = unique_path(D["hist"] / "이전버전" / base / f"{old.stem}__superseded{old.suffix}")
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(old), dst)
+                log("workflow_log.csv", [now(), base, "", "04_APPROVAL/승인대기", f"06_HISTORY/이전버전/{base}", "system", f"수정본 {p.name} 로 대체된 이전 승인대기본 이동"])
         ap = safe_copy(p, D["appr"] / "승인대기")
         log("workflow_log.csv", [now(), name, "", p.parent.name, "04_APPROVAL/승인대기", "system",
                                  "검사통과 (문서상태 승인완료 표기됨)" if approved else "검사통과 (승인 전: 배포 불가)"])

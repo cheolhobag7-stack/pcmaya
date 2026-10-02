@@ -35,3 +35,6 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 06:16:22,SH-FM-066-069_078-080_094_096_공식양식_Rev00.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-02 06:16:25,SH-FM-066-069_078-080_094_096_공식양식_Rev00,00,04_APPROVAL/승인완료,05_FINAL,system,PDF 변환 실패(배포본 없음)
 2026-10-02 06:25:14,SH_FM_Master_Rev00_20260929.xlsx,,FM Master,01_ORIGINAL/MASTER_REF/SH_FM_Master_Rev00_20260929_수정본_FM101-121등록.xlsx,system,신규 FM 21건 등록(원본 유지)
+2026-10-02 06:27:57,SH-FM-122_현장양식목록_작성계획_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-122_현장양식목록_작성계획_Rev00,system,수정본 SH-FM-122_현장양식목록_작성계획_Rev00_수정본.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-02 06:27:57,SH-FM-122,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-02 06:27:57,SH-FM-122_현장양식목록_작성계획_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-122_현장양식목록_작성계획_Rev00_수정본,system,승인 패키지 생성
