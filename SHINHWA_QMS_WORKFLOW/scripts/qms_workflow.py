@@ -2,7 +2,8 @@
 """(주)신화에이치앤티 QMS 문서관리 자동화 (ISO 9001:2015 / IATF 16949:2016).
 
 사용법 (SHINHWA_QMS_WORKFLOW 에서):
-  python3 scripts/qms_workflow.py run        # 01_ORIGINAL 분류 → 17개 항목 검토 → 02_REVIEW(+수정후보) / 04_APPROVAL
+  python3 scripts/qms_workflow.py run [--rereview]  # (--rereview: 이미 검토한 파일도 새 보고서로 다시 검토)
+  # 01_ORIGINAL 분류 → 17개 항목 검토 → 02_REVIEW(+수정후보) / 04_APPROVAL
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
   python3 scripts/qms_workflow.py approve F  # (사람) 승인대기 → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
@@ -31,6 +32,7 @@ ERR_DIR = {"문서번호": "문서번호오류", "개정번호": "개정번호�
 DEFAULT_ERR_DIR = "내용보완필요"
 TEXT_EXT = {".docx", ".xlsx", ".txt", ".md", ".csv"}
 UNCONFIRMED = "[확인 필요]"
+MASTER = "MASTER_REF"   # SH_ 로 시작하는 관리자료(대장/마스터/계획) 분류 폴더
 
 
 # ---------------- 공통 ----------------
@@ -97,6 +99,88 @@ def extract_text(p: Path) -> str:
         return ""
     return ""   # pdf 등: 본문 검사 불가
 
+def unique_path(path: Path) -> Path:
+    """기존 파일을 덮어쓰지 않도록 _vN 경로 반환."""
+    n, out = 2, path
+    while out.exists():
+        out = path.with_name(f"{path.stem}_v{n}{path.suffix}")
+        n += 1
+    return out
+
+_XL_CACHE = {}
+def xlsx_sheets(p: Path):
+    """{시트명: 텍스트} (shared strings 해석, 표준 라이브러리만 사용)."""
+    key = (str(p), p.stat().st_size)
+    if key in _XL_CACHE:
+        return _XL_CACHE[key]
+    import xml.etree.ElementTree as ET
+    ln = lambda t: t.rsplit("}", 1)[-1]
+    out = {}
+    try:
+        with zipfile.ZipFile(p) as z:
+            names = set(z.namelist())
+            ss = []
+            if "xl/sharedStrings.xml" in names:
+                for si in ET.fromstring(z.read("xl/sharedStrings.xml")):
+                    if ln(si.tag) == "si":
+                        ss.append("".join(t.text or "" for t in si.iter() if ln(t.tag) == "t"))
+            rid2t = {}
+            if "xl/_rels/workbook.xml.rels" in names:
+                for r in ET.fromstring(z.read("xl/_rels/workbook.xml.rels")):
+                    rid2t[r.get("Id")] = r.get("Target")
+            ridk = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+            for i, sh in enumerate([e for e in ET.fromstring(z.read("xl/workbook.xml")).iter() if ln(e.tag) == "sheet"], 1):
+                tgt = (rid2t.get(sh.get(ridk)) or f"worksheets/sheet{i}.xml").lstrip("/")
+                tgt = tgt if tgt.startswith("xl/") else "xl/" + tgt
+                if tgt not in names:
+                    continue
+                rows = []
+                for row in ET.fromstring(z.read(tgt)).iter():
+                    if ln(row.tag) != "row":
+                        continue
+                    cells = []
+                    for c in row:
+                        v = next((x for x in c if ln(x.tag) == "v"), None)
+                        if c.get("t") == "s" and v is not None and v.text is not None:
+                            cells.append(ss[int(v.text)])
+                        elif c.get("t") == "inlineStr":
+                            cells.append("".join(t.text or "" for t in c.iter() if ln(t.tag) == "t"))
+                        elif v is not None and v.text:
+                            cells.append(v.text)
+                    if cells:
+                        rows.append(" ".join(cells))
+                out[sh.get("name")] = "\n".join(rows)
+    except Exception:
+        out = {}
+    _XL_CACHE[key] = out
+    return out
+
+def split_units(p: Path):
+    """여러 양식이 한 파일에 든 워크북 → [(문서번호, 시트텍스트)]. 양식 시트가 2개 미만이면 빈 리스트."""
+    if p.suffix.lower() != ".xlsx":
+        return []
+    full = cfg("document_number_rules.yaml")["unit_sheet_pattern"]
+    units = [(n.strip(), t) for n, t in xlsx_sheets(p).items() if re.fullmatch(full, n.strip())]
+    return units if len(units) >= 2 else []
+
+def expected_range(name):
+    """파일명 'SH-FM-066-069_078-080_094_096_...' → {'SH-FM-066', ...}. 해석 불가 시 빈 집합."""
+    toks = name.split("_")
+    m = re.match(r"^((?:SH-)?[A-Z]+-)(\d{2,3})(?:-(\d{2,3}))?$", toks[0])
+    if not m:
+        return set()
+    pre, ids = m.group(1), [(m.group(2), m.group(3))]
+    for t in toks[1:]:
+        mm = re.fullmatch(r"(\d{2,3})(?:-(\d{2,3}))?", t)
+        if not mm:
+            break
+        ids.append((mm.group(1), mm.group(2)))
+    out = set()
+    for a, b in ids:
+        for n in range(int(a), int(b or a) + 1):
+            out.add(f"{pre}{n:0{len(a)}d}")
+    return out
+
 def page_toc_flags(p: Path, text: str):
     """(페이지번호 있음, 목차 있음)"""
     if p.suffix.lower() == ".docx":
@@ -126,6 +210,8 @@ def registry(docpat):
     reg = set()
     for p in stage_files():
         reg.update(norm(x) for x in re.findall(docpat, p.name))
+        for sheet_no, _ in split_units(p):   # 양식 워크북의 시트(=양식) 번호
+            reg.add(norm(sheet_no))
         if "문서관리대장" in p.name or "FM_Master" in p.name:   # 대장/마스터에 등재된 번호도 존재하는 문서로 인정
             reg.update(norm(x) for x in re.findall(docpat, extract_text(p)))
     return reg
@@ -167,15 +253,15 @@ def duplicates(docpat, p: Path, docno, rev):
 
 
 # ---------------- 검토 (17개 항목) ----------------
-def validate(p: Path, typ: str, final_stage=False):
+def validate(p: Path, typ: str, final_stage=False, unit=None):
     """반환 (docno, [(카테고리, 메시지, 수정제안)])"""
     qms, num, cust = cfg("qms_rules.yaml"), cfg("document_number_rules.yaml"), cfg("customer_rules.yaml")
-    text = extract_text(p)
+    text = unit[1] if unit else extract_text(p)
     issues = []
     add = lambda c, m, f="": issues.append((c, m, f))
 
     # (1) 문서번호
-    m = re.search(num["doc_pattern"], p.name)
+    m = re.search(num["doc_pattern"], unit[0] if unit else p.name)
     docno = m.group(0) if m else None
     if not docno:
         add("문서번호", "파일명에서 문서번호를 찾을 수 없음", f"파일명 앞에 문서번호 부여 {UNCONFIRMED}")
@@ -212,9 +298,11 @@ def validate(p: Path, typ: str, final_stage=False):
         add("내용보완", f"회사명 미표기 ({', '.join(qms['company']['names'])})", f"회사명 {qms['company']['name']} 표기")
 
     # (3) 문서명
-    nm = re.match(r"^(?:SH-)?[A-Za-z]+(?:-[\w]+)*?_(.+?)_Rev", p.name) if docno else None
+    nm = re.match(r"^(?:SH-)?[A-Za-z]+(?:-[\w]+)*?_(.+?)_Rev", p.name) if docno and not unit else None
     title = nm.group(1) if nm else None
-    if not title:
+    if unit:
+        pass   # 양식(시트) 단위는 파일명 문서명 대신 시트 자체를 검토
+    elif not title:
         add("내용보완", "파일명에서 문서명을 찾을 수 없음 (형식: 문서번호_문서명_Rev.NN)", f"문서명 {UNCONFIRMED}")
     elif title not in text:
         add("내용보완", f"본문에 문서명 '{title}' 없음", "본문 제목과 파일명 문서명 일치 필요")
@@ -306,7 +394,7 @@ def validate(p: Path, typ: str, final_stage=False):
         add("내용보완", "목차 없음", "목차 삽입")
 
     # (15) 중복 문서
-    if docno and rev is not None:
+    if docno and rev is not None and not unit:
         dup = duplicates(num["doc_pattern"], p, docno, rev)
         if dup:
             add("내용보완", f"동일 문서번호/Rev 중복 문서: {', '.join(dup)}", "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)")
@@ -328,10 +416,30 @@ def write_candidate(p: Path, docno, issues):
     log("revision_history.csv", [dt.date.today(), docno or p.stem, rv, "", f"수정후보 생성(미확정, {len(issues)}건): {out.name}", "system", ""])
     return out
 
-def summary_table(p: Path, docno, issues, approved, stage="검토"):
+def check(p: Path, typ: str, final_stage=False):
+    """워크북이면 양식(시트)별로 쪼개 검토. 반환 (docno, issues, approved, units)
+    units = [(unit_docno, unit_issues, unit_approved, unit_text)] (분할 검토가 아니면 빈 리스트)."""
+    units = split_units(p)
+    if not units:
+        d, i, a = validate(p, typ, final_stage)
+        return d, i, a, []
+    results, issues = [], []
+    want = {norm(x) for x in expected_range(p.name)}
+    have = {norm(n) for n, _ in units}
+    for miss in sorted(want - have):
+        issues.append(("문서번호", f"파일명 범위의 {miss} 양식 시트가 없음", "시트 추가 또는 파일명 범위 정정 " + UNCONFIRMED))
+    for extra in sorted(have - want) if want else []:
+        issues.append(("문서번호", f"파일명 범위에 없는 양식 시트 {extra}", "파일명 범위 정정 " + UNCONFIRMED))
+    for name, text in units:
+        d, i, a = validate(p, typ, final_stage, unit=(name, text))
+        results.append((name, i, a, text))
+        issues += [(c, f"[{name}] {m}", f) for c, m, f in i]
+    return p.stem, issues, all(a for _, _, a, _ in results), results
+
+def summary_table(p: Path, docno, issues, approved, stage="검토", text=None, label=None, quiet=False):
     """검사 | 결과 | 조치 요약표 (markdown). 문서별로 02_REVIEW/자동검토결과 에 저장."""
     num, qms = cfg("document_number_rules.yaml"), cfg("qms_rules.yaml")
-    text = extract_text(p)
+    text = text if text is not None else extract_text(p)
     def hit(cat=None, kw=None):
         return [m for c, m, _ in issues if (cat is None or c == cat) and (kw is None or any(k in m for k in kw))]
     rows = []
@@ -365,22 +473,32 @@ def summary_table(p: Path, docno, issues, approved, stage="검토"):
     else:
         mv = ("가능", "04_APPROVAL/승인완료 → finalize")
     rows.append(("FINAL 이동", mv[0], mv[1]))
-    md = f"### {p.name} ({docno or '문서번호 미확인'}) — {stage}\n\n| 검사 | 결과 | 조치 |\n|---|---|---|\n" + "\n".join(f"| {a} | {b} | {c} |" for a, b, c in rows) + "\n"
+    md = f"### {label or p.name} ({docno or '문서번호 미확인'}) — {stage}\n\n| 검사 | 결과 | 조치 |\n|---|---|---|\n" + "\n".join(f"| {a} | {b} | {c} |" for a, b, c in rows) + "\n"
     rep = D["rev"] / "자동검토결과"; rep.mkdir(exist_ok=True)
-    (rep / f"{p.stem}_요약.md").write_text(md, encoding="utf-8")
-    print(md)
+    out = unique_path(rep / (f"{p.stem}__{docno}_요약.md" if label else f"{p.stem}_요약.md"))
+    out.write_text(md, encoding="utf-8")
+    if quiet:
+        print(f"  ▸ {docno}: {verdict}" + (f" ({len(issues)}건)" if issues else "") + f"  FINAL {mv[0]}")
+    else:
+        print(md)
 
 def route(p: Path, typ: str):
     """검토 후 02_REVIEW 또는 04_APPROVAL/승인대기 로 '복사'. 반환: 통과 여부"""
-    docno, issues, approved = validate(p, typ)
+    docno, issues, approved, units = check(p, typ)
     name = docno or p.stem
-    summary_table(p, docno, issues, approved)
+    if units:
+        print(f"[WORKBOOK] {p.name}: 양식 시트 {len(units)}개를 양식별로 검토")
+        for ud, ui, ua, ut in units:
+            summary_table(p, ud, ui, ua, text=ut, label=f"{p.name} ▸ {ud}", quiet=True)
+    else:
+        summary_table(p, docno, issues, approved)
     if issues:
         cats = {c for c, _, _ in issues}
         folder = next((ERR_DIR[c] for c in ERR_DIR if c in cats), DEFAULT_ERR_DIR)
         rep = D["rev"] / "자동검토결과"; rep.mkdir(exist_ok=True)
-        (rep / f"{p.stem}_검토결과.json").write_text(json.dumps({
+        unique_path(rep / f"{p.stem}_검토결과.json").write_text(json.dumps({
             "file": p.name, "checked": now(), "sha256": sha(p),
+            "units": [u[0] for u in units],
             "issues": [{"category": c, "message": m, "suggestion": f} for c, m, f in issues]},
             ensure_ascii=False, indent=2), encoding="utf-8")
         safe_copy(p, D["rev"] / folder)
@@ -403,6 +521,21 @@ def classify():
         if not p.is_file() or p.name == ".gitkeep":
             continue
         typ = rules.get(prefix_of(p.name))
+        if typ == MASTER:   # 관리자료(대장/마스터/계획): 승인 흐름 없이 등록만
+            dest = D["orig"] / typ
+            dest.mkdir(exist_ok=True)
+            if (dest / p.name).exists():
+                print(f"[SKIP   ] {p.name}: 01_ORIGINAL/{typ} 에 같은 이름 존재 → 덮어쓰지 않음")
+                continue
+            h = sha(p)
+            shutil.move(str(p), dest / p.name)
+            log("workflow_log.csv", [now(), p.name, "", "투입", f"01_ORIGINAL/{typ}", "system", "관리자료 등록(승인 흐름 없음, 상호참조 기준으로 사용)"])
+            if h in done:   # 이전에 '분류불가'로 기록된 건 종결 처리
+                log("error_log.csv", [now(), p.name, "분류불가", "관리자료로 재분류", "CLOSED"])
+            else:
+                mark_processed(h)
+            print(f"[MASTER ] {p.name} → 01_ORIGINAL/{typ} (관리자료)")
+            continue
         if not typ:
             if sha(p) not in done:
                 log("error_log.csv", [now(), p.name, "분류불가", "파일명 접두어 미등록", "OPEN"])
@@ -418,10 +551,10 @@ def classify():
         shutil.move(str(p), dest / p.name)   # 같은 01_ORIGINAL 내 정리 이동
         log("workflow_log.csv", [now(), p.name, "", "투입", f"01_ORIGINAL/{typ}", "system", "자동분류"])
 
-def run():
+def run(rereview=False):
     classify()
-    done = processed()
-    for typ_dir in sorted(d for d in D["orig"].iterdir() if d.is_dir()):
+    done = set() if rereview else processed()
+    for typ_dir in sorted(d for d in D["orig"].iterdir() if d.is_dir() and d.name != MASTER):
         for p in sorted(typ_dir.iterdir()):
             if p.is_file() and p.name != ".gitkeep" and p.suffix.lower() in (TEXT_EXT | {".pdf"}) and sha(p) not in done:
                 route(p, typ_dir.name)
@@ -452,7 +585,7 @@ def status():
         for p in sorted((D["appr"] / sub).iterdir()):
             if p.is_file() and p.name != ".gitkeep":
                 typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
-                docno, issues, approved = validate(p, typ, final_stage=True)
+                docno, issues, approved, _ = check(p, typ, final_stage=True)
                 ok = not issues and sub == "승인완료"
                 why = "가능" if ok else ("승인 완료 후 이동" if not issues and sub != "승인완료" else f"불가 ({len(issues)}건 이슈)")
                 print(f"[{sub}] {p.name}: FINAL {why}")
@@ -501,8 +634,12 @@ def finalize():
         if (D["log"] / "finalized_hashes.txt").exists() and h in (D["log"] / "finalized_hashes.txt").read_text().split():
             continue
         # FINAL 직전 재검증 (문서상태 승인완료 필수)
-        docno, issues, approved = validate(p, typ, final_stage=True)
-        summary_table(p, docno, issues, approved, stage="FINAL 직전 재검증")
+        docno, issues, approved, units = check(p, typ, final_stage=True)
+        if units:
+            for ud, ui, ua, ut in units:
+                summary_table(p, ud, ui, ua, stage="FINAL 직전 재검증", text=ut, label=f"{p.name} ▸ {ud}", quiet=True)
+        else:
+            summary_table(p, docno, issues, approved, stage="FINAL 직전 재검증")
         if issues:
             cats = {c for c, _, _ in issues}
             tag = "문서번호 불일치로 FINAL 이동 금지" if "문서번호" in cats else "검토 이슈로 FINAL 이동 금지"
@@ -545,7 +682,7 @@ def finalize():
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
-    if cmd == "run": run()
+    if cmd == "run": run(rereview="--rereview" in sys.argv)
     elif cmd == "recheck": recheck()
     elif cmd == "approve" and len(sys.argv) > 2: advance(sys.argv[2], "승인대기", "검토완료", "검토 완료")
     elif cmd == "sign" and len(sys.argv) > 2: advance(sys.argv[2], "검토완료", "승인완료", "승인")

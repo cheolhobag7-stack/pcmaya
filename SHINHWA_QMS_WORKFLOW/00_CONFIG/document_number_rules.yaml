@@ -9,3 +9,5 @@ by_type:
   WI: '^SH-WI-\d{2,3}(-\d{2,3}){0,2}$'
   FM: '^SH-FM-\d{2,3}(-\d{2,3}){0,2}$'
 revision_pattern: 'Rev\.?\s?(\d{2})'
+# 양식 워크북의 시트명이 이 패턴이면 시트 1개 = 양식 1개로 쪼개서 검토
+unit_sheet_pattern: '(?:SH-)?(?:QM|QP|WI|FM)-\d{2,3}(?:-\d{2,3}){0,2}'

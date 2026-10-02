@@ -24,6 +24,7 @@ classify:
   CP: CONTROL_PLAN
   SPC: SPC_MSA
   MSA: SPC_MSA
+  SH: MASTER_REF      # SH_ 로 시작하는 관리자료(대장/마스터/계획/실행관리)
 
 # 유형별 필수 항목(본문에 포함되어야 하는 키워드)
 required_sections:
