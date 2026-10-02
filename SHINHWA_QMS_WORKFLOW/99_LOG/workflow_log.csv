@@ -47,3 +47,4 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 06:32:58,SH-FM-101-121_현장작성양식_Rev00_수정본.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-02 06:32:58,SH-FM-101-121_현장작성양식_Rev00_수정본.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-02 06:33:04,SH-FM-101-121_현장작성양식_Rev00_수정본,00,04_APPROVAL/승인완료,05_FINAL,system,PDF 변환 실패(배포본 없음)
+2026-10-02 06:34:51,SH_FM_Master_Rev00_20260929_수정본_FM101-121등록.xlsx,,FM Master,01_ORIGINAL/MASTER_REF/SH_FM_Master_Rev00_20260929_수정본_FM101-121등록_승인반영.xlsx,system,FM-101~121 승인 정보 반영(원본·이전 수정본 유지)
