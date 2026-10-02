@@ -1,5 +1,29 @@
 # SHINHWA H&T QMS WORKFLOW
 
+## 0. 이어서 작업하는 법 (새 세션 시작 시 먼저 읽기)
+상태는 모두 파일로 남아 있다(`SHINHWA_QMS_WORKFLOW/` 하위 폴더와 `99_LOG`). 대화 기억에 의존하지 말고 아래 순서로 현재 상태를 읽는다.
+
+1. 환경: `cd SHINHWA_QMS_WORKFLOW && pip install -r requirements.txt` (PyYAML, pypdf. PDF 변환은 LibreOffice 필요)
+2. 현재 상태 확인:
+   - `python3 scripts/qms_workflow.py scan` — 아직 검토하지 않은 신규 문서
+   - `python3 scripts/qms_workflow.py status` — `04_APPROVAL` 문서별 FINAL 가능 여부
+   - `python3 scripts/qms_workflow.py releasegate` — 종합 Release Gate (PASS/HOLD/FAIL)
+   - 이력: `99_LOG/workflow_log.csv`, `revision_history.csv`, `error_log.csv`, 최신 `05_FINAL/RELEASED/최종보고서*.md`
+3. 작업 진행:
+   - 신규 문서를 `01_ORIGINAL/` 에 올린 뒤 `/qms-full-cycle` (승인 직전까지 자동)
+   - 수정은 `03_EDIT/AUTO_DRAFT` 의 `_DRAFT` 사본을 고쳐 `03_EDIT/수정완료/` 에 `_수정본` 이름으로 저장 → `recheck`
+   - 승인·배포는 사용자가 실제 승인을 확인했다고 지시한 뒤에만: `/qms-approve` → `/qms-final-release` → `/qms-final-verify` → `/qms-final-report`
+4. 규칙: 원본 삭제/덮어쓰기 금지, 확정되지 않은 값(승인자·일자·번호·보존기간) 임의 생성 금지, 승인(`sign`/`APPROVED.txt`)은 사람의 지시로만. 스크립트가 같은 이름의 파일을 만들면 `_v2` 로 새로 저장한다.
+5. 작업이 끝나면 커밋·푸시한다(브랜치 `claude/shinhwa-qms-workflow-54alyc`). 생성된 보고서와 로그도 함께 올린다.
+
+### 현재 미결 사항 (처리하면 이 목록에서 지운다)
+- 현장작성양식(SH-FM-101~121): FM Master 에 21개 번호 등록, 제정일·승인 표기 필요 (담당자 작업) → 현재 `04_APPROVAL/승인대기`
+- SH-FM-122 현장양식목록 작성계획: 승인 표기·제정일 필요 → `04_APPROVAL/승인대기`
+- 공식양식 워크북(SH-FM-066~069 외 9종): `05_FINAL/RELEASED` 릴리스 완료. 단 PDF/배포본은 미생성(LibreOffice 가 되는 PC 에서 변환 필요)
+- 승인체크리스트의 작성자·승인자: 확정 전이라 `[확인 필요]`
+- 저장소 루트에 업로드된 `SHINHWA_QMS_CLAUDE_WORKFLOW_v0.2 ~ _FINAL` 패키지 폴더: 정리 여부 미정 (삭제하지 않음)
+- 릴리스 폴더명: 번호 범위 워크북은 파일명 전체가 문서번호 자리에 들어감 (원하는 이름 규칙 미정)
+
 ## 1. 역할
 이 저장소는 (주)신화에이치앤티의 ISO 9001:2015 + IATF 16949:2016 기반 QMS 문서 검토·수정·승인·배포 준비를 위한 작업공간이다.
 
