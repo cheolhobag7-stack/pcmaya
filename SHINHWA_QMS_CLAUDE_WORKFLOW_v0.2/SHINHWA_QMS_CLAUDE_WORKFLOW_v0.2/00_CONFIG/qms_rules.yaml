@@ -1,0 +1,115 @@
+company:
+  name: "(주)신화에이치앤티"
+  accepted_names:
+    - "(주)신화에이치앤티"
+    - "주식회사 신화에이치앤티"
+    - "신화에이치앤티"
+  prefix: "SH"
+
+standards:
+  - "ISO 9001:2015"
+  - "IATF 16949:2016"
+
+document_prefix:
+  QM: "SH-QM"
+  QP: "SH-QP"
+  WI: "SH-WI"
+  FM: "SH-FM"
+
+revision:
+  initial: "Rev.00"
+  allowed_pattern: "^Rev\\.\\d{2}$"
+
+customer:
+  main: "한온시스템"
+  accepted_names:
+    - "한온시스템"
+    - "Hanon Systems"
+    - "HANON"
+
+responsibility:
+  quality_manager: "김흥수"
+  customer_approver: "이은주"
+
+record_retention:
+  lot_traceability: "3년"
+  accepted_patterns:
+    - "3년"
+    - "3 년"
+    - "36개월"
+    - "36 개월"
+
+lot_traceability:
+  target_time: "1시간"
+  accepted_patterns:
+    - "1시간"
+    - "1 시간"
+    - "60분"
+    - "60 분"
+
+approval_gate:
+  AP-01:
+    status: "APPROVED"
+    forms:
+      - "FM-066"
+      - "FM-067"
+      - "FM-068"
+      - "FM-069"
+  AP-02:
+    status: "APPROVED"
+    forms:
+      - "FM-078"
+      - "FM-079"
+      - "FM-080"
+  AP-03:
+    status: "APPROVED"
+    forms:
+      - "FM-096"
+  AP-04:
+    status: "APPROVED"
+    forms:
+      - "FM-094"
+
+prohibited_phrases:
+  - "FM Master 재매핑 반영"
+  - "QP 제3권 FM-030~039 폐기/참조금지"
+  - "문서통제 주의: 승인된 FM Master와 일치"
+  - "부록 E. Rev.00 ACTIVE Release 승인결과(AP-01~04)"
+  - "※ 실제 승인자 성명·서명·일자 입력 후 관리본 배포"
+
+required_notice:
+  - "FM-066"
+  - "FM-067"
+  - "FM-068"
+  - "FM-069"
+  - "FM-078"
+  - "FM-079"
+  - "FM-080"
+  - "FM-096"
+  - "FM-094"
+
+cross_reference:
+  patterns:
+    - "SH-QM-\\d{3}"
+    - "SH-QP-\\d{3}"
+    - "SH-WI-\\d{3}"
+    - "SH-FM-\\d{3}"
+    - "\\bQM-\\d{3}\\b"
+    - "\\bQP-\\d{3}\\b"
+    - "\\bWI-\\d{3}\\b"
+    - "\\bFM-\\d{3}\\b"
+
+workflow:
+  original: "01_ORIGINAL"
+  review: "02_REVIEW"
+  edit: "03_EDIT"
+  approval: "04_APPROVAL"
+  final: "05_FINAL"
+  history: "06_HISTORY"
+  log: "99_LOG"
+
+final_release_rules:
+  require_document_number_match: true
+  require_revision_match: true
+  require_approval_complete: true
+  block_if_prohibited_reference_found: true
