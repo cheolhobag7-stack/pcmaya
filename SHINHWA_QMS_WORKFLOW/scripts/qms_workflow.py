@@ -241,8 +241,9 @@ def duplicates(docpat, p: Path, docno, rev):
     me = norm(docno)
     others = set()
     for q in stage_files():
-        if q.name == p.name or q.suffix.lower() not in (TEXT_EXT | {".pdf"}):
-            continue   # 보고서(.json/.md) 등은 문서가 아님
+        if q.name == p.name or q.suffix.lower() not in (TEXT_EXT | {".pdf"}) \
+                or D["rev"] / "자동검토결과" in q.parents or D["edit"] / "수정중" in q.parents:
+            continue   # 보고서·수정후보는 문서가 아님
         m = re.search(docpat, q.name)
         r = re.search(cfg("document_number_rules.yaml")["revision_pattern"], q.name)
         stem_name = re.sub(r"(_수정후보.*|_v\d+)$", "", q.stem)
