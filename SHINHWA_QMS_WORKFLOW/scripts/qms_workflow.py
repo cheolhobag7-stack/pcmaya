@@ -7,6 +7,8 @@
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
   python3 scripts/qms_workflow.py approve F  # (사람) 승인대기 → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
+  python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
+  python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fullaudit  # 전체 자동감사(신규 검색→점검→상호참조→대장→Release Gate)
   python3 scripts/qms_workflow.py releasegate # 종합 Release Gate(PASS/HOLD/FAIL) → 02_REVIEW/qms_release_gate.md
   python3 scripts/qms_workflow.py ledger     # 문서관리대장 ↔ 실제 파일 대조 → 02_REVIEW/qms_ledger_check.md
@@ -37,6 +39,7 @@ ERR_DIR = {"문서번호": "문서번호오류", "개정번호": "개정번호�
 DEFAULT_ERR_DIR = "내용보완필요"
 TEXT_EXT = {".docx", ".xlsx", ".txt", ".md", ".csv"}
 UNCONFIRMED = "[확인 필요]"
+AUX_DIRS = [D["edit"] / "AUTO_DRAFT", D["edit"] / "DIFF", D["appr"] / "PACKAGES"]   # 문서 레지스트리/중복검사에서 제외
 MASTER = "MASTER_REF"   # SH_ 로 시작하는 관리자료(대장/마스터/계획) 분류 폴더
 
 
@@ -222,7 +225,7 @@ PAGE_TXT = re.compile(r"(Page\s*\d+\s*(of|/)\s*\d+|\d+\s*/\s*\d+\s*(쪽|페이�
 def stage_files(stages=("orig", "rev", "edit", "appr", "final")):
     for st in stages:
         for p in D[st].rglob("*"):
-            if p.is_file() and p.name != ".gitkeep":
+            if p.is_file() and p.name != ".gitkeep" and not any(x in p.parents for x in AUX_DIRS):
                 yield p
 
 def registry(docpat):
@@ -266,9 +269,9 @@ def duplicates(docpat, p: Path, docno, rev):
             continue   # 보고서·수정후보는 문서가 아님
         m = re.search(docpat, q.name)
         r = re.search(cfg("document_number_rules.yaml")["revision_pattern"], q.name)
-        stem_name = re.sub(r"(_수정후보.*|_v\d+)$", "", q.stem)
+        stem_name = re.sub(r"(_DRAFT|_수정본\d*|_수정후보.*|_v\d+)+$", "", q.stem)
         if m and norm(m.group(0)) == me and (r.group(1) if r else None) == rev \
-                and stem_name != re.sub(r"(_v\d+)$", "", p.stem):
+                and stem_name != re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", p.stem):
             others.add(q.name)
     return sorted(others)
 
@@ -467,9 +470,11 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
 
 # ---------------- 라우팅 ----------------
 def write_candidate(p: Path, docno, issues):
-    """수정후보: 원본을 건드리지 않고 03_EDIT/수정중 에 새 파일 생성. 확정되지 않은 값은 임의 생성 금지."""
+    """수정 필요사항 추출 → 03_EDIT/AUTO_DRAFT 에 (1) 수정필요사항 목록 (2) 편집용 초안 사본(_DRAFT)을 새 파일로 생성.
+    원본은 건드리지 않으며, 확정되지 않은 값은 임의로 채우지 않는다(초안 사본은 원본과 동일, 사람이 수정)."""
     ts = dt.datetime.now().strftime("%Y%m%d%H%M%S")
-    out = D["edit"] / "수정중" / f"{p.stem}_수정후보_{ts}.md"
+    out = D["edit"] / "AUTO_DRAFT" / f"{p.stem}_수정필요사항_{ts}.md"
+    safe_copy(p, D["edit"] / "AUTO_DRAFT", f"{p.stem}_DRAFT{p.suffix}")
     lines = [f"# 수정후보: {p.name}", f"- 생성: {now()}", f"- 원본: {p} (변경 없음)",
              f"- 주의: '{UNCONFIRMED}' 표시는 담당자 확정 전에는 임의 값을 넣지 않음", "", "| # | 분류 | 문제 | 수정 제안 |", "|---|---|---|---|"]
     for i, (c, m, f) in enumerate(issues, 1):
@@ -477,8 +482,112 @@ def write_candidate(p: Path, docno, issues):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     rv = (re.search(cfg("document_number_rules.yaml")["revision_pattern"], p.name) or [None, ""])[1]
-    log("revision_history.csv", [dt.date.today(), docno or p.stem, rv, "", f"수정후보 생성(미확정, {len(issues)}건): {out.name}", "system", ""])
+    log("revision_history.csv", [dt.date.today(), docno or p.stem, rv, "", f"AUTO_DRAFT 생성(수정 필요 {len(issues)}건, 미확정): {out.name}", "system", ""])
     return out
+
+def doc_lines(p: Path):
+    """DIFF 용 줄 단위 텍스트 (xlsx 는 시트별 구분)."""
+    if p.suffix.lower() == ".xlsx":
+        out = []
+        for name, t in xlsx_sheets(p).items():
+            out.append(f"[SHEET:{name}]")
+            out += t.splitlines()
+        return out
+    return extract_text(p).splitlines()
+
+def find_original(p: Path):
+    """수정본 → 원본(01_ORIGINAL) 찾기: 접미어(_DRAFT/_수정본/_vN) 제거한 이름 일치 → 같은 문서번호."""
+    base = re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", p.stem)
+    cands = [q for q in D["orig"].rglob("*") if q.is_file() and q.name != ".gitkeep" and q.suffix.lower() == p.suffix.lower()]
+    for q in cands:
+        if q.stem == base:
+            return q
+    num = cfg("document_number_rules.yaml")
+    m = re.search(num["doc_pattern"], p.name)
+    same = [q for q in cands if m and (re.search(num["doc_pattern"], q.name) or [None])[0] == m.group(0)]
+    return sorted(same)[-1] if same else None
+
+def make_diff(orig: Path, revised: Path):
+    """원본 ↔ 수정본 DIFF → 03_EDIT/DIFF/*.md (unified diff). revision_history 에 기록."""
+    import difflib
+    a, b = doc_lines(orig), doc_lines(revised)
+    ud = list(difflib.unified_diff(a, b, fromfile=f"원본 {orig.name}", tofile=f"수정본 {revised.name}", lineterm="", n=1))
+    add = sum(1 for l in ud if l.startswith("+") and not l.startswith("+++"))
+    dele = sum(1 for l in ud if l.startswith("-") and not l.startswith("---"))
+    out = unique_path(D["edit"] / "DIFF" / f"{revised.stem}__vs__{orig.stem}.md")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    body = "\n".join(ud) if ud else "(텍스트 차이 없음)"
+    out.write_text(f"# DIFF: 원본 ↔ 수정본\n- 원본: {orig.relative_to(ROOT)}\n- 수정본: {revised.name}\n- 생성: {now()}\n- 변경 줄: +{add} / -{dele}\n\n```diff\n{body}\n```\n", encoding="utf-8")
+    num = cfg("document_number_rules.yaml")
+    m = re.search(num["doc_pattern"], revised.name)
+    log("revision_history.csv", [dt.date.today(), norm(m.group(0)) if m else revised.stem, (re.search(num["revision_pattern"], orig.name) or [None, ""])[1],
+                                  (re.search(num["revision_pattern"], revised.name) or [None, ""])[1], f"원본↔수정본 DIFF 생성 +{add}/-{dele}: {out.name}", "system", ""])
+    print(f"[DIFF   ] {orig.name} ↔ {revised.name}: +{add} / -{dele} → {out.relative_to(ROOT)}")
+    return out
+
+def diff_cmd(a, b=None):
+    """diff <원본> <수정본>  (경로 또는 파일명).  수정본만 주면 원본을 자동으로 찾는다."""
+    def find(x):
+        pp = Path(x)
+        if pp.exists():
+            return pp
+        hits = [q for q in ROOT.rglob(x) if q.is_file()]
+        return hits[0] if hits else sys.exit(f"{x} 없음")
+    if b is None:
+        rv = find(a)
+        og = find_original(rv)
+        if not og:
+            sys.exit("원본을 찾을 수 없음")
+        return make_diff(og, rv)
+    return make_diff(find(a), find(b))
+
+# ---------------- 승인 패키지 ----------------
+def build_package(p: Path, typ: str, folder="승인대기"):
+    """Release Gate 결과 + 검토요약 + DIFF + 문서 사본 + 결재 체크리스트 → 04_APPROVAL/PACKAGES/<문서>/"""
+    pk, n = D["appr"] / "PACKAGES" / p.stem, 2
+    while pk.exists():
+        pk = D["appr"] / "PACKAGES" / f"{p.stem}_v{n}"
+        n += 1
+    pk.mkdir(parents=True)
+    shutil.copy2(p, pk / p.name)
+    latest = {}   # 같은 요약의 여러 재실행본 중 최신본만 포함
+    for f in (D["rev"] / "자동검토결과").glob(f"{p.stem}*_요약*.md"):
+        key = re.sub(r"_v\d+(?=\.md$)", "", f.name)
+        if key not in latest or f.stat().st_mtime >= latest[key].stat().st_mtime:
+            latest[key] = f
+    sd = pk / "검토요약"
+    sd.mkdir()
+    for key, f in sorted(latest.items()):
+        shutil.copy2(f, sd / key)
+    for f in sorted((D["edit"] / "DIFF").glob(f"{p.stem}__vs__*.md")):
+        shutil.copy2(f, pk / f"DIFF_{f.name}")
+    g = gate_check(p, folder)
+    ok = all(x[1] != "FAIL" for x in g)
+    lines = [f"# Release Gate: {p.name}", f"- 판정: {'PASS' if ok else 'FAIL/HOLD'} (G8 '사람 승인'은 승인 전에는 FAIL 이 정상)", "", "| Gate | 결과 | 비고 |", "|---|---|---|"]
+    lines += [f"| {a} | {b} | {c} |" for a, b, c in g]
+    (pk / "Release_Gate.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    q = cfg("qms_rules.yaml")
+    (pk / "승인체크리스트.md").write_text("\n".join([
+        f"# 승인 체크리스트: {p.name}", f"- 패키지 생성: {now()}", "",
+        "## 확인 항목", "- [ ] Release Gate 의 FAIL/HOLD 항목을 확인했다", "- [ ] 원본 ↔ 수정본 DIFF 를 확인했다 (있는 경우)",
+        "- [ ] 문서번호/Rev/문서명이 맞다", "- [ ] 문서관리대장·FM Master 등재가 맞다", "",
+        "## 결재 (성명·서명·일자는 사람이 기재)",
+        f"- 작성: [확인 필요]  서명: ________  일자: ________",
+        f"- 검토(품질책임자): {q.get('quality_manager', UNCONFIRMED)}  서명: ________  일자: ________",
+        f"- 승인: [확인 필요]  서명: ________  일자: ________",
+        f"- 고객 승인 담당(필요 시): {q.get('customer_approver', UNCONFIRMED)}", ""]), encoding="utf-8")
+    (pk / "STATUS.md").write_text(f"# 패키지 상태\n- {now()} 생성 ({folder})\n", encoding="utf-8")
+    log("workflow_log.csv", [now(), p.stem, "", f"04_APPROVAL/{folder}", f"04_APPROVAL/PACKAGES/{pk.name}", "system", "승인 패키지 생성"])
+    print(f"[PACKAGE] {p.name} → 04_APPROVAL/PACKAGES/{pk.name}  (Gate {'PASS' if ok else 'FAIL/HOLD'})")
+    return pk
+
+def package_cmd(name):
+    for sub in ("승인대기", "검토완료", "승인완료"):
+        f = D["appr"] / sub / name
+        if f.exists():
+            typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(f.name), "")
+            return build_package(f, typ, sub)
+    sys.exit(f"{name} 이(가) 04_APPROVAL 에 없음")
 
 def approval_state(text: str) -> str:
     """승인상태 자동판정: ACTIVE / APPROVED / DRAFT(승인 전) / UNKNOWN."""
@@ -594,12 +703,13 @@ def route(p: Path, typ: str):
         for c, m, _ in issues:
             log("error_log.csv", [now(), name, c, m, "OPEN"])
         log("workflow_log.csv", [now(), name, "", p.parent.name, f"02_REVIEW/{folder}", "system", f"{len(issues)}건 문제, 수정후보 {cand.name}"])
-        print(f"[REVIEW ] {p.name}: {len(issues)}건 → 02_REVIEW/{folder} (수정후보: 03_EDIT/수정중/{cand.name})")
+        print(f"[REVIEW ] {p.name}: {len(issues)}건 → 02_REVIEW/{folder} (AUTO_DRAFT: 03_EDIT/AUTO_DRAFT/{cand.name})")
     else:
-        safe_copy(p, D["appr"] / "승인대기")
+        ap = safe_copy(p, D["appr"] / "승인대기")
         log("workflow_log.csv", [now(), name, "", p.parent.name, "04_APPROVAL/승인대기", "system",
                                  "검사통과 (문서상태 승인완료 표기됨)" if approved else "검사통과 (승인 전: 배포 불가)"])
         print(f"[PASS   ] {p.name} → 04_APPROVAL/승인대기")
+        build_package(ap, typ, "승인대기")
     mark_processed(sha(p))
     return not issues
 
@@ -654,6 +764,11 @@ def recheck():
         if not p.is_file() or p.name == ".gitkeep" or sha(p) in done:
             continue
         typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
+        og = find_original(p)
+        if og and og.resolve() != p.resolve():
+            make_diff(og, p)   # 원본 ↔ 수정본 DIFF (재점검 전)
+        else:
+            print(f"[DIFF   ] {p.name}: 대응하는 원본을 찾지 못해 DIFF 생략")
         route(p, typ)
 
 def crosscheck():
@@ -933,6 +1048,11 @@ def advance(name, src, dst, note):
     shutil.move(str(s), D["appr"] / dst / name)   # 04 내부 상태 이동(복사본)
     log("workflow_log.csv", [now(), name, "", f"04_APPROVAL/{src}", f"04_APPROVAL/{dst}", "human", note])
     print(f"{name}: {src} → {dst}")
+    stem = Path(name).stem
+    for st in (D["appr"] / "PACKAGES").glob(f"{stem}*"):
+        if st.is_dir() and (st / "STATUS.md").exists():
+            with open(st / "STATUS.md", "a", encoding="utf-8") as f:
+                f.write(f"- {now()} {src} → {dst} ({note})\n")
 
 def gates():
     reg = registry(cfg("document_number_rules.yaml")["doc_pattern"])
@@ -1017,6 +1137,9 @@ def finalize():
                                  "PDF/배포본 생성" if dist else "PDF 변환 실패(배포본 없음)"])
         with open(D["log"] / "finalized_hashes.txt", "a") as f:
             f.write(h + "\n")
+        for pk in sorted((D["appr"] / "PACKAGES").glob(f"{p.stem}*")):
+            if pk.is_dir():
+                shutil.copytree(pk, unique_path(D["hist"] / "변경이력" / docno / f"PACKAGE_{dt.datetime.now():%Y%m%d%H%M%S}_{pk.name}"))
         print(f"[FINAL  ] {p.name} → 05_FINAL/{sub}, PDF{'+배포본' if dist else ' 없음'}, 06_HISTORY 백업")
 
 
@@ -1027,6 +1150,8 @@ if __name__ == "__main__":
     elif cmd == "approve" and len(sys.argv) > 2: advance(sys.argv[2], "승인대기", "검토완료", "검토 완료")
     elif cmd == "sign" and len(sys.argv) > 2: advance(sys.argv[2], "검토완료", "승인완료", "승인")
     elif cmd == "gates": gates()
+    elif cmd == "diff" and len(sys.argv) > 2: diff_cmd(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
+    elif cmd == "package" and len(sys.argv) > 2: package_cmd(sys.argv[2])
     elif cmd == "scan": scan()
     elif cmd == "crosscheck": crosscheck()
     elif cmd == "ledger": ledger_check()

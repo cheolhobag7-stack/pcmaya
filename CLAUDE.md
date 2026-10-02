@@ -99,3 +99,12 @@ Claude Code는 다음 원칙을 최우선으로 따른다.
 - 문서관리대장과 실제 파일을 양방향으로 대조한다 (ledger). 대장 위치: `01_ORIGINAL/MASTER_REF` 또는 `00_CONFIG` (파일명에 `문서관리대장`, 샘플 제외).
 - FINAL 이동 전 Release Gate(G1~G8)를 반드시 통과해야 한다 (gatecheck / releasegate / finalize 자동 실행).
 - 전체 자동감사: `fullaudit` (`/qms-full-audit`).
+
+## 12. 수정 → DIFF → 재점검 → 승인 패키지 흐름
+01_ORIGINAL → `fullaudit`(전체 자동감사) → 수정 필요사항 추출 → `03_EDIT/AUTO_DRAFT`(수정필요사항 목록 + `_DRAFT` 편집용 사본)
+→ 사람이 수정해 `03_EDIT/수정완료` 에 저장 → `recheck`(원본↔수정본 DIFF 를 `03_EDIT/DIFF` 에 자동 생성 후 재점검)
+→ Release Gate → 통과 시 `04_APPROVAL/승인대기` + `04_APPROVAL/PACKAGES/<문서>/`(문서·검토요약·DIFF·Release_Gate·승인체크리스트·STATUS)
+→ 사람이 `approve`/`sign` → `finalize`(Gate 재확인, 05_FINAL, 패키지는 06_HISTORY/변경이력 에 보관)
+- 원본은 수정하지 않는다. AUTO_DRAFT 사본도 자동으로 값을 채우지 않는다(확정되지 않은 값은 사람이 입력).
+- 수정본 파일명 규칙: 원본 이름 뒤에 `_수정본`, `_수정본2`, `_vN` 등을 붙이면 원본과 자동 연결된다.
+- 수동 실행: `diff 수정본 [원본]`, `package 파일명`.
