@@ -11,6 +11,7 @@
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
+  python3 scripts/qms_workflow.py mcphealth | mcpsafestart   # MCP 상태·보안 점검(읽기 전용) / 점검 후 전체 운영
   python3 scripts/qms_workflow.py qmsaudit | integratedaudit | modulecheck <lot|safety|equipment|training|production|inventory|quality>
   python3 scripts/qms_workflow.py collectactions | dashboarddata | weeklyreport | monthlyreport
   python3 scripts/qms_workflow.py auditpackage <internal|customer|certification> | customerresponse | backupworkspace
@@ -2072,6 +2073,70 @@ def backup_workspace():
     print(f"[BACKUP ] {n}개 파일 → {out.relative_to(ROOT)} ({out.stat().st_size // 1024} KB)")
     return out
 
+SECRET_RX = [re.compile(r"(?i)(api[_-]?key|secret|token|passwd|password)[\"']?\s*[:=]\s*[\"']?[A-Za-z0-9_\-\.]{12,}"),
+             re.compile(r"\bsk-[A-Za-z0-9]{20,}"), re.compile(r"\bghp_[A-Za-z0-9]{30,}"), re.compile(r"Bearer\s+[A-Za-z0-9\-\._]{20,}"), re.compile(r"\bAKIA[0-9A-Z]{16}")]
+
+def mcp_health_check():
+    """MCP 상태·보안 점검(읽기 전용). claude mcp list, .mcp.json 비밀값, .gitignore, 저장소 내 비밀값 패턴.
+    MCP 가 없거나 장애여도 로컬 QMS 자동화는 계속 사용 가능 → 보고서만 남기고 중단하지 않는다."""
+    rows, repo = [], ROOT.parent
+    add = lambda area, st, note: rows.append((area, st, note))
+    if shutil.which("claude"):
+        r = subprocess.run(["claude", "mcp", "list"], capture_output=True, text=True, timeout=60)
+        out = (r.stdout or r.stderr).strip()
+        if "No MCP servers configured" in out:
+            add("claude mcp list", "INFO", "설정된 MCP 서버 없음 — 로컬 QMS 자동화는 정상 사용 가능")
+        else:
+            lines = [l for l in out.splitlines() if l.strip()]
+            bad = [l for l in lines if re.search(r"(?i)fail|error|disconnect|needs auth|✗", l)]
+            add("claude mcp list", "WARN" if bad else "PASS", f"서버 {len(lines)}개" + (f", 이상: {'; '.join(bad[:3])}" if bad else ", 모두 정상 표시"))
+    else:
+        add("claude mcp list", "INFO", "claude CLI 를 찾을 수 없음(이 환경에서는 확인 불가)")
+    mcpjs = [f for f in (repo / ".mcp.json", ROOT / ".mcp.json") if f.exists()]
+    if not mcpjs:
+        add(".mcp.json", "INFO", "프로젝트 .mcp.json 없음")
+    for f in mcpjs:
+        txt = f.read_text(encoding="utf-8", errors="ignore")
+        hit = [rx.pattern[:20] for rx in SECRET_RX if rx.search(txt)]
+        add(str(f.relative_to(repo)), "FAIL" if hit else "PASS", "비밀값(키/토큰) 직접 기재 의심 — 환경변수·OAuth 로 교체" if hit else "비밀값 직접 기재 없음")
+    gi = (repo / ".gitignore").read_text(encoding="utf-8") if (repo / ".gitignore").exists() else ""
+    need = [".env", "credentials", "token"]
+    miss = [n for n in need if n not in gi]
+    add(".gitignore", "WARN" if miss else "PASS", f"누락 패턴: {', '.join(miss)}" if miss else ".env/credentials/token 패턴 제외됨")
+    tracked = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True, text=True).stdout.splitlines()
+    risky = [t for t in tracked if re.search(r"(^|/)(\.env(\..*)?|.*credentials.*\.json|.*token.*\.json|client_secret.*\.json)$", t, re.I)]
+    add("추적 중인 민감 파일", "FAIL" if risky else "PASS", ", ".join(risky[:5]) if risky else "없음")
+    hits = []
+    for t in tracked:
+        if t.lower().endswith((".md", ".py", ".yaml", ".yml", ".json", ".txt", ".csv", ".sh")) and "06_HISTORY/업로드패키지" not in t:
+            try:
+                for i, line in enumerate((repo / t).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+                    if any(rx.search(line) for rx in SECRET_RX):
+                        hits.append(f"{t}:{i}")
+            except Exception:
+                pass
+    add("저장소 내 비밀값 패턴", "WARN" if hits else "PASS", (f"{len(hits)}곳 확인 필요: " + ", ".join(hits[:5])) if hits else "발견 없음")
+    try:
+        subprocess.run([sys.executable, str(Path(__file__)), "scan"], capture_output=True, text=True, timeout=120, check=True)
+        add("로컬 QMS 자동화", "PASS", "MCP 와 독립적으로 동작(scan 실행 확인)")
+    except Exception as e:
+        add("로컬 QMS 자동화", "FAIL", f"scan 실행 실패: {e}")
+    add("권한 단계", "INFO", "초기 운영은 LEVEL 1(READ) 권장. 메일 발송·외부 공유·삭제·승인/배포(LEVEL 4)는 사용자의 명시적 승인 없이 실행하지 않음 (17_MCP/MCP_SECURITY_POLICY.md)")
+    worst = "FAIL" if any(r[1] == "FAIL" for r in rows) else "WARN" if any(r[1] == "WARN" for r in rows) else "PASS"
+    L = ["# MCP 상태·보안 점검 (읽기 전용)", f"- 생성: {now()}", f"- 종합: {worst}", "", "| 영역 | 결과 | 비고 |", "|---|---|---|"] + [f"| {a} | {b} | {c} |" for a, b, c in rows]
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    out = unique_path(OUT_DIR / "REPORTS" / f"mcp_health_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"[MCP HEALTH] {worst} " + " / ".join(f"{a}:{b}" for a, b, _ in rows[:7]) + f" → {out.relative_to(ROOT)}")
+    return worst
+
+def mcp_safe_start():
+    """MCP 점검 후 전체 운영 시작. MCP 문제와 무관하게 로컬 QMS 운영은 계속하되, FAIL 이면 MCP 사용을 중단하라고 안내한다."""
+    worst = mcp_health_check()
+    if worst == "FAIL":
+        print("[MCP SAFE START] FAIL 항목이 있어 외부 연동(MCP) 사용은 보류합니다. 로컬 QMS 운영은 계속합니다.")
+    full_operation()
+
 def full_operation():
     """전체 운영: QMS 사이클(승인 직전까지) → 통합 점검 → 조치사항 → 대시보드 → 주간 보고. 승인/배포는 하지 않는다."""
     fullcycle()
@@ -2098,6 +2163,8 @@ if __name__ == "__main__":
     elif cmd == "fullcycle": fullcycle()
     elif cmd == "sqaudit": sq_audit()
     elif cmd == "fulloperation": full_operation()
+    elif cmd == "mcphealth": mcp_health_check()
+    elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
     elif cmd == "modulecheck" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_check(sys.argv[2])

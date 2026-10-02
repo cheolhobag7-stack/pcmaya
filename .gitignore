@@ -1,2 +1,11 @@
 # 백업 zip 은 저장소에 올리지 않는다 (로컬 백업용)
 SHINHWA_QMS_WORKFLOW/16_BACKUP/*.zip
+
+# 비밀값·인증 파일은 커밋 금지 (17_MCP/MCP_SECURITY_POLICY.md)
+.env
+.env.*
+*credentials*.json
+*token*.json
+client_secret*.json
+*.pem
+*.key

@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-10-02T07:19:18",
+  "areas": {
+    "qms": {
+      "PASS": 3
+    },
+    "lot": {
+      "NO_DATA": 1
+    },
+    "safety": {
+      "NO_DATA": 1
+    },
+    "equipment": {
+      "NO_DATA": 1
+    },
+    "training": {
+      "NO_DATA": 1
+    },
+    "production": {
+      "NO_DATA": 1
+    },
+    "inventory": {
+      "NO_DATA": 1
+    },
+    "quality": {
+      "NO_DATA": 1
+    }
+  },
+  "action_items": {
+    "total": 25,
+    "open": 25
+  },
+  "released_documents": 3,
+  "sq": {
+    "required_docs": 240,
+    "number_assigned": 240,
+    "drafts_created": 15,
+    "approved_forms": 0
+  }
+}
