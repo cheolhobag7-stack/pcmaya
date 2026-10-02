@@ -9,6 +9,7 @@
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
   python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
+  python3 scripts/qms_workflow.py fullcycle  # 승인 직전까지 전체 사이클(감사→AUTO_DRAFT→재감사→Gate→패키지). 승인/배포는 사람이
   python3 scripts/qms_workflow.py fullaudit  # 전체 자동감사(신규 검색→점검→상호참조→대장→Release Gate)
   python3 scripts/qms_workflow.py releasegate # 종합 Release Gate(PASS/HOLD/FAIL) → 02_REVIEW/qms_release_gate.md
   python3 scripts/qms_workflow.py ledger     # 문서관리대장 ↔ 실제 파일 대조 → 02_REVIEW/qms_ledger_check.md
@@ -1020,6 +1021,19 @@ def fullaudit():
     run()
     release_gate()
 
+def fullcycle():
+    """전체 사이클(승인 직전까지): 신규 검색 → 점검(+AUTO_DRAFT) → 수정완료분 재감사(+DIFF) → Release Gate → 승인 패키지.
+    승인(approve/sign)과 FINAL 배포(finalize)는 사람이 실제 승인한 뒤 직접 실행한다."""
+    scan()
+    run()
+    recheck()
+    release_gate()
+    for sub in ("승인대기", "검토완료", "승인완료"):
+        for f in sorted((D["appr"] / sub).iterdir()):
+            if f.is_file() and f.name != ".gitkeep" and not list((D["appr"] / "PACKAGES").glob(f"{f.stem}*")):
+                build_package(f, cfg("qms_rules.yaml")["classify"].get(prefix_of(f.name), ""), sub)
+    print("\n[다음 단계] 실제 승인 후 사람이 실행: approve <파일> → sign <파일> → finalize  (자동 승인 없음)")
+
 def scan():
     """1. 신규 문서 검색: 아직 검토되지 않은 파일 목록."""
     done, new = processed(), []
@@ -1256,6 +1270,7 @@ if __name__ == "__main__":
     elif cmd == "ledger": ledger_check()
     elif cmd == "releasegate": release_gate()
     elif cmd == "fullaudit": fullaudit()
+    elif cmd == "fullcycle": fullcycle()
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()
     elif cmd == "finalize": finalize()
