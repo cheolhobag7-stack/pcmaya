@@ -126,6 +126,8 @@ def registry(docpat):
     reg = set()
     for p in stage_files():
         reg.update(norm(x) for x in re.findall(docpat, p.name))
+        if "문서관리대장" in p.name or "FM_Master" in p.name:   # 대장/마스터에 등재된 번호도 존재하는 문서로 인정
+            reg.update(norm(x) for x in re.findall(docpat, extract_text(p)))
     return reg
 
 def expand_ids(entries):
@@ -272,12 +274,12 @@ def validate(p: Path, typ: str, final_stage=False):
 
     # (11) 보존기간
     r = qms["retention"]
-    ret = re.search(r"보존기간\s*[:：]?\s*(\S+)", text)
+    spans = [text[m.end():m.end() + 25] for m in re.finditer("보존기간", text)]
     if typ in r["required_for"]:
-        if not ret:
+        if not spans:
             add("내용보완", "보존기간 미표기", f"보존기간 기재 (허용값 {r['allowed']})")
-        elif not any(ret.group(1).startswith(a) for a in r["allowed"]):
-            add("내용보완", f"보존기간 '{ret.group(1)}' 허용값 아님 {r['allowed']}", "허용값 중 선택")
+        elif not any(a in sp for sp in spans for a in r["allowed"]):
+            add("내용보완", f"보존기간 값 미확정 (본문: '보존기간{spans[0].strip()[:20]}')", f"허용값 중 확정 {r['allowed']} {UNCONFIRMED}")
 
     # (12) 고객사 요구사항
     allowed = set(cust.get("customers") or [])
