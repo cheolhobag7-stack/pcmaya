@@ -1,0 +1,56 @@
+integrated_modules:
+  lot_traceability:
+    required_fields: ["LOT","품번","생산일","공정","설비","작업자","검사이력","출하이력"]
+    retention: "3년"
+    target_trace_time: "1시간"
+  safety_risk:
+    required_fields: ["위험요인","현재조치","위험성","개선조치","담당자","완료예정일"]
+  equipment_trial:
+    required_fields: ["설비명","트라이일","조건","결과","이상유무","조치내용","판정"]
+  training:
+    required_fields: ["교육명","교육일","대상자","교육내용","교육자","참석확인"]
+  production:
+    required_fields: ["품번","계획수량","실적수량","불량수량","생산일"]
+  inventory:
+    required_fields: ["품번","입고","출고","현재고"]
+  quality:
+    required_fields: ["고객사","품번","불량수량","PPM","원인","조치","담당자","완료일"]
+
+management_reports:
+  weekly:
+    sections:
+      - "QMS 변경/오류"
+      - "LOT 추적성"
+      - "안전/위험성평가"
+      - "설비"
+      - "교육"
+      - "생산"
+      - "재고"
+      - "품질"
+      - "미결 조치사항"
+  monthly:
+    sections:
+      - "목표 PPM 대비 실적"
+      - "고객사별 PPM"
+      - "차종/품번별 주요 불량"
+      - "전월 대비 증감"
+      - "개선과제 진행률"
+      - "담당자/완료일"
+      - "결정 필요사항"
+
+audit_packages:
+  internal: true
+  customer: true
+  certification: true
+
+customer_response:
+  enabled: true
+  default_customer: "한온시스템"
+  include:
+    - "문제현상"
+    - "LOT 추적 결과"
+    - "원인"
+    - "임시조치"
+    - "영구대책"
+    - "재발방지"
+    - "증빙자료"

@@ -147,3 +147,11 @@ Claude Code는 다음 원칙을 최우선으로 따른다.
 - 기존 FINAL 동일 문서번호는 `06_HISTORY` 로 이동하며, 이동 전에 `06_HISTORY/ROLLBACK_BACKUP` 에 사본을 만든다. 롤백은 자동 실행하지 않고 `rollbackcheck` 로 후보만 제시한다.
 - 배포목록(`05_FINAL/RELEASED/배포목록.csv`)·변경이력·워크플로우 로그를 기록하고, 배포 후 SHA-256 무결성 검사를 수행한다. 스냅샷은 `05_FINAL/DISTRIBUTION/` 에 저장한다.
 - 명령: `/qms-approve`, `/qms-final-release`, `/qms-final-verify`, `/qms-final-report`, `/qms-rollback-check`, `/qms-diff`, `/qms-approval-package`, `/qms-autofix-plan`, `/qms-create-drafts`, `/qms-full-cycle`.
+
+## 15. 통합 운영 (OPERATION 패키지 반영: 현장 모듈·보고·심사·고객 대응·백업)
+시작 명령: `/full-operation` (= `python3 scripts/qms_workflow.py fulloperation`, 승인 직전까지). 승인·배포는 사람의 지시로만.
+- 폴더 (`SHINHWA_QMS_WORKFLOW/`): QMS 원본 `01_ORIGINAL`(패키지의 01_QMS_ORIGINAL), QMS 검토 `02_REVIEW`(02_QMS_REVIEW), 현장 입력 `11_INPUT/{LOT,SAFETY,EQUIPMENT,TRAINING,PRODUCTION,INVENTORY,QUALITY}`, 점검 결과 `12_OUTPUT/REPORTS`, 조치사항 `12_OUTPUT/ACTION_ITEMS`, 대시보드 `12_OUTPUT/DASHBOARD_DATA`, 경영보고 `13_MANAGEMENT/{WEEKLY,MONTHLY}`, 심사 패키지 `14_AUDIT/{INTERNAL,CUSTOMER,CERTIFICATION}`, 고객 대응 `15_CUSTOMER_RESPONSE`, 백업 `16_BACKUP`(zip 은 git 제외). 모듈별 필수 항목은 `00_CONFIG/integrated_rules.yaml`.
+- 명령: `/qms-audit`, `/integrated-audit`, `/collect-actions`, `/dashboard-data`, `/weekly-report`, `/monthly-report`, `/audit-internal`, `/audit-customer`, `/audit-certification`, `/customer-response`, `/backup-workspace`.
+- 주기: 문서 추가·개정 시 `/qms-audit`, 매주 `/full-operation`, 월간 품질회의 전 `/monthly-report`, 심사 전 해당 `/audit-*`, 고객 클레임 시 `/customer-response`, 큰 수정 전후 `/backup-workspace`.
+- 입력 데이터가 없는 모듈은 NO_DATA 로 표시한다(PASS 아님). 월간 수치·고객 대응 내용은 사용자 제공 사실만 쓰고 임의로 만들지 않는다.
+- 원본 패키지는 `06_HISTORY/업로드패키지/OPERATION_FINAL/` 에 보관(참고용).

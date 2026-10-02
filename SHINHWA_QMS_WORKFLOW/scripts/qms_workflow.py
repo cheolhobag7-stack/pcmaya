@@ -10,6 +10,10 @@
   python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
+  python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
+  python3 scripts/qms_workflow.py qmsaudit | integratedaudit | modulecheck <lot|safety|equipment|training|production|inventory|quality>
+  python3 scripts/qms_workflow.py collectactions | dashboarddata | weeklyreport | monthlyreport
+  python3 scripts/qms_workflow.py auditpackage <internal|customer|certification> | customerresponse | backupworkspace
   python3 scripts/qms_workflow.py sqdrafts [우선순위]  # SQ 필요서류 양식 초안(기본 '높음') → 03_EDIT/AUTO_DRAFT/SQ_*_초안/
   python3 scripts/qms_workflow.py sqnumber   # SQ안 FM번호 → 정식 SH-FM 번호 배정(대응표·SQ 사본·FM Master 새 파일)
   python3 scripts/qms_workflow.py sqaudit    # SQ mark 필요서류 리스트 ↔ 문서체계 대조 → 07_AUDIT/고객심사/
@@ -1780,6 +1784,303 @@ def final_report_cmd():
     print(f"[REPORT ] {out.relative_to(ROOT)}")
 
 
+# ====================== 통합 운영 (OPERATION 패키지 반영) ======================
+OPS_MODULES = {"lot": ("lot_traceability", "LOT"), "safety": ("safety_risk", "SAFETY"), "equipment": ("equipment_trial", "EQUIPMENT"),
+               "training": ("training", "TRAINING"), "production": ("production", "PRODUCTION"), "inventory": ("inventory", "INVENTORY"),
+               "quality": ("quality", "QUALITY")}
+IN_DIR, OUT_DIR, MGMT_DIR = ROOT / "11_INPUT", ROOT / "12_OUTPUT", ROOT / "13_MANAGEMENT"
+CUST_DIR, BACKUP_DIR = ROOT / "15_CUSTOMER_RESPONSE", ROOT / "16_BACKUP"
+AUDIT_KINDS = {"internal": "INTERNAL", "customer": "CUSTOMER", "certification": "CERTIFICATION"}   # 14_AUDIT 하위 (OPERATION 패키지 구조)
+AUDIT_DIR = ROOT / "14_AUDIT"
+
+def latest_file(folder: Path, pattern: str):
+    fs = sorted(folder.glob(pattern), key=lambda f: f.stat().st_mtime) if folder.exists() else []
+    return fs[-1] if fs else None
+
+def read_csv_rows(f: Path):
+    return list(csv.DictReader(open(f, encoding="utf-8-sig", newline=""))) if f else []
+
+def current_docs():
+    """현재 유효한 문서(문서번호별 최신 Rev, 릴리스 > 승인 단계 > 원본 순)."""
+    num = cfg("document_number_rules.yaml")
+    cand, prio = {}, {"RELEASED": 3, "APPROVAL": 2, "ORIGINAL": 1}
+    def add(p, stage):
+        if p.suffix.lower() not in (TEXT_EXT | {".pdf"}):
+            return
+        m = re.search(num["doc_pattern"], p.name)
+        rv = re.search(num["revision_pattern"], p.name)
+        score = (int(rv.group(1)) if rv else -1, prio[stage], p.stat().st_mtime)
+        key = m.group(0) if m else p.stem
+        if key not in cand or score > cand[key][0]:
+            cand[key] = (score, p, stage)
+    for mf in RELEASED.rglob("MANIFEST.json") if RELEASED.exists() else []:
+        m = json.loads(mf.read_text(encoding="utf-8"))
+        for fe in m["files"]:
+            if fe["role"] == "문서" and (mf.parent / fe["name"]).exists():
+                add(mf.parent / fe["name"], "RELEASED")
+    for sub in ("승인대기", "검토완료", "승인완료"):
+        for f in (D["appr"] / sub).glob("*"):
+            if f.is_file() and f.name != ".gitkeep" and not is_finalized(f):
+                add(f, "APPROVAL")
+    for d in D["orig"].iterdir():
+        if d.is_dir() and d.name != MASTER:
+            for f in d.rglob("*"):
+                if f.is_file() and f.name != ".gitkeep":
+                    add(f, "ORIGINAL")
+    return [(p, st) for _, p, st in cand.values()]
+
+def ops_qms_audit():
+    """QMS 자동감사: 현재 유효 문서별 PASS/HOLD/FAIL → 02_REVIEW/qms_audit_*.csv/md (조치사항·대시보드의 입력)"""
+    rows = []
+    for p, stage in sorted(current_docs(), key=lambda x: x[0].name):
+        typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
+        docno, issues, approved, units = check(p, typ)
+        hard = [m for c, m, _ in issues if c != "확인필요"]
+        hold = [m for c, m, _ in issues if c == "확인필요"]
+        st = "FAIL" if hard else ("HOLD" if hold or not approved else "PASS")
+        note = " | ".join((hard + hold)[:6]) + ("" if approved else ("" if not (hard or hold) else " | ") + "승인 표기 없음(승인 전)" if not approved else "")
+        rows.append([str(p.relative_to(ROOT)), docno or p.stem, (re.search(cfg("document_number_rules.yaml")["revision_pattern"], p.name) or [None, ""])[1], st, note, stage])
+    ts = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+    out = D["rev"] / f"qms_audit_{ts}.csv"
+    with open(out, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f); w.writerow(["file", "document_no", "revision", "status", "issues", "stage"]); w.writerows(rows)
+    cnt = collections.Counter(r[3] for r in rows)
+    md = ["# QMS 자동감사 (현재 유효 문서)", f"- 생성: {now()}", f"- PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']}", "", "## HOLD / FAIL"]
+    md += [f"- [{r[3]}] {r[0]} :: {r[4]}" for r in rows if r[3] != "PASS"] or ["- 없음"]
+    (D["rev"] / f"qms_audit_{ts}.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    print(f"[QMS AUDIT] PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']} → {out.relative_to(ROOT)}")
+    return out
+
+def module_check(key):
+    """현장 모듈 입력 점검: 11_INPUT/<모듈>/ 파일의 필수 항목 존재 확인 → 12_OUTPUT/REPORTS/<모듈>_check_*.csv"""
+    cfg_key, folder = OPS_MODULES[key]
+    required = cfg("integrated_rules.yaml")["integrated_modules"][cfg_key]["required_fields"]
+    src = IN_DIR / folder
+    src.mkdir(parents=True, exist_ok=True)
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    rows = []
+    for p in sorted(src.rglob("*")):
+        if not p.is_file() or p.name == ".gitkeep":
+            continue
+        text = extract_text(p)
+        if not text:
+            rows.append([str(p.relative_to(ROOT)), key, "HOLD", "본문을 읽을 수 없음(스캔/미지원 형식)"])
+            continue
+        miss = [x for x in required if x.lower() not in text.lower()]
+        rows.append([str(p.relative_to(ROOT)), key, "PASS" if not miss else "HOLD", "; ".join(miss)])
+    if not rows:
+        rows.append([f"11_INPUT/{folder}", key, "NO_DATA", "입력 데이터 없음"])
+    out = OUT_DIR / "REPORTS" / f"{key}_check_{dt.datetime.now():%Y%m%d_%H%M%S}.csv"
+    with open(out, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f); w.writerow(["file", "module", "status", "missing_fields"]); w.writerows(rows)
+    c = collections.Counter(r[2] for r in rows)
+    print(f"[MODULE {key.upper():9}] " + " / ".join(f"{k} {v}" for k, v in c.items()) + f" → {out.relative_to(ROOT)}")
+    return rows
+
+def integrated_audit():
+    """QMS + 현장 모듈 7종 통합 점검 → 12_OUTPUT/REPORTS/integrated_audit_*.csv/md"""
+    ops_qms_audit()
+    summary = []
+    q_rows = read_csv_rows(latest_file(D["rev"], "qms_audit_*.csv"))
+    qc = collections.Counter(r["status"] for r in q_rows)
+    summary.append(["QMS", dict(qc)])
+    for key in OPS_MODULES:
+        rows = module_check(key)
+        summary.append([key.upper(), dict(collections.Counter(r[2] for r in rows))])
+    out = OUT_DIR / "REPORTS" / f"integrated_audit_{dt.datetime.now():%Y%m%d_%H%M%S}.csv"
+    with open(out, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f); w.writerow(["area", "result"]); w.writerows([[a, json.dumps(r, ensure_ascii=False)] for a, r in summary])
+    md = ["# 통합 점검 요약", f"- 생성: {now()}", "", "| 영역 | 결과 |", "|---|---|"] + [f"| {a} | {r} |" for a, r in summary]
+    md += ["", "※ NO_DATA = 입력 데이터 없음(점검하지 않음). PASS 가 아닙니다."]
+    out.with_suffix(".md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    print(f"[INTEGRATED] → {out.relative_to(ROOT)}")
+    return out
+
+def collect_actions():
+    """HOLD/FAIL 조치사항 취합 → 12_OUTPUT/ACTION_ITEMS/action_items_*.csv (이전 담당자·기한·상태는 이어받음)"""
+    (OUT_DIR / "ACTION_ITEMS").mkdir(parents=True, exist_ok=True)
+    prev = {}
+    pf = latest_file(OUT_DIR / "ACTION_ITEMS", "action_items_*.csv")
+    for r in read_csv_rows(pf):
+        prev[(r["target"], r["issue"])] = (r["owner"], r["due_date"], r["action_status"])
+    items = []
+    qf = latest_file(D["rev"], "qms_audit_*.csv")
+    for r in read_csv_rows(qf):
+        if r["status"] in ("HOLD", "FAIL"):
+            items.append([qf.name, r["document_no"] or r["file"], r["status"], r["issues"]])
+    for key in OPS_MODULES:
+        mf = latest_file(OUT_DIR / "REPORTS", f"{key}_check_*.csv")
+        for r in read_csv_rows(mf):
+            if r["status"] in ("HOLD", "FAIL"):
+                items.append([mf.name, r["file"], r["status"], r["missing_fields"]])
+    # SQ 심사: 담당자 확인 대기 항목
+    dec = latest_file(ROOT / "07_AUDIT" / "고객심사", "SQ_중복검토_결정*.csv")
+    for r in read_csv_rows(dec):
+        if r["결정"].startswith("보류"):
+            items.append([dec.name, f"{r['정식 SH-FM 번호']} {r['양식명']}", "HOLD", f"중복/문서 여부 담당자 확인: {r['근거']}"])
+    for wbk in sorted((D["edit"] / "AUTO_DRAFT").glob("SQ_*_초안/*.xlsx")):
+        items.append(["SQ 양식 초안", wbk.name, "HOLD", "초안 — 항목·기준·결재방식·보존기간 담당부서 확정 필요"])
+    out = unique_path(OUT_DIR / "ACTION_ITEMS" / f"action_items_{dt.datetime.now():%Y%m%d_%H%M%S}.csv")
+    with open(out, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f); w.writerow(["source", "target", "status", "issue", "owner", "due_date", "action_status"])
+        for src, tgt, st, iss in items:
+            o, d_, a = prev.get((tgt, iss), ("", "", "OPEN"))
+            w.writerow([src, tgt, st, iss, o, d_, a])
+    print(f"[ACTIONS] 조치 {len(items)}건 (FAIL {sum(1 for i in items if i[2]=='FAIL')} / HOLD {sum(1 for i in items if i[2]=='HOLD')}) → {out.relative_to(ROOT)}")
+    return out, items
+
+def dashboard_data():
+    """대시보드용 JSON → 12_OUTPUT/DASHBOARD_DATA/dashboard_*.json"""
+    (OUT_DIR / "DASHBOARD_DATA").mkdir(parents=True, exist_ok=True)
+    areas = {}
+    qf = latest_file(D["rev"], "qms_audit_*.csv")
+    if qf:
+        areas["qms"] = dict(collections.Counter(r["status"] for r in read_csv_rows(qf)))
+    for key in OPS_MODULES:
+        mf = latest_file(OUT_DIR / "REPORTS", f"{key}_check_*.csv")
+        if mf:
+            areas[key] = dict(collections.Counter(r["status"] for r in read_csv_rows(mf)))
+    af = latest_file(OUT_DIR / "ACTION_ITEMS", "action_items_*.csv")
+    acts = read_csv_rows(af)
+    sq = {}
+    mp = ROOT / "07_AUDIT" / "고객심사" / "SQ_FM번호_배정대응표.csv"
+    if mp.exists():
+        sq = {"required_docs": len(read_csv_rows(mp)), "number_assigned": len(read_csv_rows(mp)),
+              "drafts_created": sum(1 for _ in (D["edit"] / "AUTO_DRAFT").glob("SQ_*_초안/*.xlsx")), "approved_forms": 0}
+    summary = {"generated_at": dt.datetime.now().isoformat(timespec="seconds"), "areas": areas,
+               "action_items": {"total": len(acts), "open": sum(1 for r in acts if r["action_status"] == "OPEN")},
+               "released_documents": len(list(RELEASED.rglob("MANIFEST.json"))) if RELEASED.exists() else 0, "sq": sq}
+    out = unique_path(OUT_DIR / "DASHBOARD_DATA" / f"dashboard_{dt.datetime.now():%Y%m%d_%H%M%S}.json")
+    out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[DASHBOARD] → {out.relative_to(ROOT)}")
+    return out
+
+def weekly_report():
+    """주간 통합 운영 보고 → 13_MANAGEMENT/WEEKLY/weekly_management_*.md"""
+    (MGMT_DIR / "WEEKLY").mkdir(parents=True, exist_ok=True)
+    rules = cfg("integrated_rules.yaml")["management_reports"]["weekly"]["sections"]
+    af = latest_file(OUT_DIR / "ACTION_ITEMS", "action_items_*.csv")
+    acts = read_csv_rows(af)
+    qf = latest_file(D["rev"], "qms_audit_*.csv")
+    qc = collections.Counter(r["status"] for r in read_csv_rows(qf))
+    gate = latest_file(D["rev"], "qms_release_gate*.md")
+    gtxt = re.search(r"## 결과:\s*(\w+)", gate.read_text(encoding="utf-8")) if gate else None
+    def mod(key):
+        mf = latest_file(OUT_DIR / "REPORTS", f"{key}_check_*.csv")
+        c = collections.Counter(r["status"] for r in read_csv_rows(mf))
+        return dict(c) if c else "점검 결과 없음"
+    secmap = {"QMS 변경/오류": f"문서 PASS {qc['PASS']} / HOLD {qc['HOLD']} / FAIL {qc['FAIL']}, Release Gate: {gtxt.group(1) if gtxt else '미실행'}",
+              "LOT 추적성": mod("lot"), "안전/위험성평가": mod("safety"), "설비": mod("equipment"), "교육": mod("training"),
+              "생산": mod("production"), "재고": mod("inventory"), "품질": mod("quality"),
+              "미결 조치사항": f"{len(acts)}건 (OPEN {sum(1 for r in acts if r['action_status']=='OPEN')})"}
+    L = ["# 주간 통합 운영 보고", "", f"- 작성일: {dt.date.today()}", ""]
+    for sct in rules:
+        L += [f"## {sct}", f"{secmap.get(sct, '데이터 없음')}", ""]
+    L += ["## 우선 확인 (HOLD/FAIL 상위 30)"] + [f"- [{r['status']}] {r['target']} :: {r['issue'][:100]}" for r in acts[:30]]
+    out = unique_path(MGMT_DIR / "WEEKLY" / f"weekly_management_{dt.date.today():%Y%m%d}.md")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"[WEEKLY] → {out.relative_to(ROOT)}")
+    return out
+
+def monthly_report():
+    """월간 품질·생산 관리 보고 → 13_MANAGEMENT/MONTHLY/. 입력 데이터(11_INPUT/QUALITY)가 있으면 고객사별 집계, 없으면 '데이터 입력 필요'."""
+    (MGMT_DIR / "MONTHLY").mkdir(parents=True, exist_ok=True)
+    rules = cfg("integrated_rules.yaml")["management_reports"]["monthly"]["sections"]
+    rows = []
+    for p in (IN_DIR / "QUALITY").rglob("*") if (IN_DIR / "QUALITY").exists() else []:
+        if p.suffix.lower() == ".csv":
+            rows += list(csv.DictReader(open(p, encoding="utf-8-sig", newline="")))
+        elif p.suffix.lower() == ".xlsx":
+            from openpyxl import load_workbook
+            for wsx in load_workbook(p, data_only=True).worksheets:
+                data = [[c for c in r] for r in wsx.iter_rows(values_only=True) if any(c is not None for c in r)]
+                hi = next((i for i, r in enumerate(data) if "고객사" in [str(c) for c in r] and "PPM" in [str(c) for c in r]), None)
+                if hi is not None:
+                    hdr = [str(c) for c in data[hi]]
+                    rows += [dict(zip(hdr, r)) for r in data[hi + 1:]]
+    def num(v):
+        try:
+            return float(str(v).replace(",", ""))
+        except Exception:
+            return None
+    by = collections.defaultdict(list)
+    for r in rows:
+        if r.get("고객사") and num(r.get("PPM")) is not None:
+            by[r["고객사"]].append(num(r["PPM"]))
+    sec = {s: "데이터 입력 필요" for s in rules}
+    if by:
+        sec["고객사별 PPM"] = "\n".join(f"- {c}: 평균 PPM {sum(v)/len(v):.1f} (n={len(v)})" for c, v in sorted(by.items()))
+    L = ["# 월간 품질·생산 관리 보고", "", f"- 작성월: {dt.date.today():%Y-%m}", f"- 입력 데이터: {'11_INPUT/QUALITY ('+str(len(rows))+'행)' if rows else '없음'}", ""]
+    for i, sct in enumerate(rules, 1):
+        L += [f"## {i}. {sct}", sec[sct], ""]
+    L += ["※ 목표 PPM·전월 값 등 확정되지 않은 수치는 임의로 채우지 않습니다."]
+    out = unique_path(MGMT_DIR / "MONTHLY" / f"monthly_quality_management_{dt.date.today():%Y%m}.md")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"[MONTHLY] → {out.relative_to(ROOT)}")
+    return out
+
+def audit_package(kind):
+    """심사 패키지(내부/고객/인증) → 14_AUDIT/<INTERNAL|CUSTOMER|CERTIFICATION>/AUDIT_PACKAGE_*/"""
+    folder = AUDIT_KINDS[kind]
+    pkg = AUDIT_DIR / folder / f"AUDIT_PACKAGE_{dt.datetime.now():%Y%m%d_%H%M%S}"
+    pkg.mkdir(parents=True)
+    srcs = [("QMS_REVIEW", D["rev"], ["qms_audit_*", "qms_release_gate*", "qms_ledger_check*", "qms_crosscheck_summary*"]),
+            ("MODULE_REPORTS", OUT_DIR / "REPORTS", ["*_check_*", "integrated_audit_*"]),
+            ("ACTION_ITEMS", OUT_DIR / "ACTION_ITEMS", ["action_items_*"]),
+            ("MANAGEMENT", MGMT_DIR, ["WEEKLY/*", "MONTHLY/*"]),
+            ("RELEASE", D["final"] / "RELEASED", ["배포목록.csv", "최종보고서*", "무결성검사*"])]
+    if kind in ("customer", "certification"):
+        srcs.append(("SQ", ROOT / "07_AUDIT" / "고객심사", ["SQ_필요서류_대조보고서*", "SQ_FM번호_배정대응표.csv", "SQ_중복검토_*"]))
+    n = 0
+    for name, base, pats in srcs:
+        (pkg / name).mkdir()
+        for pat in pats:
+            fs = sorted(base.glob(pat), key=lambda f: f.stat().st_mtime) if base.exists() else []
+            for f in [x for x in fs if x.is_file()][-3:]:   # 패턴별 최신 3개
+                shutil.copy2(f, pkg / name / f.name); n += 1
+    (pkg / "AUDIT_README.md").write_text(f"# {folder} 패키지\n\n- 생성: {now()}\n- 포함 파일 {n}개\n\n포함: QMS 최신 검토·Release Gate·문서관리대장 대조, 현장 모듈 점검, 미결 조치사항, 주간/월간 보고, 릴리스 이력"
+                                        f"{'(SQ 필요서류 대조 포함)' if kind != 'internal' else ''}.\n\n**제출 전 확인**: HOLD/FAIL 항목이 있으면 제출하지 않고, 최신성·승인 상태를 확인합니다. 자동 생성 자료이며 실제 승인 책임은 승인권자에게 있습니다.\n", encoding="utf-8")
+    log("workflow_log.csv", [now(), pkg.name, "", "심사 패키지", str(pkg.relative_to(ROOT)), "system", f"{folder} 패키지 생성({n}개 파일)"])
+    print(f"[AUDIT PKG] {folder}: {n}개 파일 → {pkg.relative_to(ROOT)}")
+    return pkg
+
+def customer_response():
+    """고객사(한온시스템) 품질 대응자료 템플릿 → 15_CUSTOMER_RESPONSE/HANON_RESPONSE_*/ (내용은 임의 생성하지 않음)"""
+    pkg = CUST_DIR / f"HANON_RESPONSE_{dt.datetime.now():%Y%m%d_%H%M%S}"
+    pkg.mkdir(parents=True)
+    lot = latest_file(OUT_DIR / "REPORTS", "lot_check_*.csv")
+    (pkg / "CUSTOMER_RESPONSE_TEMPLATE.md").write_text("\n".join([
+        f"# 고객사 품질 대응자료 — {cfg('qms_rules.yaml').get('main_customer', '한온시스템')}", "", f"- 작성일: {dt.date.today()}",
+        f"- LOT 추적성 기준: 보존 {cfg('qms_rules.yaml')['lot_traceability_retention']}, 추적 목표시간 {cfg('qms_rules.yaml')['lot_trace_target_time']}",
+        f"- 최근 LOT 점검 결과 파일: {lot.name if lot else '없음'}", ""] +
+        [f"## {i}. {t}\n입력 필요\n" for i, t in enumerate(["문제현상", "대상 품번 / LOT", "LOT 추적 결과", "원인분석", "임시조치", "영구대책", "재발방지"], 1)] +
+        ["## 8. 증빙자료\n첨부 필요\n", "## 9. 담당자 / 완료일\n입력 필요\n"]), encoding="utf-8")
+    log("workflow_log.csv", [now(), pkg.name, "", "고객 대응", str(pkg.relative_to(ROOT)), "system", "고객 대응자료 템플릿 생성"])
+    print(f"[CUSTOMER] → {pkg.relative_to(ROOT)}")
+    return pkg
+
+def backup_workspace():
+    """작업공간 전체 백업(zip) → 16_BACKUP/ (백업 폴더 자신은 제외)"""
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    out = unique_path(BACKUP_DIR / f"SHINHWA_BACKUP_{dt.datetime.now():%Y%m%d_%H%M%S}.zip")
+    n = 0
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(ROOT.rglob("*")):
+            if f.is_file() and BACKUP_DIR not in f.parents and "__pycache__" not in f.parts:
+                z.write(f, f.relative_to(ROOT)); n += 1
+    log("workflow_log.csv", [now(), out.name, "", "백업", str(out.relative_to(ROOT)), "system", f"{n}개 파일 백업"])
+    print(f"[BACKUP ] {n}개 파일 → {out.relative_to(ROOT)} ({out.stat().st_size // 1024} KB)")
+    return out
+
+def full_operation():
+    """전체 운영: QMS 사이클(승인 직전까지) → 통합 점검 → 조치사항 → 대시보드 → 주간 보고. 승인/배포는 하지 않는다."""
+    fullcycle()
+    integrated_audit()
+    collect_actions()
+    dashboard_data()
+    weekly_report()
+    print("\n[완료] 승인(approve/sign)과 FINAL 배포(finalize)는 사람이 지시할 때만 실행합니다. 월간 보고·심사 패키지·고객 대응·백업은 필요 시 개별 명령으로.")
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     if cmd == "run": run(rereview="--rereview" in sys.argv)
@@ -1796,6 +2097,17 @@ if __name__ == "__main__":
     elif cmd == "fullaudit": fullaudit()
     elif cmd == "fullcycle": fullcycle()
     elif cmd == "sqaudit": sq_audit()
+    elif cmd == "fulloperation": full_operation()
+    elif cmd == "qmsaudit": ops_qms_audit()
+    elif cmd == "integratedaudit": integrated_audit()
+    elif cmd == "modulecheck" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_check(sys.argv[2])
+    elif cmd == "collectactions": collect_actions()
+    elif cmd == "dashboarddata": dashboard_data()
+    elif cmd == "weeklyreport": weekly_report()
+    elif cmd == "monthlyreport": monthly_report()
+    elif cmd == "auditpackage" and len(sys.argv) > 2 and sys.argv[2] in AUDIT_KINDS: audit_package(sys.argv[2])
+    elif cmd == "customerresponse": customer_response()
+    elif cmd == "backupworkspace": backup_workspace()
     elif cmd == "sqnumber": sq_number()
     elif cmd == "sqdrafts": sq_drafts(sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("--") else "높음", overwrite="--overwrite" in sys.argv)
     elif cmd == "fmregister": fm_master_register()
