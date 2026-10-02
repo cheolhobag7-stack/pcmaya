@@ -6,6 +6,6 @@ doc_pattern: '(?:SH-)?(?:QM|QP|WI|FM)-\d{2,3}(?:-\d{2,3}){0,2}|(?:APQP|PPAP|PFME
 by_type:
   QM: '^SH-QM-\d{2,3}$'
   QP: '^SH-QP-\d{2,3}(-\d{2,3})?$'
-  WI: '^SH-WI-\d{2,3}-\d{2,3}(-\d{2,3})?$'
+  WI: '^SH-WI-\d{2,3}(-\d{2,3}){0,2}$'
   FM: '^SH-FM-\d{2,3}(-\d{2,3}){0,2}$'
 revision_pattern: 'Rev\.?\s?(\d{2})'
