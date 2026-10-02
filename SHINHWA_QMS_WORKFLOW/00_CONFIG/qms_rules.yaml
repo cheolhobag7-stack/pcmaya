@@ -52,3 +52,26 @@ retention:
 
 # 결재 상태 검사: 본문에 아래 라벨이 모두 있어야 승인대기로 이동
 approval_labels: [작성, 검토, 승인]
+
+# ---- 확장 검토 규칙 (※ 기본값은 가정치 — 회사 규정 확정 후 수정) ----
+document_status:
+  field: '문서상태'                     # 본문 '문서상태: 승인완료' 형태
+  approved_values: ["승인완료", "APPROVED"]
+date_fields:
+  initial: '제정일'                     # Rev.00 문서에 필수
+  revised: '개정일'                     # Rev.01 이상 문서에 필수
+page_number_required_for: [QM, QP, WI]
+toc_required_for: [QM, QP]
+csr_required_for: [QM]                  # 고객 특정 요구사항(CSR) 언급 필수 유형
+core_tools:                             # 본문에 언급되면 연계 문서번호 명시 필요
+  APQP: ["APQP"]
+  PPAP: ["PPAP"]
+  PFMEA: ["PFMEA", "P-FMEA"]
+  CONTROL_PLAN: ["Control Plan", "관리계획서", "CONTROL PLAN"]
+  SPC: ["SPC"]
+  MSA: ["MSA"]
+core_tool_docs: {}                      # 확정 전: 예) PFMEA: SH-QP-xx  (비워 두면 임의 생성하지 않음)
+lot_traceability:
+  keyword: "LOT 추적"
+  # 본문에 LOT 추적 언급 시 보존기간(3년)과 목표시간(1시간)을 명시해야 함
+obsolete_docs: []                       # 폐기된 문서번호 목록 (06_HISTORY/폐기문서 폴더 파일명도 자동 반영)

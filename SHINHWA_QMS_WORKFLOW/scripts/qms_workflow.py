@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-"""SHINHWA QMS 문서 워크플로 자동화.
+"""(주)신화에이치앤티 QMS 문서관리 자동화 (ISO 9001:2015 / IATF 16949:2016).
 
 사용법 (SHINHWA_QMS_WORKFLOW 에서):
-  python3 scripts/qms_workflow.py run        # 01_ORIGINAL 분류 → 전 항목 검사 → 02_REVIEW / 04_APPROVAL
+  python3 scripts/qms_workflow.py run        # 01_ORIGINAL 분류 → 17개 항목 검토 → 02_REVIEW(+수정후보) / 04_APPROVAL
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
-  python3 scripts/qms_workflow.py approve F  # (사람) 04_APPROVAL/승인대기 의 F → 검토완료
+  python3 scripts/qms_workflow.py approve F  # (사람) 승인대기 → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
-  python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식(FM) 존재 확인
-  python3 scripts/qms_workflow.py finalize   # 승인완료 → 05_FINAL + PDF + 배포본 + 06_HISTORY 백업
+  python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식 존재 확인
+  python3 scripts/qms_workflow.py finalize   # 승인완료 재검증 → 05_FINAL + PDF + 배포본 + 06_HISTORY
+
+절대 규칙(코드로 강제):
+  - 원본은 삭제/덮어쓰기 하지 않는다. 단계 이동은 모두 '복사'이며, 기존 파일과 이름이 겹치면 _vN 으로 새로 저장한다.
+    (01_ORIGINAL 루트에 투입된 파일을 유형 폴더로 정리하는 것만 같은 01_ORIGINAL 안의 이동이다.)
+  - 수정본/수정후보는 항상 새 파일(03_EDIT/수정중)이며 모든 생성은 revision_history.csv 에 기록한다.
+  - 문서번호 오류가 하나라도 있으면 FINAL 이동 금지. 검토 이슈가 있으면 FINAL 이동 금지.
+  - 승인(문서상태=승인완료 + 사람의 sign) 전 문서는 배포본을 만들지 않는다.
+  - 폐기 문서 참조는 오류. 확정되지 않은 값은 임의로 만들지 않고 '[확인 필요]'로 표시한다.
 """
-import csv, json, re, shutil, subprocess, sys, zipfile, datetime as dt
+import csv, hashlib, json, re, shutil, subprocess, sys, zipfile, datetime as dt
 from pathlib import Path
 import yaml
 
@@ -20,10 +28,15 @@ D = {k: ROOT / v for k, v in dict(
 ERR_DIR = {"문서번호": "문서번호오류", "개정번호": "개정번호오류", "상호참조": "상호참조오류"}
 DEFAULT_ERR_DIR = "내용보완필요"
 TEXT_EXT = {".docx", ".xlsx", ".txt", ".md", ".csv"}
+UNCONFIRMED = "[확인 필요]"
 
 
+# ---------------- 공통 ----------------
 def cfg(name):
     return yaml.safe_load((D["cfg"] / name).read_text(encoding="utf-8"))
+
+def now():
+    return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def norm(no):
     """SH- 접두어 제거: SH-FM-066 == FM-066"""
@@ -32,12 +45,34 @@ def norm(no):
 def prefix_of(name):
     return re.split(r"[-_ ]", norm(name.upper()))[0]
 
-def now():
-    return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
 def log(fname, row):
     with open(D["log"] / fname, "a", newline="", encoding="utf-8") as f:
         csv.writer(f).writerow(row)
+
+def sha(p: Path):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+def safe_copy(src: Path, dest_dir: Path, name=None) -> Path:
+    """절대 덮어쓰지 않는 복사. 동일 내용이 이미 있으면 그 경로 반환, 다르면 _vN."""
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    name = name or src.name
+    dest = dest_dir / name
+    n = 2
+    while dest.exists():
+        if dest.read_bytes() == src.read_bytes():
+            return dest
+        dest = dest_dir / f"{Path(name).stem}_v{n}{Path(name).suffix}"
+        n += 1
+    shutil.copy2(src, dest)
+    return dest
+
+def processed():
+    f = D["log"] / "processed_hashes.txt"
+    return set(f.read_text().split()) if f.exists() else set()
+
+def mark_processed(h):
+    with open(D["log"] / "processed_hashes.txt", "a") as f:
+        f.write(h + "\n")
 
 def extract_text(p: Path) -> str:
     """docx/xlsx 는 표준 라이브러리로 텍스트 추출 (외부 패키지 불필요)."""
@@ -60,175 +95,315 @@ def extract_text(p: Path) -> str:
         return ""
     return ""   # pdf 등: 본문 검사 불가
 
-def stages_files():
-    for stage in ("orig", "rev", "edit", "appr", "final"):
-        for p in D[stage].rglob("*"):
+def page_toc_flags(p: Path, text: str):
+    """(페이지번호 있음, 목차 있음)"""
+    if p.suffix.lower() == ".docx":
+        try:
+            with zipfile.ZipFile(p) as z:
+                xml = " ".join(z.read(n).decode("utf8", "ignore") for n in z.namelist()
+                               if re.match(r"word/(document|header\d*|footer\d*)\.xml", n))
+            page = bool(re.search(r"(instrText[^>]*>\s*PAGE\b|w:instr=\"\s*PAGE\b)", xml)) or bool(PAGE_TXT.search(text))
+            toc = bool(re.search(r"instrText[^>]*>\s*TOC\b", xml)) or "목차" in text
+            return page, toc
+        except Exception:
+            pass
+    return bool(PAGE_TXT.search(text)), "목차" in text
+
+PAGE_TXT = re.compile(r"(Page\s*\d+\s*(of|/)\s*\d+|\d+\s*/\s*\d+\s*(쪽|페이지|page)|페이지\s*:?\s*\d+)", re.I)
+
+
+# ---------------- 레지스트리 ----------------
+def stage_files(stages=("orig", "rev", "edit", "appr", "final")):
+    for st in stages:
+        for p in D[st].rglob("*"):
             if p.is_file() and p.name != ".gitkeep":
                 yield p
 
 def registry(docpat):
-    """현재 시스템에 존재하는 문서번호 집합 (상호참조 검사용)."""
+    """시스템에 존재하는 (폐기 아닌) 문서번호 집합 (상호참조 검사용)."""
     reg = set()
-    for p in stages_files():
+    for p in stage_files():
         reg.update(norm(x) for x in re.findall(docpat, p.name))
     return reg
 
-# ---------------- 1) 자동 분류 ----------------
+def obsolete_set(docpat):
+    obs = {norm(x) for x in (cfg("qms_rules.yaml").get("obsolete_docs") or [])}
+    for p in (D["hist"] / "폐기문서").rglob("*"):
+        if p.is_file() and p.name != ".gitkeep":
+            obs.update(norm(x) for x in re.findall(docpat, p.name))
+    return obs
+
+def duplicates(docpat, p: Path, docno, rev):
+    """같은 문서번호+Rev 가 서로 다른 파일명으로 존재하는지 (파이프라인 단계 복사본은 같은 이름이므로 제외)."""
+    me = norm(docno)
+    others = set()
+    for q in stage_files():
+        if q.name == p.name or q.suffix.lower() == ".json":
+            continue
+        m = re.search(docpat, q.name)
+        r = re.search(cfg("document_number_rules.yaml")["revision_pattern"], q.name)
+        stem_name = re.sub(r"(_수정후보.*|_v\d+)$", "", q.stem)
+        if m and norm(m.group(0)) == me and (r.group(1) if r else None) == rev \
+                and stem_name != re.sub(r"(_v\d+)$", "", p.stem):
+            others.add(q.name)
+    return sorted(others)
+
+
+# ---------------- 검토 (17개 항목) ----------------
+def validate(p: Path, typ: str, final_stage=False):
+    """반환 (docno, [(카테고리, 메시지, 수정제안)])"""
+    qms, num, cust = cfg("qms_rules.yaml"), cfg("document_number_rules.yaml"), cfg("customer_rules.yaml")
+    text = extract_text(p)
+    issues = []
+    add = lambda c, m, f="": issues.append((c, m, f))
+
+    # (1) 문서번호
+    m = re.search(num["doc_pattern"], p.name)
+    docno = m.group(0) if m else None
+    if not docno:
+        add("문서번호", "파일명에서 문서번호를 찾을 수 없음", f"파일명 앞에 문서번호 부여 {UNCONFIRMED}")
+    else:
+        pat = num["by_type"].get(typ)
+        if pat and not re.match(pat, docno):
+            fix = f"SH-{docno} 로 접두어 보완 (번호 자체는 {UNCONFIRMED})" if not docno.startswith("SH-") else f"규칙 {pat} 에 맞게 번호 확인 {UNCONFIRMED}"
+            add("문서번호", f"{docno} 가 {typ} 문서번호 규칙({pat})에 맞지 않음", fix)
+        if text:
+            if docno not in text:
+                add("문서번호", f"본문(머리글 포함)에 문서번호 {docno} 가 없음", f"본문 머리글에 {docno} 표기")
+            fld = re.search(r"문서번호\s*[:：]\s*(\S+)", text)
+            if fld and norm(fld.group(1)) != norm(docno):
+                add("문서번호", f"문서번호 불일치: 파일명 {docno} ≠ 본문 {fld.group(1)}", f"어느 쪽이 맞는지 확정 필요 {UNCONFIRMED}")
+
+    # (4) Rev
+    fm = re.search(num["revision_pattern"], p.name)
+    rev = fm.group(1) if fm else None
+    if not fm:
+        add("개정번호", "파일명에 Rev 표기 없음", f"파일명에 _Rev.NN 추가 (초기 문서는 {num['initial_revision']})")
+    elif text:
+        body = set(re.findall(num["revision_pattern"], text))
+        if not body:
+            add("개정번호", "본문에 Rev 표기 없음", f"본문에 Rev.{rev} 표기")
+        elif rev not in body:
+            add("개정번호", f"파일명 Rev.{rev} 와 본문 Rev.{sorted(body)} 불일치", f"올바른 Rev 확정 필요 {UNCONFIRMED}")
+
+    if not text:
+        add("내용보완", "본문 텍스트 추출 불가(PDF/미지원 형식) - 본문 검사 생략, 수동 확인 필요")
+        return docno, issues, False
+
+    # (2) 회사명
+    if not any(n in text for n in qms["company"]["names"]):
+        add("내용보완", f"회사명 미표기 ({', '.join(qms['company']['names'])})", f"회사명 {qms['company']['name']} 표기")
+
+    # (3) 문서명
+    nm = re.match(r"^(?:SH-)?[A-Za-z]+(?:-[\w]+)*?_(.+?)_Rev", p.name) if docno else None
+    title = nm.group(1) if nm else None
+    if not title:
+        add("내용보완", "파일명에서 문서명을 찾을 수 없음 (형식: 문서번호_문서명_Rev.NN)", f"문서명 {UNCONFIRMED}")
+    elif title not in text:
+        add("내용보완", f"본문에 문서명 '{title}' 없음", "본문 제목과 파일명 문서명 일치 필요")
+
+    # (5) 제정/개정일
+    df = qms["date_fields"]
+    key = df["initial"] if rev == "00" else df["revised"]
+    dm = re.search(rf"{key}\s*[:：]?\s*(\d{{4}})[.\-/]\s?(\d{{1,2}})[.\-/]\s?(\d{{1,2}})", text) if rev is not None else None
+    if rev is not None:
+        if not dm:
+            add("내용보완", f"{key} 미표기 또는 날짜 형식 오류 (YYYY-MM-DD)", f"{key} 기재 {UNCONFIRMED}")
+        else:
+            try:
+                d = dt.date(int(dm[1]), int(dm[2]), int(dm[3]))
+                if d > dt.date.today():
+                    add("내용보완", f"{key} {d} 가 미래 날짜", f"{key} 확인 {UNCONFIRMED}")
+            except ValueError:
+                add("내용보완", f"{key} 날짜가 유효하지 않음", f"{key} 확인 {UNCONFIRMED}")
+
+    # (6) 작성/검토/승인 상태
+    missing = [l for l in qms["approval_labels"] if l not in text]
+    if missing:
+        add("내용보완", f"결재란 항목 누락: {', '.join(missing)}", "결재란(작성/검토/승인) 보완")
+    st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
+    status = st.group(1) if st else None
+    approved = status in qms["document_status"]["approved_values"]
+    if final_stage and not approved:
+        add("내용보완", f"문서상태가 승인완료가 아님 ({status or '미표기'}) - FINAL/배포 불가", "승인 절차 완료 후 문서상태 갱신")
+
+    # (7)(16) 상호참조 / 폐기 문서 참조
+    reg, obs = registry(num["doc_pattern"]), obsolete_set(num["doc_pattern"])
+    refs = {norm(x) for x in re.findall(num["doc_pattern"], text)} - {norm(docno)}
+    for ref in sorted(refs):
+        if ref in obs:
+            add("상호참조", f"폐기 문서 {ref} 를 참조함", "대체 문서로 교체 (대체 문서번호 " + UNCONFIRMED + ")")
+        elif ref not in reg:
+            add("상호참조", f"참조 문서 {ref} 가 시스템에 존재하지 않음", "참조 문서번호 확인 또는 해당 문서 등록")
+
+    # 필수 항목 / (8)(9) ISO·IATF 요구사항
+    for s in qms["required_sections"].get(typ, []):
+        if s not in text:
+            add("내용보완", f"필수 항목 '{s}' 누락", f"'{s}' 항목 작성")
+    for chk in qms["standards_check"].get(typ, []):
+        if chk.get("applies_to_prefix") and docno and not norm(docno).startswith(chk["applies_to_prefix"]):
+            continue
+        if not any(k in text for k in chk["any_of"]):
+            add("내용보완", f"{chk['clause']}: {'/'.join(chk['any_of'])} 중 하나 필요", "해당 요구사항 반영")
+
+    # (10) APQP/PPAP/PFMEA/CP/SPC/MSA 연계
+    for tool, kws in qms["core_tools"].items():
+        if any(k in text for k in kws):
+            want = (qms.get("core_tool_docs") or {}).get(tool)
+            if want and norm(want) not in refs:
+                add("상호참조", f"{tool} 언급 - 연계 문서 {want} 참조 없음", f"{want} 참조 추가")
+            elif not want and not refs:
+                add("내용보완", f"{tool} 언급 - 연계 문서번호 미명시", f"연계 QP/WI/FM 번호 명시 {UNCONFIRMED}")
+
+    # (11) 보존기간
+    r = qms["retention"]
+    ret = re.search(r"보존기간\s*[:：]?\s*(\S+)", text)
+    if typ in r["required_for"]:
+        if not ret:
+            add("내용보완", "보존기간 미표기", f"보존기간 기재 (허용값 {r['allowed']})")
+        elif not any(ret.group(1).startswith(a) for a in r["allowed"]):
+            add("내용보완", f"보존기간 '{ret.group(1)}' 허용값 아님 {r['allowed']}", "허용값 중 선택")
+
+    # (12) 고객사 요구사항
+    allowed = set(cust.get("customers") or [])
+    for c in re.findall(cust["customer_marker"], text):
+        if c not in allowed:
+            add("내용보완", f"등록되지 않은 고객사 '{c}' (customer_rules.yaml)", "고객사 등록 여부 확인")
+    if typ in qms["csr_required_for"] and not re.search(r"고객 특정 요구사항|CSR", text):
+        add("내용보완", "IATF 고객 특정 요구사항(CSR) 언급 없음", f"{qms['main_customer']} CSR 반영")
+
+    # (13) LOT 추적성
+    lt = qms["lot_traceability"]
+    if lt["keyword"] in text:
+        need = qms["lot_traceability_retention"], qms["lot_trace_target_time"]
+        if need[0] not in text:
+            add("내용보완", f"LOT 추적 기록 보존기간 {need[0]} 미명시", f"보존기간 {need[0]} 명시")
+        if need[1] not in text:
+            add("내용보완", f"LOT 추적 목표시간 {need[1]} 미명시", f"목표시간 {need[1]} 명시")
+
+    # (14) 페이지 번호와 목차
+    page, toc = page_toc_flags(p, text)
+    if typ in qms["page_number_required_for"] and not page:
+        add("내용보완", "페이지 번호 없음", "머리글/바닥글에 Page X of Y 삽입")
+    if typ in qms["toc_required_for"] and not toc:
+        add("내용보완", "목차 없음", "목차 삽입")
+
+    # (15) 중복 문서
+    if docno and rev is not None:
+        dup = duplicates(num["doc_pattern"], p, docno, rev)
+        if dup:
+            add("내용보완", f"동일 문서번호/Rev 중복 문서: {', '.join(dup)}", "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)")
+    return docno, issues, approved
+
+
+# ---------------- 라우팅 ----------------
+def write_candidate(p: Path, docno, issues):
+    """수정후보: 원본을 건드리지 않고 03_EDIT/수정중 에 새 파일 생성. 확정되지 않은 값은 임의 생성 금지."""
+    ts = dt.datetime.now().strftime("%Y%m%d%H%M%S")
+    out = D["edit"] / "수정중" / f"{p.stem}_수정후보_{ts}.md"
+    lines = [f"# 수정후보: {p.name}", f"- 생성: {now()}", f"- 원본: {p} (변경 없음)",
+             f"- 주의: '{UNCONFIRMED}' 표시는 담당자 확정 전에는 임의 값을 넣지 않음", "", "| # | 분류 | 문제 | 수정 제안 |", "|---|---|---|---|"]
+    for i, (c, m, f) in enumerate(issues, 1):
+        lines.append(f"| {i} | {c} | {m} | {f or '-'} |")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    rv = (re.search(cfg("document_number_rules.yaml")["revision_pattern"], p.name) or [None, ""])[1]
+    log("revision_history.csv", [dt.date.today(), docno or p.stem, rv, "", f"수정후보 생성(미확정, {len(issues)}건): {out.name}", "system", ""])
+    return out
+
+def route(p: Path, typ: str):
+    """검토 후 02_REVIEW 또는 04_APPROVAL/승인대기 로 '복사'. 반환: 통과 여부"""
+    docno, issues, approved = validate(p, typ)
+    name = docno or p.stem
+    if issues:
+        cats = {c for c, _, _ in issues}
+        folder = next((ERR_DIR[c] for c in ERR_DIR if c in cats), DEFAULT_ERR_DIR)
+        rep = D["rev"] / "자동검토결과"; rep.mkdir(exist_ok=True)
+        (rep / f"{p.stem}_검토결과.json").write_text(json.dumps({
+            "file": p.name, "checked": now(), "sha256": sha(p),
+            "issues": [{"category": c, "message": m, "suggestion": f} for c, m, f in issues]},
+            ensure_ascii=False, indent=2), encoding="utf-8")
+        safe_copy(p, D["rev"] / folder)
+        cand = write_candidate(p, docno, issues)
+        for c, m, _ in issues:
+            log("error_log.csv", [now(), name, c, m, "OPEN"])
+        log("workflow_log.csv", [now(), name, "", p.parent.name, f"02_REVIEW/{folder}", "system", f"{len(issues)}건 문제, 수정후보 {cand.name}"])
+        print(f"[REVIEW ] {p.name}: {len(issues)}건 → 02_REVIEW/{folder} (수정후보: 03_EDIT/수정중/{cand.name})")
+    else:
+        safe_copy(p, D["appr"] / "승인대기")
+        log("workflow_log.csv", [now(), name, "", p.parent.name, "04_APPROVAL/승인대기", "system",
+                                 "검사통과 (문서상태 승인완료 표기됨)" if approved else "검사통과 (승인 전: 배포 불가)"])
+        print(f"[PASS   ] {p.name} → 04_APPROVAL/승인대기")
+    mark_processed(sha(p))
+    return not issues
+
 def classify():
-    rules = cfg("qms_rules.yaml")["classify"]
-    moved = []
-    for p in list(D["orig"].iterdir()):
+    rules, done = cfg("qms_rules.yaml")["classify"], processed()
+    for p in sorted(D["orig"].iterdir()):
         if not p.is_file() or p.name == ".gitkeep":
             continue
         typ = rules.get(prefix_of(p.name))
         if not typ:
-            log("error_log.csv", [now(), p.name, "분류불가", "파일명 접두어 미등록", "OPEN"])
-            dest = D["rev"] / DEFAULT_ERR_DIR; dest.mkdir(exist_ok=True)
-            shutil.move(str(p), dest / p.name)
+            if sha(p) not in done:
+                log("error_log.csv", [now(), p.name, "분류불가", "파일명 접두어 미등록", "OPEN"])
+                safe_copy(p, D["rev"] / DEFAULT_ERR_DIR)
+                mark_processed(sha(p))
+                print(f"[REVIEW ] {p.name}: 분류 불가 → 02_REVIEW/{DEFAULT_ERR_DIR} (원본은 01_ORIGINAL 에 유지)")
             continue
-        (D["orig"] / typ).mkdir(exist_ok=True)
-        shutil.move(str(p), D["orig"] / typ / p.name)
+        dest = D["orig"] / typ
+        dest.mkdir(exist_ok=True)
+        if (dest / p.name).exists():   # 덮어쓰기 금지
+            print(f"[SKIP   ] {p.name}: 01_ORIGINAL/{typ} 에 같은 이름 존재 → 덮어쓰지 않음")
+            continue
+        shutil.move(str(p), dest / p.name)   # 같은 01_ORIGINAL 내 정리 이동
         log("workflow_log.csv", [now(), p.name, "", "투입", f"01_ORIGINAL/{typ}", "system", "자동분류"])
-        moved.append(D["orig"] / typ / p.name)
-    return moved
-
-# ---------------- 2) 검사 ----------------
-def validate(p: Path, typ: str):
-    """반환: list[(카테고리, 메시지)]"""
-    qms, num, cust = cfg("qms_rules.yaml"), cfg("document_number_rules.yaml"), cfg("customer_rules.yaml")
-    text = extract_text(p)
-    issues = []
-    # 문서번호
-    m = re.search(num["doc_pattern"], p.name)
-    docno = m.group(0) if m else None
-    if not docno:
-        issues.append(("문서번호", "파일명에서 문서번호를 찾을 수 없음"))
-    else:
-        pat = num["by_type"].get(typ)
-        if pat and not re.match(pat, docno):
-            issues.append(("문서번호", f"{docno} 가 {typ} 문서번호 규칙({pat})에 맞지 않음"))
-        if text and docno not in text:
-            issues.append(("문서번호", f"본문(머리글 포함)에 문서번호 {docno} 가 없음"))
-    # Rev
-    fm = re.search(num["revision_pattern"], p.name)
-    if not fm:
-        issues.append(("개정번호", "파일명에 Rev 표기 없음 (예: _Rev.01)"))
-    elif text:
-        body = set(re.findall(num["revision_pattern"], text))
-        if not body:
-            issues.append(("개정번호", "본문에 Rev 표기 없음"))
-        elif fm.group(1) not in body:
-            issues.append(("개정번호", f"파일명 Rev.{fm.group(1)} 와 본문 Rev.{sorted(body)} 불일치"))
-    if not text:
-        issues.append(("내용보완", "본문 텍스트 추출 불가(PDF/미지원 형식) - 본문 검사 생략, 수동 확인 필요"))
-        return docno, issues
-    # 회사명/고객사
-    if not any(n in text for n in qms["company"]["names"]):
-        issues.append(("내용보완", f"회사명({', '.join(qms['company']['names'])}) 미표기"))
-    allowed = set(cust.get("customers") or [])
-    for c in re.findall(cust["customer_marker"], text):
-        if c not in allowed:
-            issues.append(("내용보완", f"등록되지 않은 고객사 '{c}' (customer_rules.yaml)"))
-    # QP-WI-FM 상호참조
-    reg = registry(num["doc_pattern"])
-    for ref in sorted({norm(x) for x in re.findall(num["doc_pattern"], text)} - {norm(docno)}):
-        if ref not in reg:
-            issues.append(("상호참조", f"참조 문서 {ref} 가 시스템에 존재하지 않음"))
-    # 필수 항목 + ISO/IATF
-    for s in qms["required_sections"].get(typ, []):
-        if s not in text:
-            issues.append(("내용보완", f"필수 항목 '{s}' 누락"))
-    for chk in qms["standards_check"].get(typ, []):
-        if chk.get("applies_to_prefix") and docno and not docno.startswith(chk["applies_to_prefix"]):
-            continue
-        if not any(k in text for k in chk["any_of"]):
-            issues.append(("내용보완", f"{chk['clause']}: {'/'.join(chk['any_of'])} 중 하나 필요"))
-    # 보존기간
-    r = qms["retention"]
-    if typ in r["required_for"]:
-        mm = re.search(r"보존기간\s*[:：]?\s*(\S+)", text)
-        if not mm:
-            issues.append(("내용보완", "보존기간 미표기"))
-        elif not any(mm.group(1).startswith(a) for a in r["allowed"]):
-            issues.append(("내용보완", f"보존기간 '{mm.group(1)}' 허용값 아님 {r['allowed']}"))
-    # 결재/승인
-    missing = [l for l in qms["approval_labels"] if l not in text]
-    if missing:
-        issues.append(("내용보완", f"결재란 항목 누락: {', '.join(missing)}"))
-    return docno, issues
-
-def route(p: Path, typ: str):
-    docno, issues = validate(p, typ)
-    name = docno or p.stem
-    if issues:
-        cats = {c for c, _ in issues}
-        folder = next((ERR_DIR[c] for c in ERR_DIR if c in cats), DEFAULT_ERR_DIR)
-        report = D["rev"] / "자동검토결과" / f"{p.stem}_검토결과.json"
-        report.write_text(json.dumps({"file": p.name, "checked": now(),
-            "issues": [{"category": c, "message": m} for c, m in issues]}, ensure_ascii=False, indent=2), encoding="utf-8")
-        dest = D["rev"] / folder
-        shutil.copy2(p, dest / p.name)
-        for c, m in issues:
-            log("error_log.csv", [now(), name, c, m, "OPEN"])
-        log("workflow_log.csv", [now(), name, "", p.parent.name, f"02_REVIEW/{folder}", "system", f"{len(issues)}건 문제"])
-        print(f"[REVIEW ] {p.name}: {len(issues)}건 → 02_REVIEW/{folder}")
-    else:
-        dest = D["appr"] / "승인대기"
-        shutil.copy2(p, dest / p.name)
-        log("workflow_log.csv", [now(), name, "", p.parent.name, "04_APPROVAL/승인대기", "system", "검사통과"])
-        print(f"[PASS   ] {p.name} → 04_APPROVAL/승인대기")
-    return not issues
 
 def run():
     classify()
+    done = processed()
     for typ_dir in sorted(d for d in D["orig"].iterdir() if d.is_dir()):
-        typ = typ_dir.name
         for p in sorted(typ_dir.iterdir()):
-            if p.is_file() and p.name != ".gitkeep" and p.suffix.lower() in (TEXT_EXT | {".pdf"}):
-                done = D["appr"] / "승인대기" / p.name
-                rev = list((D["rev"]).glob(f"*/{p.name}"))
-                if done.exists() or rev:   # 이미 처리됨
-                    continue
-                route(p, typ)
+            if p.is_file() and p.name != ".gitkeep" and p.suffix.lower() in (TEXT_EXT | {".pdf"}) and sha(p) not in done:
+                route(p, typ_dir.name)
 
 def recheck():
-    """03_EDIT/수정완료 → 재검증 → 통과 시 04_APPROVAL, 실패 시 02_REVIEW 로 되돌림."""
+    """03_EDIT/수정완료 재검증 (파일은 지우지 않고 복사)."""
+    done = processed()
     for p in sorted((D["edit"] / "수정완료").iterdir()):
-        if not p.is_file() or p.name == ".gitkeep":
+        if not p.is_file() or p.name == ".gitkeep" or sha(p) in done:
             continue
-        typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name))
-        for old in D["rev"].glob(f"*/{p.name}"):   # 이전 검토본 정리
-            old.unlink()
-        if route(p, typ or ""):
-            shutil.move(str(p), D["hist"] / "이전버전" / f"{p.stem}_수정본_{dt.datetime.now():%Y%m%d%H%M%S}{p.suffix}")
-        else:
-            p.unlink()
+        typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
+        route(p, typ)
+
+def advance(name, src, dst, note):
+    s = D["appr"] / src / name
+    if not s.exists():
+        sys.exit(f"{s} 없음")
+    shutil.move(str(s), D["appr"] / dst / name)   # 04 내부 상태 이동(복사본)
+    log("workflow_log.csv", [now(), name, "", f"04_APPROVAL/{src}", f"04_APPROVAL/{dst}", "human", note])
+    print(f"{name}: {src} → {dst}")
 
 def gates():
-    """승인 게이트(AP) 충족 여부: 필요한 양식(FM)이 시스템에 있는지 확인."""
     reg = registry(cfg("document_number_rules.yaml")["doc_pattern"])
     for ap, g in cfg("gate_rules.yaml")["gate"].items():
         forms = g.get("forms") or [g.get("form")]
         miss = [f for f in forms if norm(f) not in reg]
         print(f"{ap} [{g['status']}] " + ("충족" if not miss else f"미비: {', '.join(miss)}"))
 
-def advance(name, src, dst, who_note):
-    s = D["appr"] / src / name
-    if not s.exists():
-        sys.exit(f"{s} 없음")
-    shutil.move(str(s), D["appr"] / dst / name)
-    log("workflow_log.csv", [now(), name, "", f"04_APPROVAL/{src}", f"04_APPROVAL/{dst}", "human", who_note])
-    print(f"{name}: {src} → {dst}")
 
 # ---------------- 최종 처리 ----------------
 def to_pdf(src: Path, outdir: Path):
+    outdir.mkdir(parents=True, exist_ok=True)
     if src.suffix.lower() == ".pdf":
-        shutil.copy2(src, outdir / src.name); return outdir / src.name
+        return safe_copy(src, outdir)
     if not shutil.which("soffice"):
         print("  ! soffice 없음: PDF 변환 생략"); return None
+    out = outdir / (src.stem + ".pdf")
+    if out.exists():   # 덮어쓰기 금지
+        outdir = outdir / f"v{dt.datetime.now():%Y%m%d%H%M%S}"; outdir.mkdir()
+        out = outdir / (src.stem + ".pdf")
     r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", str(outdir), str(src)],
                        capture_output=True, text=True, timeout=180)
-    out = outdir / (src.stem + ".pdf")
     if not out.exists():
         print("  ! PDF 변환 실패:", (r.stderr or r.stdout).strip()[-200:])
         return None
@@ -239,31 +414,51 @@ def finalize():
     for p in sorted((D["appr"] / "승인완료").iterdir()):
         if not p.is_file() or p.name == ".gitkeep":
             continue
-        docno = (re.search(num["doc_pattern"], p.name) or [p.stem])[0] if re.search(num["doc_pattern"], p.name) else p.stem
+        typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
+        h = sha(p)
+        if (D["log"] / "finalized_hashes.txt").exists() and h in (D["log"] / "finalized_hashes.txt").read_text().split():
+            continue
+        # FINAL 직전 재검증 (문서상태 승인완료 필수)
+        docno, issues, approved = validate(p, typ, final_stage=True)
+        if issues:
+            cats = {c for c, _, _ in issues}
+            tag = "문서번호 불일치로 FINAL 이동 금지" if "문서번호" in cats else "검토 이슈로 FINAL 이동 금지"
+            folder = next((ERR_DIR[c] for c in ERR_DIR if c in cats), DEFAULT_ERR_DIR)
+            safe_copy(p, D["rev"] / folder)
+            cand = write_candidate(p, docno, issues)
+            for c, m, _ in issues:
+                log("error_log.csv", [now(), docno or p.stem, c, m, "OPEN"])
+            log("workflow_log.csv", [now(), docno or p.stem, "", "04_APPROVAL/승인완료", f"02_REVIEW/{folder}", "system", tag])
+            print(f"[BLOCKED] {p.name}: {tag} ({len(issues)}건) → 02_REVIEW/{folder}")
+            continue
+        docno = docno or p.stem
         rev = (re.search(num["revision_pattern"], p.name) or [None, ""])[1]
         sub = "EXCEL" if p.suffix.lower() in (".xlsx", ".xls", ".csv") else "WORD"
-        # 같은 문서번호의 기존 최종본 → 06_HISTORY/이전버전
+        # 같은 문서번호의 기존 최종본 → 06_HISTORY/이전버전 (이동, 삭제 아님)
         old_rev = ""
-        for old in list((D["final"] / sub).glob(f"{docno}_*")) + list((D["final"] / sub).glob(f"{docno}.*")):
+        for old in [f for f in (D["final"] / sub).iterdir() if f.is_file() and f.name != ".gitkeep"
+                    and (re.search(num["doc_pattern"], f.name) or [None])[0] == (re.search(num["doc_pattern"], p.name) or [None])[0]
+                    and f.name != p.name]:
             om = re.search(num["revision_pattern"], old.name)
             old_rev = om.group(1) if om else ""
-            (D["hist"] / "이전버전" / docno).mkdir(parents=True, exist_ok=True)
-            shutil.move(str(old), D["hist"] / "이전버전" / docno / old.name)
+            obsolete_dir = D["hist"] / "이전버전" / docno   # 구버전은 삭제하지 않고 이동
+            obsolete_dir.mkdir(parents=True, exist_ok=True)
+            old.rename(obsolete_dir / f"{old.stem}__superseded{old.suffix}")
             for oldpdf in (D["final"] / "PDF").glob(f"{old.stem}.pdf"):
-                shutil.move(str(oldpdf), D["hist"] / "이전버전" / docno / oldpdf.name)
-        shutil.copy2(p, D["final"] / sub / p.name)
+                oldpdf.rename(obsolete_dir / f"{oldpdf.stem}__superseded.pdf")
+        safe_copy(p, D["final"] / sub)
         pdf = to_pdf(p, D["final"] / "PDF")
-        if pdf:
-            stamp = f"{dt.date.today():%Y%m%d}"
-            shutil.copy2(pdf, D["final"] / "배포본" / f"{pdf.stem}_배포본_{stamp}.pdf")
-        # 백업 (원본 그대로)
-        bdir = D["hist"] / "변경이력" / docno; bdir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(p, bdir / f"{dt.datetime.now():%Y%m%d%H%M%S}_{p.name}")
+        dist = None
+        if pdf and approved:   # 승인된 문서만 배포본
+            dist = safe_copy(pdf, D["final"] / "배포본", f"{pdf.stem}_배포본_{dt.date.today():%Y%m%d}.pdf")
+        safe_copy(p, D["hist"] / "변경이력" / docno, f"{dt.datetime.now():%Y%m%d%H%M%S}_{p.name}")
         log("revision_history.csv", [dt.date.today(), docno, old_rev, rev, "승인 후 최종 발행", "", "승인완료"])
         log("workflow_log.csv", [now(), docno, rev, "04_APPROVAL/승인완료", "05_FINAL", "system",
-                                 "PDF/배포본 생성" if pdf else "PDF 변환 실패"])
-        p.unlink()
-        print(f"[FINAL  ] {p.name} → 05_FINAL/{sub}, PDF{'+배포본' if pdf else ' 없음'}, 06_HISTORY 백업")
+                                 "PDF/배포본 생성" if dist else "PDF 변환 실패(배포본 없음)"])
+        with open(D["log"] / "finalized_hashes.txt", "a") as f:
+            f.write(h + "\n")
+        print(f"[FINAL  ] {p.name} → 05_FINAL/{sub}, PDF{'+배포본' if dist else ' 없음'}, 06_HISTORY 백업")
+
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
@@ -271,6 +466,6 @@ if __name__ == "__main__":
     elif cmd == "recheck": recheck()
     elif cmd == "approve" and len(sys.argv) > 2: advance(sys.argv[2], "승인대기", "검토완료", "검토 완료")
     elif cmd == "sign" and len(sys.argv) > 2: advance(sys.argv[2], "검토완료", "승인완료", "승인")
-    elif cmd == "finalize": finalize()
     elif cmd == "gates": gates()
+    elif cmd == "finalize": finalize()
     else: print(__doc__)
