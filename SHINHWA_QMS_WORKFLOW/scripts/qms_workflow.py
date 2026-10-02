@@ -1264,6 +1264,9 @@ def integrity_check(write_report=True):
 def release_record(p: Path, docno, rev, pdf, dist, gate_rows):
     """05_FINAL/RELEASED/<문서번호>/Rev<NN>/ 에 릴리스본(문서·PDF·배포본)과 MANIFEST.json 저장, 이전 Rev 는 06_HISTORY 로 이동."""
     tag = f"Rev{rev}" if rev != "" else "RevNA"
+    m_ = re.search(cfg("document_number_rules.yaml")["doc_pattern"], p.name)
+    if docno == p.stem and m_:   # 번호 범위 워크북: 파일명 전체 대신 문서번호(범위)를 릴리스 폴더명으로
+        docno = m_.group(0)
     base = RELEASED / docno
     rel, n = base / tag, 2
     while rel.exists():
@@ -1282,6 +1285,13 @@ def release_record(p: Path, docno, rev, pdf, dist, gate_rows):
         "document_no": docno, "revision": tag, "released_at": now(), "source": str(p.relative_to(ROOT)),
         "gates": [{"gate": a, "result": b, "note": c} for a, b, c in gate_rows], "files": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
     moved = []
+    for legacy in sorted(RELEASED.iterdir()):   # 예전 이름(파일명 전체)으로 만든 같은 문서의 릴리스 폴더도 이전 Rev 로 취급
+        if legacy.is_dir() and legacy != base and (re.search(cfg("document_number_rules.yaml")["doc_pattern"], legacy.name) or [None])[0] == docno:
+            dest = unique_path(D["hist"] / "이전버전" / docno / f"RELEASED_{legacy.name}")
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            rollback_backup(legacy)
+            shutil.move(str(legacy), dest)
+            moved.append(f"{legacy.name} → 06_HISTORY/이전버전/{docno}/{dest.name}")
     for old in sorted(base.iterdir()):   # 이전 Rev → 06_HISTORY (이동, 삭제 아님)
         if old.is_dir() and old != rel:
             dest = unique_path(D["hist"] / "이전버전" / docno / f"RELEASED_{old.name}")
