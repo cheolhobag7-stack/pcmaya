@@ -3,7 +3,7 @@
 ## 0. 이어서 작업하는 법 (새 세션 시작 시 먼저 읽기)
 상태는 모두 파일로 남아 있다(`SHINHWA_QMS_WORKFLOW/` 하위 폴더와 `99_LOG`). 대화 기억에 의존하지 말고 아래 순서로 현재 상태를 읽는다.
 
-1. 환경: `cd SHINHWA_QMS_WORKFLOW && pip install -r requirements.txt` (PyYAML, pypdf. PDF 변환은 LibreOffice 필요)
+1. 환경: `cd SHINHWA_QMS_WORKFLOW && pip install -r requirements.txt` (PyYAML, pypdf, openpyxl(fmregister 용). PDF 변환은 LibreOffice 필요)
 2. 현재 상태 확인:
    - `python3 scripts/qms_workflow.py scan` — 아직 검토하지 않은 신규 문서
    - `python3 scripts/qms_workflow.py status` — `04_APPROVAL` 문서별 FINAL 가능 여부
@@ -18,7 +18,7 @@
 6. 작업이 끝나면 커밋·푸시한다(브랜치 `claude/shinhwa-qms-workflow-54alyc`). 생성된 보고서와 로그도 함께 올린다.
 
 ### 현재 미결 사항 (처리하면 이 목록에서 지운다)
-- 현장작성양식(SH-FM-101~121): FM Master 에 21개 번호 등록, 제정일·승인 표기 필요 (담당자 작업) → 현재 `04_APPROVAL/승인대기`
+- 현장작성양식(SH-FM-101~121): FM Master 등록 완료(`01_ORIGINAL/MASTER_REF/SH_FM_Master_Rev00_20260929_수정본_FM101-121등록.xlsx`, 원본 Master 유지, `fmregister`). 남은 일: 양식 사용승인 후 제정일·승인 표기, 기록별 보존기간 확정, Master 의 문서상태·승인자 갱신(담당자) → 현재 `04_APPROVAL/승인대기`
 - SH-FM-122 현장양식목록 작성계획: 승인 표기·제정일 필요 → `04_APPROVAL/승인대기`
 - 공식양식 워크북(SH-FM-066~069 외 9종): `05_FINAL/RELEASED` 릴리스 완료. 단 PDF/배포본은 미생성(LibreOffice 가 되는 PC 에서 변환 필요)
 - 승인체크리스트의 작성자·승인자: 확정 전이라 `[확인 필요]`

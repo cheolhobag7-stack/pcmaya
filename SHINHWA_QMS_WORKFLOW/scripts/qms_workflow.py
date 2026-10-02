@@ -9,6 +9,7 @@
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
   python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
+  python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fullcycle  # 승인 직전까지 전체 사이클(감사→AUTO_DRAFT→재감사→Gate→패키지). 승인/배포는 사람이
   python3 scripts/qms_workflow.py fullaudit  # 전체 자동감사(신규 검색→점검→상호참조→대장→Release Gate)
   python3 scripts/qms_workflow.py releasegate # 종합 Release Gate(PASS/HOLD/FAIL) → 02_REVIEW/qms_release_gate.md
@@ -998,6 +999,10 @@ def gatecheck():
             if p.is_file() and p.name != ".gitkeep":
                 print_gate(p, sub)
 
+def is_finalized(p: Path):
+    f = D["log"] / "finalized_hashes.txt"
+    return f.exists() and sha(p) in f.read_text().split()
+
 def release_gate():
     """FINAL 배포 전 종합 Release Gate: 상호참조·대장 대조·문서별 Gate(G1~G8)를 모아 PASS/HOLD/FAIL 판정.
     FAIL 이 하나라도 있으면 배포 금지 / FAIL 없고 HOLD 만 있으면 승인·확인 후 재검사 / 모두 PASS 일 때만 배포 후보."""
@@ -1013,7 +1018,7 @@ def release_gate():
     gate_hold = ("G2", "G3", "G8")                            # 승인/확인 후 재검사(HOLD)
     for sub in ("승인대기", "검토완료", "승인완료"):
         for p in sorted((D["appr"] / sub).iterdir()):
-            if p.is_file() and p.name != ".gitkeep":
+            if p.is_file() and p.name != ".gitkeep" and not is_finalized(p):   # 이미 릴리스된 문서는 제외
                 for g, st, note in gate_check(p, sub):
                     if st == "FAIL":
                         (blockers if g[:2] in gate_fail_blocking else holds).append(f"Gate[{sub}]: {p.name} :: {g} {note}")
@@ -1033,6 +1038,72 @@ def fullaudit():
     scan()
     run()
     release_gate()
+
+def fm_master_register():
+    """양식 워크북(SH-FM-1xx 시트)의 번호 중 FM Master 에 없는 것을 FM Master 의 '새 파일'에 등록한다.
+    원본 Master 는 수정/덮어쓰지 않는다. 값은 FM-122(현장양식목록·작성계획·번호배정대조표)에 있는 것만 옮기고,
+    없는 값(보존기간·최종개정일·승인자 등)은 비워 둔다. 등록은 '승인'이 아니므로 승인상태는 '승인 전'으로 둔다."""
+    try:
+        from openpyxl import load_workbook
+        from copy import copy
+    except ImportError:
+        sys.exit("openpyxl 이 필요합니다: pip install openpyxl")
+    masters = [f for f in master_files("FM_Master") if "수정본" not in f.name]
+    plans = [q for q in D["orig"].rglob("SH-FM-122*.xlsx")]
+    forms = [q for q in D["orig"].rglob("*.xlsx") if MASTER not in q.parts and split_units(q) and "SH-FM-122" not in q.name]
+    if not masters or not plans:
+        sys.exit("FM Master 또는 SH-FM-122 계획 파일을 찾지 못함")
+    master, plan = sorted(masters)[0], plans[0]
+    have = fm_master_ids()
+    targets = sorted({norm(n) for f in forms for n, _ in split_units(f)} - {norm(x) for x in have})
+    targets = [f"SH-{t}" for t in targets]
+    if not targets:
+        print("[FM MASTER] 등록할 신규 번호가 없습니다 (이미 모두 등록됨)")
+        return
+    pw = load_workbook(plan, data_only=True)
+    info = {}
+    for r in pw["01_현장양식목록"].iter_rows(values_only=True):
+        if r and isinstance(r[1], str) and r[1] in targets:
+            info[r[1]] = {"name": r[2], "qp": r[3], "wi": r[4], "use": r[7], "src": r[8]}
+    for r in pw["02_작성계획"].iter_rows(values_only=True):
+        if r and isinstance(r[1], str) and r[1] in info:
+            info[r[1]].update({"dept": r[3], "keep": r[6], "sign": r[10]})
+    for r in pw["03_번호배정대조표"].iter_rows(values_only=True):
+        if r and isinstance(r[1], str) and r[1] in info:
+            info[r[1]].update({"assign": r[4], "rev": r[5], "state": r[6], "basis": r[7]})
+    missing = [t for t in targets if t not in info]
+    if missing:
+        print(f"[FM MASTER] 계획 파일(FM-122)에 정보가 없어 등록하지 않는 번호: {', '.join(missing)}")
+    wb = load_workbook(master)
+    ws = wb["01_FM_Master"]
+    row = 2
+    while ws.cell(row, 1).value:
+        row += 1
+    tmpl = row - 1
+    added = []
+    for t in targets:
+        if t not in info:
+            continue
+        i = info[t]
+        vals = [t, i["name"], i.get("use"), i.get("qp"), i.get("rev") or "Rev.00", "신규 배정", f"승인 전 ({i.get('state') or '양식 등록·승인 필요'})",
+                f"{i.get('assign') or '신규 번호 배정'} — {plan.name} 03_번호배정대조표", f"{plan.name} / {forms[0].name}",
+                (f"{i['dept']}(안)" if i.get("dept") else None), None, None, None,
+                f"신규 번호. 연계 WI: {i.get('wi') or '-'} / 결재 방식(안): {i.get('sign') or '-'}",
+                "양식 사용승인 후 문서상태·승인자 갱신, 기록별 보존기간 확정"]
+        for c, v in enumerate(vals, 1):
+            cell = ws.cell(row, c, v)
+            cell._style = copy(ws.cell(tmpl, c)._style)
+        added.append(t)
+        row += 1
+    out_name = f"{master.stem}_수정본_FM{added[0][-3:]}-{added[-1][-3:]}등록.xlsx"
+    out = unique_path(master.parent / out_name)
+    wb.save(out)
+    mfn = lambda f: f"{f.stem}"
+    log("revision_history.csv", [dt.date.today(), "SH_FM_Master", "00", "00", f"FM Master 신규 번호 {len(added)}건 등록({added[0]}~{added[-1]}) 새 파일: {out.name}", "system", ""])
+    log("workflow_log.csv", [now(), master.name, "", "FM Master", f"01_ORIGINAL/MASTER_REF/{out.name}", "system", f"신규 FM {len(added)}건 등록(원본 유지)"])
+    make_diff(master, out)
+    print(f"[FM MASTER] {len(added)}건 등록 ({added[0]}~{added[-1]}) → {out.relative_to(ROOT)}  (원본 {master.name} 은 변경하지 않음)")
+    return out
 
 def fullcycle():
     """전체 사이클(승인 직전까지): 신규 검색 → 점검(+AUTO_DRAFT) → 수정완료분 재감사(+DIFF) → Release Gate → 승인 패키지.
@@ -1346,6 +1417,7 @@ if __name__ == "__main__":
     elif cmd == "releasegate": release_gate()
     elif cmd == "fullaudit": fullaudit()
     elif cmd == "fullcycle": fullcycle()
+    elif cmd == "fmregister": fm_master_register()
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()
     elif cmd == "finalize": finalize()
