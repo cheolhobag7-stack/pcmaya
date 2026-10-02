@@ -7,6 +7,8 @@
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
   python3 scripts/qms_workflow.py approve F  # (사람) 승인대기 → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
+  python3 scripts/qms_workflow.py ledger     # 문서관리대장 ↔ 실제 파일 대조 → 02_REVIEW/qms_ledger_check.md
+  python3 scripts/qms_workflow.py gatecheck  # 04_APPROVAL 문서의 FINAL 배포 전 Gate(G1~G8) 표
   python3 scripts/qms_workflow.py crosscheck # QM/QP/WI/FM 상호참조 종합 점검 → 02_REVIEW/qms_crosscheck_summary.md
   python3 scripts/qms_workflow.py scan       # 신규 문서 검색
   python3 scripts/qms_workflow.py status     # 04_APPROVAL 문서별 FINAL 가능 여부
@@ -21,7 +23,7 @@
   - 승인(문서상태=승인완료 + 사람의 sign) 전 문서는 배포본을 만들지 않는다.
   - 폐기 문서 참조는 오류. 확정되지 않은 값은 임의로 만들지 않고 '[확인 필요]'로 표시한다.
 """
-import csv, hashlib, json, re, shutil, subprocess, sys, zipfile, datetime as dt
+import collections, csv, hashlib, html, json, re, shutil, subprocess, sys, zipfile, datetime as dt
 from pathlib import Path
 import yaml
 
@@ -88,17 +90,19 @@ def extract_text(p: Path) -> str:
                 names = [n for n in z.namelist() if re.match(r"word/(document|header\d*|footer\d*)\.xml", n)]
                 xml = " ".join(z.read(n).decode("utf8", "ignore") for n in names)
             xml = re.sub(r"</w:p>", "\n", xml)
-            return re.sub(r"<[^>]+>", "", xml)
+            return html.unescape(re.sub(r"<[^>]+>", "", xml))
         if ext == ".xlsx":
             with zipfile.ZipFile(p) as z:
                 parts = [n for n in z.namelist() if n.startswith("xl/sharedStrings") or re.match(r"xl/worksheets/.*\.xml", n)]
                 xml = " ".join(z.read(n).decode("utf8", "ignore") for n in parts)
-            return re.sub(r"<[^>]+>", " ", xml)
+            return html.unescape(re.sub(r"<[^>]+>", " ", xml))
         if ext in {".txt", ".md", ".csv"}:
             return p.read_text(encoding="utf-8", errors="ignore")
+        if ext == ".pdf":
+            return pdf_text(p)
     except Exception:
         return ""
-    return ""   # pdf 등: 본문 검사 불가
+    return ""
 
 def unique_path(path: Path) -> Path:
     """기존 파일을 덮어쓰지 않도록 _vN 경로 반환."""
@@ -181,6 +185,18 @@ def expected_range(name):
         for n in range(int(a), int(b or a) + 1):
             out.add(f"{pre}{n:0{len(a)}d}")
     return out
+
+def pdf_text(p: Path) -> str:
+    """PDF 본문: pdftotext(poppler) 우선, 없으면 pypdf(선택 설치). 스캔본(이미지)은 빈 문자열."""
+    if shutil.which("pdftotext"):
+        r = subprocess.run(["pdftotext", "-layout", str(p), "-"], capture_output=True, timeout=120)
+        if r.returncode == 0:
+            return r.stdout.decode("utf-8", "ignore")
+    try:
+        from pypdf import PdfReader
+        return "\n\f".join((pg.extract_text() or "") for pg in PdfReader(str(p)).pages)
+    except Exception:
+        return ""
 
 def page_toc_flags(p: Path, text: str):
     """(페이지번호 있음, 목차 있음)"""
@@ -292,7 +308,7 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
             add("개정번호", f"파일명 Rev.{rev} 와 본문 Rev.{sorted(body)} 불일치", f"올바른 Rev 확정 필요 {UNCONFIRMED}")
 
     if not text:
-        add("내용보완", "본문 텍스트 추출 불가(PDF/미지원 형식) - 본문 검사 생략, 수동 확인 필요")
+        add("내용보완", "본문 텍스트 추출 불가(스캔 PDF/미지원 형식) - 본문 검사 생략, 수동 확인 필요")
         return docno, issues, False
 
     # (2) 회사명
@@ -461,6 +477,20 @@ def write_candidate(p: Path, docno, issues):
     log("revision_history.csv", [dt.date.today(), docno or p.stem, rv, "", f"수정후보 생성(미확정, {len(issues)}건): {out.name}", "system", ""])
     return out
 
+def approval_state(text: str) -> str:
+    """승인상태 자동판정: ACTIVE / APPROVED / DRAFT(승인 전) / UNKNOWN."""
+    qms = cfg("qms_rules.yaml")
+    st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
+    if st:
+        v = st.group(1)
+        return "APPROVED" if v in ("승인완료", "APPROVED") else ("ACTIVE" if v == "ACTIVE" else f"DRAFT({v})")
+    mk = re.search(qms["document_status"]["header_marker"], text[:600])
+    if mk:
+        return "ACTIVE" if mk.group(0) == "ACTIVE" else "APPROVED"
+    if re.search(r"사용승인 전|승인 전|작성중|DRAFT", text[:1500]):
+        return "DRAFT(승인 전)"
+    return "UNKNOWN"
+
 def check(p: Path, typ: str, final_stage=False):
     """워크북이면 양식(시트)별로 쪼개 검토. 반환 (docno, issues, approved, units)
     units = [(unit_docno, unit_issues, unit_approved, unit_text)] (분할 검토가 아니면 빈 리스트)."""
@@ -509,7 +539,7 @@ def summary_table(p: Path, docno, issues, approved, stage="검토", text=None, l
     else:
         rows.append(("LOT 추적 목표", "N/A", "LOT 추적 언급 없음"))
     st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
-    rows.append(("승인상태", "PASS" if approved else "HOLD", (st.group(1) if st else "") if approved else "승인 전"))
+    rows.append(("승인상태", "PASS" if approved else "HOLD", approval_state(text) if approved else f"승인 전 ({approval_state(text)})"))
     ph = hit(kw=["삭제 지시"])
     hold_msgs = hit("확인필요")
     row("삭제 지시 문구", ph, bad_note="; ".join(ph)[:80])
@@ -659,6 +689,137 @@ def crosscheck():
     cnt = {k: sum(r[2] == k for r in rows) for k in ("PASS", "HOLD", "FAIL")}
     print(f"[CROSSCHECK] PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']} → {out.relative_to(ROOT)}")
 
+LEDGER_RX = re.compile(r"^(\d+)\s+(QM|QP|WI|FM)\s+(SH-(?:QM|QP|WI|FM)-\d{3})\s+(.+?)\s+(Rev\.\d{2})\s+(\d{5})\s+(\d{5})")
+
+def master_files(keyword):
+    return [q for q in (D["orig"] / MASTER).glob("*") if q.is_file() and keyword in q.name]
+
+def ledger_entries():
+    """문서관리대장(01_문서관리대장 시트) → [(번호, 구분, 문서번호, 문서명, Rev)]. 대장이 없으면 빈 리스트."""
+    out = []
+    for f in master_files("문서관리대장"):
+        sheet = next((t for n, t in xlsx_sheets(f).items() if n.startswith("01_")), "")
+        for line in sheet.splitlines():
+            m = LEDGER_RX.match(line.strip())
+            if m:
+                out.append((m[1], m[2], m[3], m[4].strip(), m[5]))
+    return out
+
+def controlled_ids():
+    """대장 등재 번호 + FM Master 등재 번호 (정식 관리 대상)."""
+    ids = {norm(e[2]) for e in ledger_entries()}
+    for f in master_files("FM_Master"):
+        ids |= {norm(x) for x in re.findall(cfg("document_number_rules.yaml")["doc_pattern"], extract_text(f))}
+    return ids
+
+def ledger_check():
+    """문서관리대장 ↔ 실제 파일/통합문서 대조 → 02_REVIEW/qms_ledger_check.md"""
+    num = cfg("document_number_rules.yaml")
+    ents = ledger_entries()
+    if not ents:
+        print("[LEDGER] 문서관리대장(MASTER_REF)을 찾지 못함"); return
+    lines = ["# 문서관리대장 ↔ 실제 파일 대조", f"- 생성: {now()}", f"- 대장 등재 {len(ents)}건", ""]
+    # 실제 문서 원천: 개별 파일(파일명 번호) + 통합문서 본문
+    src_text, src_rev = {}, {}
+    for f in master_files("통합문서"):
+        src_text[f.name] = extract_text(f)
+        r = re.search(num["revision_pattern"], f.name)
+        src_rev[f.name] = f"Rev.{r.group(1)}" if r else None
+    indiv = {}
+    for q in stage_files(("orig", "edit", "appr", "final")):
+        if MASTER in q.parts or q.suffix.lower() not in (TEXT_EXT | {".pdf"}):
+            continue
+        m = re.search(num["doc_pattern"], q.name)
+        r = re.search(num["revision_pattern"], q.name)
+        if m:
+            indiv.setdefault(norm(m.group(0)), set()).add(f"Rev.{r.group(1)}" if r else None)
+    rows, dup = [], [k for k, v in collections.Counter(e[2] for e in ents).items() if v > 1]
+    for no, kind, doc, name, rev in ents:
+        found = [f for f, t in src_text.items() if doc in t]
+        status, note = "PASS", ""
+        if norm(doc) in indiv:
+            revs = indiv[norm(doc)]
+            status, note = ("PASS", "개별 파일") if rev in revs else ("FAIL", f"Rev 불일치: 대장 {rev} / 파일 {sorted(str(x) for x in revs)}")
+        elif found:
+            f = found[0]
+            if name not in src_text[f]:
+                status, note = "HOLD", f"문서명 불일치: 대장 '{name}' 가 {f} 에서 확인되지 않음"
+            elif src_rev[f] and src_rev[f] != rev:
+                status, note = "FAIL", f"Rev 불일치: 대장 {rev} / {f} {src_rev[f]}"
+            else:
+                note = f"{f} 에서 확인"
+        else:
+            status, note = "FAIL", "실제 파일/통합문서에서 찾을 수 없음"
+        if doc in dup:
+            status, note = "FAIL", note + " / 대장 중복 등재"
+        rows.append((doc, kind, name, rev, status, note))
+    cnt = collections.Counter(r[4] for r in rows)
+    lines += [f"## 결과: PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']}", "",
+              "| 문서번호 | 구분 | 문서명 | Rev | 판정 | 비고 |", "|---|---|---|---|---|---|"]
+    lines += [f"| {d} | {k} | {n} | {r} | {s_} | {nt or '-'} |" for d, k, n, r, s_, nt in rows if s_ != "PASS"] or ["| (이상 없음) | | | | | |"]
+    ledger_ids = {e[2] for e in ents}
+    extra_doc = sorted(({x for t in src_text.values() for x in re.findall(r"SH-(?:QM|QP|WI)-\d{3}", t)}) - ledger_ids)
+    fm_master = set()
+    for f in master_files("FM_Master"):
+        fm_master |= set(re.findall(r"SH-FM-\d{3}", extract_text(f)))
+    fm_used = {x for t in src_text.values() for x in re.findall(r"SH-FM-\d{3}", t)}
+    fm_used |= {f"SH-{x}" for x in indiv if re.fullmatch(r"FM-\d{3}", x)}
+    for q in stage_files(("orig", "edit", "appr", "final")):
+        if MASTER not in q.parts:
+            fm_used |= {f"SH-{norm(n)}" for n, _ in split_units(q)}
+    lines += ["", "## 대장에 없는 QM/QP/WI 번호 (통합문서에서 발견)", ", ".join(extra_doc) or "- 없음",
+              "", "## FM Master 에 없는 FM 번호 (통합문서/양식 파일에서 발견)",
+              ", ".join(sorted(fm_used - fm_master)) or "- 없음"]
+    out = unique_path(D["rev"] / "qms_ledger_check.md")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"[LEDGER] PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']}  | 대장 외 QM/QP/WI {len(extra_doc)}건 | FM Master 외 FM {len(fm_used - fm_master)}건 → {out.relative_to(ROOT)}")
+
+def gate_check(p: Path, folder=""):
+    """FINAL 자동 배포 전 Gate. 반환 [(게이트, PASS/FAIL/N/A, 비고)]"""
+    typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
+    num = cfg("document_number_rules.yaml")
+    docno, issues, approved, units = check(p, typ, final_stage=True)
+    msgs = lambda *kw: [m for _, m, _ in issues if any(k in m for k in kw)]
+    ids = [norm(u[0]) for u in units] or [norm(docno)]
+    g = []
+    d = [m for c, m, _ in issues if c == "문서번호"]
+    g.append(("G1 문서번호 일치", "FAIL" if d else "PASS", "; ".join(d)[:90] or "-"))
+    g.append(("G2 승인상태 자동판정", "PASS" if approved else "FAIL", approval_state(extract_text(p)) if not units else ("전 양식 승인 표기" if approved else "승인 표기 없는 양식 있음")))
+    other = [m for c, m, _ in issues if c != "문서번호" and "문서상태가 승인완료가 아님" not in m]
+    g.append(("G3 검토 이슈 없음", "FAIL" if other else "PASS", f"{len(other)}건" if other else "-"))
+    ctl = controlled_ids()
+    if ctl:
+        miss = [i for i in ids if i not in ctl]
+        g.append(("G4 문서관리대장/FM Master 등재", "FAIL" if miss else "PASS", ", ".join(miss)[:90] or "-"))
+    else:
+        g.append(("G4 문서관리대장/FM Master 등재", "N/A", "대장 없음"))
+    ledger_dup = [k for k, v in collections.Counter(norm(e[2]) for e in ledger_entries()).items() if v > 1 and k in ids]
+    dups = duplicates(num["doc_pattern"], p, docno, (re.search(num["revision_pattern"], p.name) or [None, None])[1]) if docno and not units else []
+    g.append(("G5 중복 Rev/문서 없음", "FAIL" if dups or ledger_dup else "PASS", ", ".join(dups + ledger_dup)[:90] or "-"))
+    ph = msgs("폐기/참조금지", "삭제 지시")
+    g.append(("G6 폐기·참조금지·삭제지시 없음", "FAIL" if ph else "PASS", "; ".join(ph)[:90] or "-"))
+    hits = [ap for ap, gt in cfg("gate_rules.yaml")["gate"].items() if {norm(f) for f in (gt.get("forms") or [gt.get("form")])} & set(ids)]
+    bad = [ap for ap in hits if cfg("gate_rules.yaml")["gate"][ap]["status"] != "APPROVED"]
+    g.append(("G7 AP 게이트(AP-01~04)", "N/A" if not hits else ("FAIL" if bad else "PASS"), ", ".join(hits) + (" 미승인: " + ", ".join(bad) if bad else "") if hits else "해당 없음"))
+    g.append(("G8 사람 승인 단계 완료", "PASS" if folder == "승인완료" else "FAIL", f"현재 {folder or '?'}"))
+    return g
+
+def print_gate(p: Path, folder):
+    g = gate_check(p, folder)
+    ok = all(x[1] != "FAIL" for x in g)
+    print(f"### {p.name} — FINAL Gate: {'PASS (배포 가능)' if ok else 'FAIL (배포 불가)'}\n\n| Gate | 결과 | 비고 |\n|---|---|---|")
+    for a, b, c in g:
+        print(f"| {a} | {b} | {c} |")
+    print()
+    return ok
+
+def gatecheck():
+    """04_APPROVAL 의 문서에 대해 FINAL 배포 전 Gate 표 출력."""
+    for sub in ("승인대기", "검토완료", "승인완료"):
+        for p in sorted((D["appr"] / sub).iterdir()):
+            if p.is_file() and p.name != ".gitkeep":
+                print_gate(p, sub)
+
 def scan():
     """1. 신규 문서 검색: 아직 검토되지 않은 파일 목록."""
     done, new = processed(), []
@@ -742,6 +903,10 @@ def finalize():
             log("workflow_log.csv", [now(), docno or p.stem, "", "04_APPROVAL/승인완료", f"02_REVIEW/{folder}", "system", tag])
             print(f"[BLOCKED] {p.name}: {tag} ({len(issues)}건) → 02_REVIEW/{folder}")
             continue
+        if not print_gate(p, "승인완료"):
+            log("workflow_log.csv", [now(), docno or p.stem, "", "04_APPROVAL/승인완료", "(보류)", "system", "FINAL Gate FAIL: 배포 불가"])
+            print(f"[BLOCKED] {p.name}: FINAL Gate FAIL → 05_FINAL 이동 안 함")
+            continue
         docno = docno or p.stem
         rev = (re.search(num["revision_pattern"], p.name) or [None, ""])[1]
         sub = "EXCEL" if p.suffix.lower() in (".xlsx", ".xls", ".csv") else "WORD"
@@ -780,6 +945,8 @@ if __name__ == "__main__":
     elif cmd == "gates": gates()
     elif cmd == "scan": scan()
     elif cmd == "crosscheck": crosscheck()
+    elif cmd == "ledger": ledger_check()
+    elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()
     elif cmd == "finalize": finalize()
     else: print(__doc__)
