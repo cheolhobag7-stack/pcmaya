@@ -42,3 +42,7 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-02,SQ___________260930_SH_정식번호반영,,,SQ 필요서류 FM번호(안) 240건 → 정식 SH-FM-123~SH-FM-362 배정(사용자 지시),system,
 2026-10-02,SH_FM_Master_Rev00_20260929_수정본_SQ번호배정,,,FM Master 에 SQ 신규 번호 240건 등록(SH-FM-123~SH-FM-362),system,
 2026-10-02,SH_FM_Master_Rev00_20260929_수정본_SQ번호배정,00,00,원본↔수정본 DIFF 생성 +268/-0: SH_FM_Master_Rev00_20260929_수정본_SQ번호배정__vs__SH_FM_Master_Rev00_20260929_수정본_FM101-121_Rev03반영.md,system,
+2026-10-02,SH-FM-144-159_SQ높음_양식초안_Rev00,00,,"SQ 높음 양식 초안 16종 생성(SH-FM-144~SH-FM-159, 초안·미승인)",system,
+2026-10-02,SH-FM-187-206_SQ높음_양식초안_Rev00,00,,"SQ 높음 양식 초안 20종 생성(SH-FM-187~SH-FM-206, 초안·미승인)",system,
+2026-10-02,SH-FM-144-159_SQ높음_양식초안_Rev00,00,,"SQ 높음 양식 초안 16종 생성(SH-FM-144~SH-FM-159, 초안·미승인)",system,
+2026-10-02,SH-FM-187-206_SQ높음_양식초안_Rev00,00,,"SQ 높음 양식 초안 20종 생성(SH-FM-187~SH-FM-206, 초안·미승인)",system,

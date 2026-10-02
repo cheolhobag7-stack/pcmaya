@@ -10,6 +10,7 @@
   python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
+  python3 scripts/qms_workflow.py sqdrafts [우선순위]  # SQ 필요서류 양식 초안(기본 '높음') → 03_EDIT/AUTO_DRAFT/SQ_*_초안/
   python3 scripts/qms_workflow.py sqnumber   # SQ안 FM번호 → 정식 SH-FM 번호 배정(대응표·SQ 사본·FM Master 새 파일)
   python3 scripts/qms_workflow.py sqaudit    # SQ mark 필요서류 리스트 ↔ 문서체계 대조 → 07_AUDIT/고객심사/
   python3 scripts/qms_workflow.py fullcycle  # 승인 직전까지 전체 사이클(감사→AUTO_DRAFT→재감사→Gate→패키지). 승인/배포는 사람이
@@ -1303,6 +1304,175 @@ def sq_number():
     make_diff(cur, outm)
     print(f"[SQ NUMBER] {len(mapping)}건 배정 {first}~{last} | 대응표 {mapf.relative_to(ROOT)} | SQ 사본 {outsq.name}(셀 {changed}곳 교체) | Master {outm.name}")
 
+SQ_NONDOC = ("설치", "제작", "보관대", "검사대", "컴퓨터", "KEY-LOCK", "장소선정")
+SQ_STD = ("기준서", "관리표준", "검사협정서", "관리기준", "검사기준", "작업조건표", "파괴검사기준")
+
+def sq_kind(name):
+    n = str(name or "")
+    if n.startswith("(") or any(k in n for k in SQ_NONDOC):
+        return "비문서"      # 설치·제작·장소선정 과제 또는 요구사항 메모 — 양식이 아님
+    if any(k in n for k in SQ_STD):
+        return "기준서"
+    return "기록양식"
+
+def sq_drafts(priority="높음", overwrite=False):
+    """SQ 필요서류 중 우선순위 해당 건의 양식 초안 → 03_EDIT/AUTO_DRAFT/SQ_<우선순위>_초안/
+    번호(정식 SH-FM-NNN)는 배정대응표를 따른다. 항목·기준값·결재 방식 등 확정되지 않은 내용은 비워 두고 '확정 필요'로 표시한다.
+    연속 번호 범위마다 워크북 1개(시트 = 양식 1개), 승인 전 '초안' 상태."""
+    from openpyxl import Workbook, load_workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    adir = ROOT / "07_AUDIT" / "고객심사"
+    mp = adir / "SQ_FM번호_배정대응표.csv"
+    if not mp.exists():
+        sys.exit("먼저 sqnumber 로 정식 번호를 배정하세요")
+    sqf = sorted(adir.glob("SQ*정식번호반영*.xlsx"), key=lambda f: f.stat().st_mtime)[-1]
+    ws0 = load_workbook(sqf, data_only=True)["전체_필요서류리스트"]
+    hdr = [c.value for c in ws0[4]]
+    ix = {h: i for i, h in enumerate(hdr)}
+    extra = {str(r[0]): r for r in ws0.iter_rows(min_row=5, values_only=True) if r[0]}
+    sel = [r for r in csv.DictReader(open(mp, encoding="utf-8-sig")) if extra[r["SQ NO"]][ix["우선순위"]] == priority]
+    sel.sort(key=lambda r: int(r["정식 SH-FM 번호"][-3:]))
+    if not sel:
+        sys.exit(f"우선순위 '{priority}' 항목이 없습니다")
+    out_dir = D["edit"] / "AUTO_DRAFT" / f"SQ_{priority}_초안"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    company = cfg("qms_rules.yaml")["company"]["name"]
+    thin = Side(style="thin", color="888888")
+    box = Border(left=thin, right=thin, top=thin, bottom=thin)
+    gray = PatternFill("solid", fgColor="E7E6E6")
+    ftxt = lambda b=False, sz=10: Font(name="맑은 고딕", bold=b, size=sz)
+    wrap = Alignment(wrap_text=True, vertical="center")
+    def put(ws, ref, val, bold=False, size=10, fill=None, border=False, merge=None, align=None):
+        c = ws[ref]
+        c.value, c.font, c.alignment = val, ftxt(bold, size), align or wrap
+        if fill: c.fill = fill
+        if merge: ws.merge_cells(merge)
+        if border:
+            rng = ws[merge or ref]
+            cells = [x for row in rng for x in row] if isinstance(rng, tuple) else [rng]
+            for cc in cells:
+                cc.border = box
+    def sheet(wb, r):
+        no, name = r["정식 SH-FM 번호"], r["필요서류(양식명)"].strip()
+        kind = sq_kind(name)
+        x = extra[r["SQ NO"]]
+        dept = r["담당부서"] if r["담당부서"] and "미정" not in r["담당부서"] else "(부서 미정 — 확정 필요)"
+        ws = wb.create_sheet(no)
+        for col, w in zip("ABCDEFGH", (13, 16, 26, 22, 16, 10, 12, 14)):
+            ws.column_dimensions[col].width = w
+        put(ws, "A1", name, True, 14, merge="A1:H1")
+        put(ws, "A2", f"{company} | 문서번호 {no} | Rev.00 | 문서상태: 초안(작성중)", merge="A2:H2")
+        put(ws, "A3", f"주관부서(안): {dept} | 연계: {r['연계 QP/WI'] or '확정 필요'} | 구분: {kind} | SQ {r['구분']} {r['번호']} | 목표 {r['목표완료월']}", merge="A3:H3")
+        req = str(x[ix["요구사항(세부 추진 항목)"]] or "").strip()
+        put(ws, "A4", f"SQ 요구사항(참고): {req or '-'}", merge="A4:H4")
+        ws.row_dimensions[4].height = 48
+        row = 6
+        if kind == "비문서":
+            put(ws, f"A{row}", "양식 아님 — 설치·제작·장소선정 과제(또는 요구사항 메모)입니다. 이 번호를 문서로 사용할지, 별도 실행 체크리스트로 관리할지 확정이 필요합니다.", True, merge=f"A{row}:H{row+2}")
+            row += 4
+        elif kind == "기준서":
+            for t in ("1. 목적", "2. 적용 범위", "3. 관리 항목 및 기준"):
+                put(ws, f"A{row}", t + ("  (내용은 담당부서 확정 필요)" if t[0] != "3" else ""), True, fill=gray, border=True, merge=f"A{row}:H{row}")
+                row += 1
+                if t[0] != "3":
+                    put(ws, f"A{row}", "", border=True, merge=f"A{row}:H{row+1}"); row += 2
+            for k, h in enumerate(("항목", "기준(값)", "확인 방법", "주기", "담당", "비고")):
+                pass
+            heads = (("A", "B", "항목"), ("C", "D", "기준(값)"), ("E", "F", "확인 방법"), ("G", "G", "주기"), ("H", "H", "담당"))
+            for a, b, h in heads:
+                put(ws, f"{a}{row}", h, True, fill=gray, border=True, merge=f"{a}{row}:{b}{row}" if a != b else None)
+            if True:
+                ws[f"A{row}"].border = box
+            row += 1
+            for _ in range(8):
+                for a, b, h in heads:
+                    put(ws, f"{a}{row}", "", border=True, merge=f"{a}{row}:{b}{row}" if a != b else None)
+                row += 1
+            for t in ("4. 이상 시 조치", "5. 관련 문서·기록"):
+                put(ws, f"A{row}", t, True, fill=gray, border=True, merge=f"A{row}:H{row}"); row += 1
+                put(ws, f"A{row}", (f"연계: {r['연계 QP/WI']}" if t[0] == "5" and r["연계 QP/WI"] else ""), border=True, merge=f"A{row}:H{row+1}"); row += 2
+            put(ws, f"A{row}", "개정이력", True, fill=gray, border=True, merge=f"A{row}:H{row}"); row += 1
+            for a, b, h in (("A", "A", "개정"), ("B", "B", "개정일"), ("C", "F", "개정 내용"), ("G", "G", "작성"), ("H", "H", "승인")):
+                put(ws, f"{a}{row}", h, True, fill=gray, border=True, merge=f"{a}{row}:{b}{row}" if a != b else None)
+            row += 1
+            for a, b, h in (("A", "A", "Rev.00"), ("B", "B", ""), ("C", "F", "초안"), ("G", "G", ""), ("H", "H", "")):
+                put(ws, f"{a}{row}", h, border=True, merge=f"{a}{row}:{b}{row}" if a != b else None)
+            row += 2
+        else:
+            put(ws, f"A{row}", "작성일:                         / 기록번호:                  작성자 성명:", merge=f"A{row}:H{row}"); row += 2
+            heads = ("일자", "품번 / LOT", "점검·검사 항목(확정 필요)", "기준", "결과(측정값)", "판정", "확인(서명)", "비고")
+            for k, h in enumerate(heads):
+                put(ws, f"{'ABCDEFGH'[k]}{row}", h, True, fill=gray, border=True)
+            row += 1
+            for _ in range(12):
+                for k in range(8):
+                    put(ws, f"{'ABCDEFGH'[k]}{row}", "", border=True)
+                row += 1
+            row += 1
+        if kind == "기록양식":
+            put(ws, f"A{row}", "종합결과 / 관련 증빙번호:", merge=f"A{row}:H{row}"); row += 2
+        # 결재란: 결재 방식(작성/검토/승인 여부)은 미확정 → 기본 3단 표기, 성명·서명·일자는 기록 시 기재
+        for k, h in enumerate(("작성", "검토", "승인")):
+            col = "ABC"[k] if False else ("A", "C", "F")[k]
+        put(ws, f"A{row}", "작성", True, fill=gray, border=True, merge=f"A{row}:B{row}")
+        put(ws, f"C{row}", "검토", True, fill=gray, border=True, merge=f"C{row}:E{row}")
+        put(ws, f"F{row}", "승인", True, fill=gray, border=True, merge=f"F{row}:H{row}")
+        row += 1
+        for lab in ("성명:", "서명:", "일자:", "직책 / 역할:"):
+            put(ws, f"A{row}", lab, border=True, merge=f"A{row}:B{row}")
+            put(ws, f"C{row}", lab, border=True, merge=f"C{row}:E{row}")
+            put(ws, f"F{row}", lab, border=True, merge=f"F{row}:H{row}")
+            row += 1
+        row += 1
+        put(ws, f"A{row}", f"보관위치(안): {dept} 기록철 | 보존기간: __________________", merge=f"A{row}:H{row}"); row += 1
+        put(ws, f"A{row}", f"{no} · Rev.00 | 초안 — 결재 방식·항목·기준은 담당부서 확정 후 개정", merge=f"A{row}:H{row}")
+        ws.page_setup.orientation, ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = "portrait", 1, 0
+        ws.sheet_properties.pageSetUpPr.fitToPage = True
+        return kind
+    # 연속 번호 구간별 워크북
+    runs, cur = [], [sel[0]]
+    for r in sel[1:]:
+        if int(r["정식 SH-FM 번호"][-3:]) == int(cur[-1]["정식 SH-FM 번호"][-3:]) + 1:
+            cur.append(r)
+        else:
+            runs.append(cur); cur = [r]
+    runs.append(cur)
+    made, listing = [], []
+    for grp in runs:
+        a, b = grp[0]["정식 SH-FM 번호"], grp[-1]["정식 SH-FM 번호"]
+        wb = Workbook()
+        idx = wb.active
+        idx.title = "00_안내및목록"
+        put(idx, "A1", f"SQ mark 심사 필요 양식 초안 {len(grp)}종 (우선순위 {priority})", True, 14, merge="A1:H1")
+        put(idx, "A2", f"{company} | {a}~{b} | Rev.00 | 초안(작성중) — 승인 전", merge="A2:H2")
+        put(idx, "A3", "항목·기준값·결재 방식·보존기간은 담당부서가 확정해야 하며, 이 초안은 자동으로 채우지 않았습니다. 확정 후 01_ORIGINAL 에 올려 검토·승인 흐름으로 진행합니다.", merge="A3:H3")
+        ws_h = ("번호", "양식명", "유형", "담당부서", "목표월", "연계 QP/WI", "플래그", "")
+        for k, h in enumerate(ws_h[:7]):
+            put(idx, f"{'ABCDEFG'[k]}5", h, True, fill=gray, border=True)
+        for col, w in zip("ABCDEFG", (13, 30, 10, 14, 10, 18, 40)):
+            idx.column_dimensions[col].width = w
+        for i, r in enumerate(grp):
+            kind = sheet(wb, r)
+            vals = (r["정식 SH-FM 번호"], r["필요서류(양식명)"], kind, r["담당부서"], r["목표완료월"], r["연계 QP/WI"], r["플래그(확정 필요)"][:80])
+            for k, v in enumerate(vals):
+                put(idx, f"{'ABCDEFG'[k]}{6+i}", v, border=True)
+            listing.append((r["정식 SH-FM 번호"], r["필요서류(양식명)"], kind, r["담당부서"], r["목표완료월"], r["플래그(확정 필요)"]))
+        fname = out_dir / f"{a}-{b[-3:]}_SQ{priority}_양식초안_Rev00.xlsx"
+        fname = fname if overwrite else unique_path(fname)   # overwrite 는 자동 생성 직후 정정용(사람이 고친 초안은 덮어쓰지 않음)
+        wb.save(fname)
+        made.append(fname)
+        log("revision_history.csv", [dt.date.today(), fname.stem, "00", "", f"SQ {priority} 양식 초안 {len(grp)}종 생성({a}~{b}, 초안·미승인)", "system", ""])
+        log("workflow_log.csv", [now(), fname.name, "", "SQ 필요서류", str(fname.relative_to(ROOT)), "system", f"양식 초안 {len(grp)}종 생성(AUTO_DRAFT)"])
+    kc = collections.Counter(x[2] for x in listing)
+    L = [f"# SQ 우선순위 '{priority}' 양식 초안", f"- 생성: {now()}", f"- 총 {len(listing)}건 — 기록양식 {kc['기록양식']} / 기준서 {kc['기준서']} / 비문서(설치·제작·장소선정·메모) {kc['비문서']}",
+         "- 항목·기준값·결재 방식·보존기간은 비워 두었습니다(담당부서 확정 필요).", "", "| 번호 | 양식명 | 유형 | 담당부서 | 목표월 | 플래그 |", "|---|---|---|---|---|---|"]
+    L += [f"| {a} | {b} | {c} | {d} | {e} | {f} |" for a, b, c, d, e, f in listing]
+    L += ["", "## 파일"] + [f"- {m.relative_to(ROOT)}" for m in made]
+    rp = (out_dir / "초안_목록.md") if overwrite else unique_path(out_dir / "초안_목록.md")
+    rp.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"[SQ DRAFTS] {len(listing)}건 (기록양식 {kc['기록양식']} / 기준서 {kc['기준서']} / 비문서 {kc['비문서']}) → {len(made)}개 워크북: " + ", ".join(m.name for m in made))
+    return made
+
 def fullcycle():
     """전체 사이클(승인 직전까지): 신규 검색 → 점검(+AUTO_DRAFT) → 수정완료분 재감사(+DIFF) → Release Gate → 승인 패키지.
     승인(approve/sign)과 FINAL 배포(finalize)는 사람이 실제 승인한 뒤 직접 실행한다."""
@@ -1627,6 +1797,7 @@ if __name__ == "__main__":
     elif cmd == "fullcycle": fullcycle()
     elif cmd == "sqaudit": sq_audit()
     elif cmd == "sqnumber": sq_number()
+    elif cmd == "sqdrafts": sq_drafts(sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("--") else "높음", overwrite="--overwrite" in sys.argv)
     elif cmd == "fmregister": fm_master_register()
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()

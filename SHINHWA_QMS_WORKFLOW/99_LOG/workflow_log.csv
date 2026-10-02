@@ -64,3 +64,7 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 07:00:32,SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.xlsx,,FM Master,01_ORIGINAL/MASTER_REF/SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.xlsx,system,FM Master 에 SQ 신규 번호 240건 등록(SH-FM-123~SH-FM-362)
 2026-10-02 07:00:44,SQ___________260930_SH_정식번호반영.xlsx,,07_AUDIT/고객심사,SQ_필요서류_대조보고서_v2.md,system,SQ 필요서류 240건 대조 보고서 생성
 2026-10-02 07:00:59,SQ___________260930_SH_정식번호반영.xlsx,,07_AUDIT/고객심사,SQ_필요서류_대조보고서_v3.md,system,SQ 필요서류 240건 대조 보고서 생성
+2026-10-02 07:03:04,SH-FM-144-159_SQ높음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_높음_초안/SH-FM-144-159_SQ높음_양식초안_Rev00.xlsx,system,양식 초안 16종 생성(AUTO_DRAFT)
+2026-10-02 07:03:04,SH-FM-187-206_SQ높음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_높음_초안/SH-FM-187-206_SQ높음_양식초안_Rev00.xlsx,system,양식 초안 20종 생성(AUTO_DRAFT)
+2026-10-02 07:03:22,SH-FM-144-159_SQ높음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_높음_초안/SH-FM-144-159_SQ높음_양식초안_Rev00.xlsx,system,양식 초안 16종 생성(AUTO_DRAFT)
+2026-10-02 07:03:22,SH-FM-187-206_SQ높음_양식초안_Rev00.xlsx,,SQ 필요서류,03_EDIT/AUTO_DRAFT/SQ_높음_초안/SH-FM-187-206_SQ높음_양식초안_Rev00.xlsx,system,양식 초안 20종 생성(AUTO_DRAFT)
