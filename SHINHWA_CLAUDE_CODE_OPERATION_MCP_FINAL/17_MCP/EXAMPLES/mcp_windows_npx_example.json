@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "example-npx-server-windows": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@your-mcp/package"
+      ],
+      "env": {}
+    }
+  }
+}
