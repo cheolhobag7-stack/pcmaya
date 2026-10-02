@@ -337,7 +337,10 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
     # (7)(16) 상호참조 / 폐기 문서 참조
     reg, obs = registry(num["doc_pattern"]), obsolete_set(num["doc_pattern"])
     refs = {norm(x) for x in re.findall(num["doc_pattern"], text)} - {norm(docno)}
+    exempt = norm(docno or "") in {norm(x) for x in qms.get("prohibited_reference_exceptions", [])}
     for ref in sorted(refs):
+        if ref in obs and exempt:
+            continue   # 예외 문서(예: 구형 번호 대조 계획표)는 폐기/참조금지 번호 참조를 허용
         if ref in obs:
             add("상호참조", f"폐기/참조금지 문서 {ref} 를 참조함", "대체 문서로 교체 (대체 문서번호 " + UNCONFIRMED + ")")
         elif ref not in reg:
@@ -615,7 +618,8 @@ def crosscheck():
             own = norm((re.search(num["doc_pattern"], name) or [""])[0])
             refs = {norm(x) for x in re.findall(num["doc_pattern"], text)} - {own}
             legacy = {m.upper() for m in re.findall(r"(?<![A-Za-z0-9-])(?:QM|QP|WI|FM)-\d{3}\b", text, re.I)} - {own}
-            fail = sorted(r for r in refs if r not in reg or r in obs)
+            exc = own in {norm(x) for x in cfg("qms_rules.yaml").get("prohibited_reference_exceptions", [])}
+            fail = sorted(r for r in refs if (r not in obs or not exc) and (r not in reg or r in obs))
             rows.append((p.name, name if units else "", "FAIL" if fail else ("HOLD" if legacy else "PASS"),
                          fail, sorted(legacy)))
     lines = ["# QMS 상호참조 점검 요약", f"- 생성: {now()}", "",

@@ -82,6 +82,8 @@ obsolete_docs: []                       # 폐기된 문서번호 목록 (06_HIST
 
 # 폐기/참조금지 문서 (범위 표기 가능: FM-030~039). 참조 시 오류 처리, 시스템 어디에 있어도 FINAL 금지.
 prohibited_references: ["FM-030~039"]
+# 폐기/참조금지 번호 참조를 허용하는 예외 문서 (구형 번호를 대조하는 계획표 등)
+prohibited_reference_exceptions: ["SH-FM-122"]
 final_release_rules:
   require_document_number_match: true
   require_revision_match: true
