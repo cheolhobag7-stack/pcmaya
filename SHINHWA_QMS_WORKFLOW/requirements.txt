@@ -1,1 +1,2 @@
 PyYAML>=6.0
+pypdf>=4.0   # PDF 본문 검사 (pdftotext 가 없는 PC용 대체)
