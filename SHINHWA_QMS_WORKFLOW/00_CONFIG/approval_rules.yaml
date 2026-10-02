@@ -1,0 +1,6 @@
+# 승인 규칙 (역할은 회사 조직에 맞게 수정)
+approval:
+  QM: {author: QMS담당, reviewer: 품질팀장, approver: 대표이사}
+  QP: {author: QMS담당, reviewer: 품질팀장, approver: 대표이사}
+  WI: {author: 작성자, reviewer: 팀장, approver: 품질팀장}
+  FM: {author: 작성자, reviewer: 팀장, approver: 품질팀장}

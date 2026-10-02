@@ -1,0 +1,7 @@
+# QMS 일반 규칙
+qms:
+  company: SHINHWA
+  standards: [IATF16949, ISO9001]
+  document_types: [QM, QP, WI, FM, APQP, PPAP, PFMEA, CONTROL_PLAN, SPC_MSA]
+  review_checks: [document_number, revision_number, cross_reference, content_completeness]
+  flow: [ORIGINAL, REVIEW, EDIT, APPROVAL, FINAL]

@@ -1,0 +1,6 @@
+# 고객별 요구사항 (CSR)
+customers: []
+# - name: 고객사명
+#   csr_ref: ""
+#   ppap_level: 3
+#   notes: ""
