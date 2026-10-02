@@ -17,6 +17,7 @@
   python3 scripts/qms_workflow.py scan       # 신규 문서 검색
   python3 scripts/qms_workflow.py status     # 04_APPROVAL 문서별 FINAL 가능 여부
   python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식 존재 확인
+  python3 scripts/qms_workflow.py integrity  # 05_FINAL/RELEASED 전체 SHA-256 무결성 검사
   python3 scripts/qms_workflow.py finalize   # 승인완료 재검증 → 05_FINAL + PDF + 배포본 + 06_HISTORY
 
 절대 규칙(코드로 강제):
@@ -39,7 +40,7 @@ ERR_DIR = {"문서번호": "문서번호오류", "개정번호": "개정번호�
 DEFAULT_ERR_DIR = "내용보완필요"
 TEXT_EXT = {".docx", ".xlsx", ".txt", ".md", ".csv"}
 UNCONFIRMED = "[확인 필요]"
-AUX_DIRS = [D["edit"] / "AUTO_DRAFT", D["edit"] / "DIFF", D["appr"] / "PACKAGES"]   # 문서 레지스트리/중복검사에서 제외
+AUX_DIRS = [D["edit"] / "AUTO_DRAFT", D["edit"] / "DIFF", D["appr"] / "PACKAGES", D["final"] / "RELEASED"]   # 문서 레지스트리/중복검사에서 제외
 MASTER = "MASTER_REF"   # SH_ 로 시작하는 관리자료(대장/마스터/계획) 분류 폴더
 
 
@@ -1080,8 +1081,73 @@ def to_pdf(src: Path, outdir: Path):
         return None
     return out
 
+RELEASED = D["final"] / "RELEASED"
+
+def verify_release(rel: Path):
+    """RELEASED/<문서>/Rev<NN>/MANIFEST.json 의 SHA-256 을 다시 계산해 변조·누락 검사. 반환 [(파일, PASS/FAIL, 비고)]"""
+    mf = rel / "MANIFEST.json"
+    if not mf.exists():
+        return [("MANIFEST.json", "FAIL", "매니페스트 없음")]
+    m = json.loads(mf.read_text(encoding="utf-8"))
+    out = []
+    for f in m["files"]:
+        fp = rel / f["name"]
+        if not fp.exists():
+            out.append((f["name"], "FAIL", "파일 없음(삭제/이동됨)"))
+        elif sha(fp) != f["sha256"]:
+            out.append((f["name"], "FAIL", "SHA-256 불일치(변조 의심)"))
+        else:
+            out.append((f["name"], "PASS", f["sha256"][:12]))
+    return out
+
+def integrity_check(write_report=True):
+    """05_FINAL/RELEASED 전체 무결성 검사 → 05_FINAL/RELEASED/무결성검사_*.md"""
+    rows = []
+    for mf in sorted(RELEASED.rglob("MANIFEST*.json")):
+        rel = mf.parent
+        for name, st, note in verify_release(rel):
+            rows.append((str(rel.relative_to(RELEASED)), name, st, note))
+    bad = [r for r in rows if r[2] == "FAIL"]
+    print(f"[INTEGRITY] 파일 {len(rows)}개 중 FAIL {len(bad)}개" + ("" if not bad else " → " + "; ".join(f"{r[0]}/{r[1]}:{r[3]}" for r in bad[:3])))
+    if write_report:
+        lines = ["# 무결성 검사 (SHA-256)", f"- 생성: {now()}", f"- 결과: {'FAIL' if bad else 'PASS'} (검사 {len(rows)}개 / FAIL {len(bad)}개)", "",
+                 "| 릴리스 | 파일 | 결과 | 비고 |", "|---|---|---|---|"] + [f"| {a} | {b} | {c} | {d} |" for a, b, c, d in rows]
+        RELEASED.mkdir(parents=True, exist_ok=True)
+        unique_path(RELEASED / "무결성검사.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return not bad
+
+def release_record(p: Path, docno, rev, pdf, dist, gate_rows):
+    """05_FINAL/RELEASED/<문서번호>/Rev<NN>/ 에 릴리스본(문서·PDF·배포본)과 MANIFEST.json 저장, 이전 Rev 는 06_HISTORY 로 이동."""
+    tag = f"Rev{rev}" if rev != "" else "RevNA"
+    base = RELEASED / docno
+    rel, n = base / tag, 2
+    while rel.exists():
+        rel = base / f"{tag}_v{n}"
+        n += 1
+    rel.mkdir(parents=True)
+    files = [("문서", p)] + ([("PDF", pdf)] if pdf else []) + ([("배포본", dist)] if dist else [])
+    entries = []
+    for role, f in files:
+        dst = rel / f.name
+        shutil.copy2(f, dst)
+        if sha(dst) != sha(f):   # 복사 직후 무결성 확인
+            raise RuntimeError(f"복사 무결성 오류: {f.name}")
+        entries.append({"role": role, "name": f.name, "sha256": sha(dst), "size": dst.stat().st_size})
+    (rel / "MANIFEST.json").write_text(json.dumps({
+        "document_no": docno, "revision": tag, "released_at": now(), "source": str(p.relative_to(ROOT)),
+        "gates": [{"gate": a, "result": b, "note": c} for a, b, c in gate_rows], "files": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
+    moved = []
+    for old in sorted(base.iterdir()):   # 이전 Rev → 06_HISTORY (이동, 삭제 아님)
+        if old.is_dir() and old != rel:
+            dest = unique_path(D["hist"] / "이전버전" / docno / f"RELEASED_{old.name}")
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(old), dest)
+            moved.append(f"{old.name} → 06_HISTORY/이전버전/{docno}/{dest.name}")
+    return rel, entries, moved
+
 def finalize():
     num = cfg("document_number_rules.yaml")
+    released, blocked = [], []
     for p in sorted((D["appr"] / "승인완료").iterdir()):
         if not p.is_file() or p.name == ".gitkeep":
             continue
@@ -1106,10 +1172,12 @@ def finalize():
                 log("error_log.csv", [now(), docno or p.stem, c, m, "OPEN"])
             log("workflow_log.csv", [now(), docno or p.stem, "", "04_APPROVAL/승인완료", f"02_REVIEW/{folder}", "system", tag])
             print(f"[BLOCKED] {p.name}: {tag} ({len(issues)}건) → 02_REVIEW/{folder}")
+            blocked.append((p.name, tag))
             continue
         if not print_gate(p, "승인완료"):
             log("workflow_log.csv", [now(), docno or p.stem, "", "04_APPROVAL/승인완료", "(보류)", "system", "FINAL Gate FAIL: 배포 불가"])
             print(f"[BLOCKED] {p.name}: FINAL Gate FAIL → 05_FINAL 이동 안 함")
+            blocked.append((p.name, "FINAL Gate FAIL"))
             continue
         docno = docno or p.stem
         rev = (re.search(num["revision_pattern"], p.name) or [None, ""])[1]
@@ -1140,7 +1208,38 @@ def finalize():
         for pk in sorted((D["appr"] / "PACKAGES").glob(f"{p.stem}*")):
             if pk.is_dir():
                 shutil.copytree(pk, unique_path(D["hist"] / "변경이력" / docno / f"PACKAGE_{dt.datetime.now():%Y%m%d%H%M%S}_{pk.name}"))
-        print(f"[FINAL  ] {p.name} → 05_FINAL/{sub}, PDF{'+배포본' if dist else ' 없음'}, 06_HISTORY 백업")
+        rel, entries, moved = release_record(p, docno, rev, pdf, dist, gate_check(p, "승인완료"))
+        ok_int = all(st == "PASS" for _, st, _ in verify_release(rel))   # 릴리스 직후 무결성 검사
+        released.append((docno, rev, p.name, rel, entries, moved, ok_int, bool(dist)))
+        print(f"[FINAL  ] {p.name} → 05_FINAL/{sub}, RELEASED/{docno}/{rel.name}, PDF{'+배포본' if dist else ' 없음'}, 무결성 {'PASS' if ok_int else 'FAIL'}, 06_HISTORY 백업")
+    if released or blocked:
+        finish_report(released, blocked)
+
+def finish_report(released, blocked):
+    """배포목록(누적 CSV) + 최종보고서(MD) → 05_FINAL/RELEASED/"""
+    RELEASED.mkdir(parents=True, exist_ok=True)
+    lst = RELEASED / "배포목록.csv"
+    new = not lst.exists()
+    with open(lst, "a", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        if new:
+            w.writerow(["배포일", "문서번호", "Rev", "릴리스 경로", "문서 SHA-256", "PDF", "배포본", "무결성"])
+        for docno, rev, name, rel, ents, moved, ok_int, has_dist in released:
+            sha_doc = next(e["sha256"] for e in ents if e["role"] == "문서")
+            w.writerow([dt.date.today(), docno, rev, str(rel.relative_to(ROOT)), sha_doc,
+                        "O" if any(e["role"] == "PDF" for e in ents) else "X", "O" if has_dist else "X", "PASS" if ok_int else "FAIL"])
+    lines = ["# 최종 보고서 (FINAL Release)", f"- 생성: {now()}", f"- 릴리스 {len(released)}건 / 보류 {len(blocked)}건", "",
+             "## 릴리스", "", "| 문서번호 | Rev | 파일 | 릴리스 경로 | PDF | 배포본 | 무결성 | 이전 Rev 이동 |", "|---|---|---|---|---|---|---|---|"]
+    for docno, rev, name, rel, ents, moved, ok_int, has_dist in released:
+        lines.append(f"| {docno} | {rev} | {name} | {rel.relative_to(ROOT)} | {'O' if any(e['role']=='PDF' for e in ents) else 'X'} | {'O' if has_dist else 'X'} | {'PASS' if ok_int else 'FAIL'} | {'; '.join(moved) or '-'} |")
+    if not released:
+        lines.append("| (릴리스 없음) | | | | | | | |")
+    lines += ["", "## 보류 (FINAL 이동 안 함)"] + ([f"- {n}: {t}" for n, t in blocked] or ["- 없음"])
+    lines += ["", "## 비고", "- PDF 변환이 불가능한 환경에서는 PDF/배포본이 생성되지 않으며, 배포 가능 여부는 담당자가 별도 확인한다.",
+              "- 승인 전 문서는 배포본을 만들지 않는다. 구버전(이전 Rev)은 삭제하지 않고 06_HISTORY 로 이동한다."]
+    out = unique_path(RELEASED / "최종보고서.md")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"[REPORT ] 배포목록 {lst.relative_to(ROOT)} / 최종보고서 {out.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
@@ -1160,4 +1259,5 @@ if __name__ == "__main__":
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()
     elif cmd == "finalize": finalize()
+    elif cmd == "integrity": sys.exit(0 if integrity_check() else 1)
     else: print(__doc__)
