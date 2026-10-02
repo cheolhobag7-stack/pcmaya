@@ -91,3 +91,11 @@ Claude Code는 다음 원칙을 최우선으로 따른다.
 - LOT 추적 관련 문서는 보존기간 3년(36개월), 목표시간 1시간(60분)을 확인한다.
 - FM 양식 단계에서는 보존기간 공란을 허용한다 (허용값 외 구체값은 오류).
 - `SH_` 로 시작하는 관리자료는 `01_ORIGINAL/MASTER_REF` 로 분류하며 승인 흐름 없이 상호참조 기준으로만 쓴다.
+
+## 11. v0.3 자동감사 규칙 (qms_workflow.py 에 통합)
+- PDF 본문도 검사한다 (pdftotext 우선, 없으면 pypdf). 스캔형 PDF는 자동판정하지 않고 HOLD 처리한다.
+- 참조된 QM/QP/WI/FM 이 실제 프로젝트(파일, 양식 시트, 문서관리대장, FM Master)에 존재하는지 확인한다.
+- 동일 문서번호의 중복 Rev와 Rev 누락을 검출하고 최신 Rev 후보를 표시한다 (crosscheck).
+- 문서관리대장과 실제 파일을 양방향으로 대조한다 (ledger). 대장 위치: `01_ORIGINAL/MASTER_REF` 또는 `00_CONFIG` (파일명에 `문서관리대장`, 샘플 제외).
+- FINAL 이동 전 Release Gate(G1~G8)를 반드시 통과해야 한다 (gatecheck / releasegate / finalize 자동 실행).
+- 전체 자동감사: `fullaudit` (`/qms-full-audit`).
