@@ -6,6 +6,8 @@
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
   python3 scripts/qms_workflow.py approve F  # (사람) 승인대기 → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
+  python3 scripts/qms_workflow.py scan       # 신규 문서 검색
+  python3 scripts/qms_workflow.py status     # 04_APPROVAL 문서별 FINAL 가능 여부
   python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식 존재 확인
   python3 scripts/qms_workflow.py finalize   # 승인완료 재검증 → 05_FINAL + PDF + 배포본 + 06_HISTORY
 
@@ -416,6 +418,28 @@ def recheck():
         typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
         route(p, typ)
 
+def scan():
+    """1. 신규 문서 검색: 아직 검토되지 않은 파일 목록."""
+    done, new = processed(), []
+    for p in sorted(D["orig"].rglob("*")):
+        if p.is_file() and p.name != ".gitkeep" and sha(p) not in done:
+            new.append(p)
+    print(f"신규 문서 {len(new)}건")
+    for p in new:
+        print("  -", p.relative_to(ROOT))
+    return new
+
+def status():
+    """9. FINAL 가능 여부 표시: 04_APPROVAL 의 문서별 상태."""
+    for sub in ("승인대기", "검토완료", "승인완료"):
+        for p in sorted((D["appr"] / sub).iterdir()):
+            if p.is_file() and p.name != ".gitkeep":
+                typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
+                docno, issues, approved = validate(p, typ, final_stage=True)
+                ok = not issues and sub == "승인완료"
+                why = "가능" if ok else ("승인 완료 후 이동" if not issues and sub != "승인완료" else f"불가 ({len(issues)}건 이슈)")
+                print(f"[{sub}] {p.name}: FINAL {why}")
+
 def advance(name, src, dst, note):
     s = D["appr"] / src / name
     if not s.exists():
@@ -509,5 +533,7 @@ if __name__ == "__main__":
     elif cmd == "approve" and len(sys.argv) > 2: advance(sys.argv[2], "승인대기", "검토완료", "검토 완료")
     elif cmd == "sign" and len(sys.argv) > 2: advance(sys.argv[2], "검토완료", "승인완료", "승인")
     elif cmd == "gates": gates()
+    elif cmd == "scan": scan()
+    elif cmd == "status": status()
     elif cmd == "finalize": finalize()
     else: print(__doc__)
