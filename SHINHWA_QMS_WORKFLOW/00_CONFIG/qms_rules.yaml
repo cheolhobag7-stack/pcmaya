@@ -2,7 +2,7 @@
 company:
   name: "(주)신화에이치앤티"
   prefix: "SH"
-  names: ["(주)신화에이치앤티", "신화에이치앤티"]   # 본문에 하나 이상 있어야 함
+  names: ["(주)신화에이치앤티", "주식회사 신화에이치앤티", "신화에이치앤티"]   # 본문에 하나 이상 있어야 함
 
 base_standard: ["ISO 9001:2015", "IATF 16949:2016"]
 main_customer: "한온시스템"
@@ -75,6 +75,8 @@ core_tools:                             # 본문에 언급되면 연계 문서�
 core_tool_docs: {}                      # 확정 전: 예) PFMEA: SH-QP-xx  (비워 두면 임의 생성하지 않음)
 lot_traceability:
   keyword: "LOT 추적"
+  retention_patterns: ["3년", "3 년", "36개월", "36 개월"]
+  target_patterns: ["1시간", "1 시간", "60분", "60 분"]
   # 본문에 LOT 추적 언급 시 보존기간(3년)과 목표시간(1시간)을 명시해야 함
 obsolete_docs: []                       # 폐기된 문서번호 목록 (06_HISTORY/폐기문서 폴더 파일명도 자동 반영)
 
@@ -85,3 +87,14 @@ final_release_rules:
   require_revision_match: true
   require_approval_complete: true
   block_if_prohibited_reference_found: true
+
+# ---- v0.2 패키지 반영 ----
+# 삭제 지시 문구: 본문에 있으면 FAIL
+prohibited_phrases:
+  - "FM Master 재매핑 반영"
+  - "QP 제3권 FM-030~039 폐기/참조금지"
+  - "문서통제 주의: 승인된 FM Master와 일치"
+  - "부록 E. Rev.00 ACTIVE Release 승인결과(AP-01~04)"
+  - "※ 실제 승인자 성명·서명·일자 입력 후 관리본 배포"
+# v0.2 설정값(현재 자동 검사에는 미사용 - 용도 확정 후 연결): 반드시 안내되어야 하는 FM 번호
+required_notice: ["FM-066", "FM-067", "FM-068", "FM-069", "FM-078", "FM-079", "FM-080", "FM-096", "FM-094"]

@@ -7,6 +7,7 @@
   python3 scripts/qms_workflow.py recheck    # 03_EDIT/수정완료 재검증
   python3 scripts/qms_workflow.py approve F  # (사람) 승인대기 → 검토완료
   python3 scripts/qms_workflow.py sign F     # (사람) 검토완료 → 승인완료
+  python3 scripts/qms_workflow.py crosscheck # QM/QP/WI/FM 상호참조 종합 점검 → 02_REVIEW/qms_crosscheck_summary.md
   python3 scripts/qms_workflow.py scan       # 신규 문서 검색
   python3 scripts/qms_workflow.py status     # 04_APPROVAL 문서별 FINAL 가능 여부
   python3 scripts/qms_workflow.py gates      # AP-01~04 게이트 양식 존재 확인
@@ -384,13 +385,24 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
     if typ in qms["csr_required_for"] and not re.search(r"고객 특정 요구사항|CSR", text):
         add("내용보완", "IATF 고객 특정 요구사항(CSR) 언급 없음", f"{qms['main_customer']} CSR 반영")
 
+    # 삭제 지시 문구 (FAIL)
+    found = [ph for ph in qms.get("prohibited_phrases", []) if ph in text]
+    if found:
+        add("내용보완", "삭제 지시 문구 발견: " + " / ".join(found), "해당 문구 삭제 후 새 수정본 작성")
+    # SH 접두어 미적용 참조 (HOLD)
+    legacy = sorted({m.upper() for m in re.findall(r"(?<![A-Za-z0-9-])(?:QM|QP|WI|FM)-\d{3}\b", text, re.I)})
+    legacy = [x for x in legacy if x != norm(docno or "")]
+    if legacy:
+        add("확인필요", f"SH 접두어 미적용 참조 확인: {', '.join(legacy[:20])}{' 외 %d건' % (len(legacy) - 20) if len(legacy) > 20 else ''}",
+            "SH- 접두어 적용 여부 확인 " + UNCONFIRMED)
+
     # (13) LOT 추적성
     lt = qms["lot_traceability"]
     if lt["keyword"] in text:
         need = qms["lot_traceability_retention"], qms["lot_trace_target_time"]
-        if need[0] not in text:
+        if not any(x in text for x in lt.get("retention_patterns", [need[0]])):
             add("내용보완", f"LOT 추적 기록 보존기간 {need[0]} 미명시", f"보존기간 {need[0]} 명시")
-        if need[1] not in text:
+        if not any(x in text for x in lt.get("target_patterns", [need[1]])):
             add("내용보완", f"LOT 추적 목표시간 {need[1]} 미명시", f"목표시간 {need[1]} 명시")
 
     # (14) 페이지 번호와 목차
@@ -470,16 +482,21 @@ def summary_table(p: Path, docno, issues, approved, stage="검토", text=None, l
         rows.append(("LOT 추적 목표", "N/A", "LOT 추적 언급 없음"))
     st = re.search(rf"{qms['document_status']['field']}\s*[:：]\s*(\S+)", text)
     rows.append(("승인상태", "PASS" if approved else "HOLD", (st.group(1) if st else "") if approved else "승인 전"))
-    others = [m for c, m, _ in issues if m not in sum([hit("문서번호"), hit("개정번호"), hit("상호참조"), hit(kw=["회사명", "고객사", "CSR", "보존기간", "LOT 추적"])], [])]
+    ph = hit(kw=["삭제 지시"])
+    hold_msgs = hit("확인필요")
+    row("삭제 지시 문구", ph, bad_note="; ".join(ph)[:80])
+    if hold_msgs:
+        rows.append(("SH 접두어 참조", "HOLD", "; ".join(hold_msgs)[:80]))
+    others = [m for c, m, _ in issues if m not in sum([hit("문서번호"), hit("개정번호"), hit("상호참조"), ph, hold_msgs, hit(kw=["회사명", "고객사", "CSR", "보존기간", "LOT 추적"])], [])]
     if others:
         rows.append(("기타 검사", "FAIL", f"{len(others)}건 (상세: 자동검토결과 JSON)"))
     fails = [r for r in rows if r[1] == "FAIL"]
-    verdict = "FAIL" if fails else ("PASS" if approved else "HOLD")
+    verdict = "FAIL" if fails else ("PASS" if approved and not hold_msgs else "HOLD")
     rows.append(("종합 판정", verdict, {"FAIL": "수정 필요", "HOLD": "확인 또는 승인 필요", "PASS": "승인 및 배포 가능"}[verdict]))
     if fails:
         mv = ("불가", "검사 FAIL 해결 후 재검증")
-    elif not approved:
-        mv = ("불가", "승인 완료 후 이동")
+    elif hold_msgs or not approved:
+        mv = ("불가", "확인 필요 항목 해소 및 승인 완료 후 이동" if hold_msgs else "승인 완료 후 이동")
     else:
         mv = ("가능", "04_APPROVAL/승인완료 → finalize")
     rows.append(("FINAL 이동", mv[0], mv[1]))
@@ -577,6 +594,41 @@ def recheck():
             continue
         typ = cfg("qms_rules.yaml")["classify"].get(prefix_of(p.name), "")
         route(p, typ)
+
+def crosscheck():
+    """QM/QP/WI/FM 상호참조 종합 점검 → 02_REVIEW/qms_crosscheck_summary.md
+    존재하지 않는 참조 FAIL / SH 접두어 없는 참조 HOLD / 동일 문서번호 복수 Rev 표시."""
+    num = cfg("document_number_rules.yaml")
+    reg, obs = registry(num["doc_pattern"]), obsolete_set(num["doc_pattern"])
+    revs, lines = {}, []
+    for q in sorted(stage_files(("orig", "edit", "appr", "final"))):
+        m = re.search(num["doc_pattern"], q.name)
+        r = re.search(num["revision_pattern"], q.name)
+        if m and r:
+            revs.setdefault(norm(m.group(0)), set()).add(r.group(1))
+    rows = []
+    for p in sorted(D["orig"].rglob("*")):
+        if not p.is_file() or p.name == ".gitkeep" or MASTER in p.parts or p.suffix.lower() not in TEXT_EXT:
+            continue
+        units = split_units(p)
+        for name, text in (units or [(p.name, extract_text(p))]):
+            own = norm((re.search(num["doc_pattern"], name) or [""])[0])
+            refs = {norm(x) for x in re.findall(num["doc_pattern"], text)} - {own}
+            legacy = {m.upper() for m in re.findall(r"(?<![A-Za-z0-9-])(?:QM|QP|WI|FM)-\d{3}\b", text, re.I)} - {own}
+            fail = sorted(r for r in refs if r not in reg or r in obs)
+            rows.append((p.name, name if units else "", "FAIL" if fail else ("HOLD" if legacy else "PASS"),
+                         fail, sorted(legacy)))
+    lines = ["# QMS 상호참조 점검 요약", f"- 생성: {now()}", "",
+             "| 문서 | 시트(양식) | 판정 | 존재/폐기 오류 참조 | SH 접두어 미적용 참조 |", "|---|---|---|---|---|"]
+    for f, u, v, fl, lg in rows:
+        lines.append(f"| {f} | {u or '-'} | {v} | {', '.join(fl)[:150] or '-'} | {', '.join(lg)[:150] or '-'} |")
+    multi = {k: sorted(v) for k, v in revs.items() if len(v) > 1}
+    lines += ["", "## 동일 문서번호의 복수 Rev (최신 Rev 후보)"]
+    lines += [f"- {k}: Rev.{', Rev.'.join(v)} → 최신 후보 Rev.{v[-1]}" for k, v in sorted(multi.items())] or ["- 없음"]
+    out = unique_path(D["rev"] / "qms_crosscheck_summary.md")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    cnt = {k: sum(r[2] == k for r in rows) for k in ("PASS", "HOLD", "FAIL")}
+    print(f"[CROSSCHECK] PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']} → {out.relative_to(ROOT)}")
 
 def scan():
     """1. 신규 문서 검색: 아직 검토되지 않은 파일 목록."""
@@ -698,6 +750,7 @@ if __name__ == "__main__":
     elif cmd == "sign" and len(sys.argv) > 2: advance(sys.argv[2], "검토완료", "승인완료", "승인")
     elif cmd == "gates": gates()
     elif cmd == "scan": scan()
+    elif cmd == "crosscheck": crosscheck()
     elif cmd == "status": status()
     elif cmd == "finalize": finalize()
     else: print(__doc__)
