@@ -12,6 +12,8 @@
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
   python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
+  python3 scripts/qms_workflow.py foldertree <루트>                       # 정리용 표준 폴더 구조 생성
+  python3 scripts/qms_workflow.py organizeplan <원본폴더> <루트> [--apply]  # 파일을 표준 구조로 복사 계획(기본 미리보기, 원본 유지)
   python3 scripts/qms_workflow.py mcphealth | mcpsafestart   # MCP 상태·보안 점검(읽기 전용) / 점검 후 전체 운영
   python3 scripts/qms_workflow.py qmsaudit | integratedaudit | modulecheck <lot|safety|equipment|training|production|inventory|quality>
   python3 scripts/qms_workflow.py collectactions | dashboarddata | weeklyreport | monthlyreport
@@ -2194,6 +2196,81 @@ def input_sync(src, apply=False):
     print(f"[INPUT SYNC] {'복사 ' + str(copied) + '개' if apply else '복사 예정 ' + str(len(plan) - same) + '개'} / 동일 {same} / 모듈 겹침 {len(ambiguous)} / 미분류 {unmatched} / 용량초과 {len(too_big)} → {out.relative_to(ROOT)}")
     return out
 
+def drive_layout_cfg():
+    return cfg("integrated_rules.yaml")["drive_layout"]
+
+def folder_tree(root):
+    """정리용 표준 폴더 구조를 만든다(이미 있으면 그대로 둔다). 예: python qms_workflow.py foldertree "E:\\SHINHWA" """
+    lay = drive_layout_cfg()
+    names = [lay[k] for k in ("qms", "lot", "safety", "equipment", "training", "production", "inventory", "quality", "sq", "customer", "unsorted")]
+    base = Path(root).expanduser()
+    for n in names:
+        (base / n).mkdir(parents=True, exist_ok=True)
+    print(f"[FOLDER TREE] {base} 아래에 {len(names)}개 폴더 준비: " + ", ".join(names))
+    return base
+
+def organize_plan(src, dest_root, apply=False):
+    """원본 폴더의 파일을 표준 폴더 구조로 '복사' 계획을 세운다(기본 미리보기). 원본은 읽기만 하며 이동·삭제하지 않는다.
+    분류: QMS 문서(SH-/키워드) > SQ > 단일 모듈 키워드 > 한온시스템 > 그 외/여러 모듈은 99_미분류_확인필요. 하위는 파일 수정 연도 폴더."""
+    srcp, dest = Path(src).expanduser(), Path(dest_root).expanduser()
+    if not srcp.exists():
+        sys.exit(f"원본 폴더를 찾을 수 없음: {src}")
+    lay, kw = drive_layout_cfg(), cfg("integrated_rules.yaml")["input_sync"]["keywords"]
+    skip = {"$recycle.bin", "system volume information", "windows", "program files", "program files (x86)", ".git", "node_modules", "__pycache__", "appdata"}
+    limit = lay["max_file_mb"] * 1024 * 1024
+    plan, big = [], []
+    for dp, dns, fns in os.walk(srcp):
+        dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != dest.resolve()]
+        for fn in fns:
+            f = Path(dp) / fn
+            if fn.lower() in lay["skip_names"] or fn.startswith("~$") or fn.lower().endswith(".tmp"):
+                continue
+            try:
+                st = f.stat()
+            except OSError:
+                continue
+            if st.st_size > limit:
+                big.append(str(f)); continue
+            hay = (fn + " " + " ".join(f.relative_to(srcp).parts[:-1]))
+            low = hay.lower()
+            mods = [k for k, ws in kw.items() if any(w.lower() in low for w in ws)]
+            if fn.upper().startswith(("SH-", "SH_")) or any(w.lower() in low for w in lay["qms_keywords"]):
+                cat, why = "qms", "QMS 문서(SH-/키워드)"
+            elif any(re.search(rf"(?<![A-Za-z]){w}(?![A-Za-z])", hay) for w in lay["sq_keywords"]):
+                cat, why = "sq", "SQ 심사 자료"
+            elif len(mods) == 1:
+                cat, why = mods[0], f"키워드({mods[0]})"
+            elif len(mods) > 1:
+                cat, why = "unsorted", "여러 모듈 키워드: " + "/".join(mods)
+            elif any(w.lower() in low for w in lay["customer_keywords"]):
+                cat, why = "customer", "고객사(한온시스템)"
+            else:
+                cat, why = "unsorted", "키워드 없음"
+            year = dt.datetime.fromtimestamp(st.st_mtime).strftime("%Y")
+            plan.append((f, cat, why, dest / lay[cat] / year / fn, st.st_size, dt.datetime.fromtimestamp(st.st_mtime).date()))
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    out = unique_path(OUT_DIR / "REPORTS" / f"organize_plan_{dt.datetime.now():%Y%m%d_%H%M%S}.csv")
+    copied = same = 0
+    with open(out, "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh)
+        w.writerow(["원본 경로", "분류", "사유", "대상 경로", "크기(KB)", "수정일", "처리"])
+        for f, cat, why, dst, size, mdate in sorted(plan, key=lambda x: (x[1], str(x[0]))):
+            if dst.exists() and dst.read_bytes() == f.read_bytes():
+                act = "이미 있음(동일)"; same += 1
+            elif apply:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                act = f"복사 → {safe_copy(f, dst.parent, dst.name)}"; copied += 1
+            else:
+                act = "복사 예정"
+            w.writerow([f, lay[cat], why, dst, size // 1024, mdate, act])
+    cnt = collections.Counter(lay[c] for _, c, *_ in plan)
+    print(f"[ORGANIZE] {'복사 ' + str(copied) + '개' if apply else '미리보기: 복사 예정 ' + str(len(plan) - same) + '개'} / 동일 {same} / 용량초과 {len(big)} → {out.relative_to(ROOT)}")
+    print("  분류별: " + ", ".join(f"{k} {v}" for k, v in sorted(cnt.items())))
+    if apply:
+        log("workflow_log.csv", [now(), str(srcp), "", "organize", str(dest), "system", f"{copied}개 복사(원본 유지), 동일 {same}"])
+        print("  원본 폴더는 그대로입니다. 복사본을 확인한 뒤 원본 정리는 사람이 직접 하세요.")
+    return out
+
 def full_operation():
     """전체 운영: QMS 사이클(승인 직전까지) → 통합 점검 → 조치사항 → 대시보드 → 주간 보고. 승인/배포는 하지 않는다."""
     fullcycle()
@@ -2221,6 +2298,8 @@ if __name__ == "__main__":
     elif cmd == "sqaudit": sq_audit()
     elif cmd == "fulloperation": full_operation()
     elif cmd == "mcphealth": mcp_health_check()
+    elif cmd == "foldertree" and len(sys.argv) > 2: folder_tree(sys.argv[2])
+    elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv)
     elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv)
     elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
