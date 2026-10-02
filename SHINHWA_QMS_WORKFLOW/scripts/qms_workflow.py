@@ -10,6 +10,7 @@
   python3 scripts/qms_workflow.py diff 수정본 [원본]  # 원본↔수정본 DIFF → 03_EDIT/DIFF/ (원본 생략 시 자동 탐색)
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
+  python3 scripts/qms_workflow.py sqnumber   # SQ안 FM번호 → 정식 SH-FM 번호 배정(대응표·SQ 사본·FM Master 새 파일)
   python3 scripts/qms_workflow.py sqaudit    # SQ mark 필요서류 리스트 ↔ 문서체계 대조 → 07_AUDIT/고객심사/
   python3 scripts/qms_workflow.py fullcycle  # 승인 직전까지 전체 사이클(감사→AUTO_DRAFT→재감사→Gate→패키지). 승인/배포는 사람이
   python3 scripts/qms_workflow.py fullaudit  # 전체 자동감사(신규 검색→점검→상호참조→대장→Release Gate)
@@ -1154,6 +1155,10 @@ def sq_audit():
                 first = t.splitlines()[0].replace(n.strip(), "").strip() if t else ""
                 if first:
                     known.setdefault(n.strip(), first)
+    mapf_ = adir / "SQ_FM번호_배정대응표.csv"
+    if mapf_.exists():   # SQ 필요서류에 새로 배정한 번호는 '기존 양식' 후보에서 제외 (자기 자신과 매칭 방지)
+        assigned = {r["정식 SH-FM 번호"] for r in csv.DictReader(open(mapf_, encoding="utf-8-sig"))}
+        known = {k: v for k, v in known.items() if k not in assigned}
     norm_ = lambda x: re.sub(r"[\s\-_/·()\[\]]", "", str(x or ""))
     ledger = {e[2]: e[3] for e in latest_ledger_entries()} if "latest_ledger_entries" in globals() else {e[2]: e[3] for e in ledger_entries()}
     scheme = lambda n: ("공식(SH-FM-NNN)" if re.fullmatch(r"SH-FM-\d{3}", n or "") else
@@ -1200,6 +1205,103 @@ def sq_audit():
     log("workflow_log.csv", [now(), sqs[-1].name, "", "07_AUDIT/고객심사", rp.name, "system", f"SQ 필요서류 {len(rows)}건 대조 보고서 생성"])
     print(f"[SQ AUDIT] {len(rows)}건 | 번호체계 {dict(sc)} | 중복 번호 {len(dup)} | 유사 기존 양식 {len(sim)} → {rp.relative_to(ROOT)}")
     return rp
+
+def sq_number():
+    """SQ안 FM번호 → 정식 SH-FM-NNN 번호 배정 (사용자 지시). 기존 최대 번호 다음부터 SQ 리스트 NO 순서로 한 번만 배정한다.
+    산출: 07_AUDIT/고객심사/SQ_FM번호_배정대응표.csv, SQ 사본(정식번호반영, 번호대응표 시트), FM Master 새 파일(신규 번호 등록).
+    SQ 원본 파일과 이전 Master 는 수정하지 않는다. 이미 배정했다면 번호를 바꾸지 않는다."""
+    from openpyxl import load_workbook
+    from copy import copy
+    adir = ROOT / "07_AUDIT" / "고객심사"
+    mapf = adir / "SQ_FM번호_배정대응표.csv"
+    if mapf.exists():
+        print(f"[SQ NUMBER] 이미 배정됨: {mapf.relative_to(ROOT)} (번호는 다시 바꾸지 않음)")
+        return
+    sqs = sorted((f for f in adir.glob("SQ*.xlsx") if "정식번호반영" not in f.name), key=lambda f: f.stat().st_mtime)
+    if not sqs:
+        sys.exit("07_AUDIT/고객심사/SQ*.xlsx 없음")
+    sq = sqs[-1]
+    wb0 = load_workbook(sq, data_only=True)
+    ws0 = wb0["전체_필요서류리스트"]
+    hdr = [c.value for c in ws0[4]]
+    ix = {h: i for i, h in enumerate(hdr)}
+    rows = [[c.value for c in r] for r in ws0.iter_rows(min_row=5) if r[0].value]
+    # 시작 번호: 시스템에서 확인되는 가장 큰 SH-FM-NNN 다음
+    ids = {int(x[-3:]) for x in (fm_master_ids() | {f"SH-{n}" for f in D["orig"].rglob("*.xlsx") if MASTER not in f.parts for n, _ in split_units(f)}) if re.fullmatch(r"SH-FM-\d{3}", x)}
+    ids |= {int(m) for f in D["orig"].rglob("SH-FM-122*") for m in re.findall(r"FM-(\d{3})", f.name)}
+    start = max(ids) + 1
+    # 비슷한/중복 후보 표시(확정 아님)
+    simf = sorted(adir.glob("SQ_필요서류_번호대조*.csv"), key=lambda f: f.stat().st_mtime)
+    sim = {}
+    if simf:
+        for r in csv.DictReader(open(simf[-1], encoding="utf-8-sig")):
+            sim[str(r["NO"])] = r["유사 기존 양식 후보(제안, 확정 아님)"]
+    nm = lambda x: re.sub(r"[\s\-_/·()\[\]]", "", str(x or ""))
+    names = collections.Counter(nm(r[ix["필요서류(준비서류)"]]) for r in rows)
+    mapping, order = {}, []
+    for r in rows:
+        old = r[ix["FM문서번호"]]
+        if old and old not in mapping:
+            mapping[old] = f"SH-FM-{start + len(mapping):03d}"
+        order.append(r)
+    with open(mapf, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        w.writerow(["SQ NO", "구분", "번호", "필요서류(양식명)", "SQ안 번호(구)", "정식 SH-FM 번호", "작성구분", "담당부서", "담당자", "목표완료월", "연계 QP/WI", "플래그(확정 필요)"])
+        for r in order:
+            old = r[ix["FM문서번호"]]
+            flags = []
+            if sim.get(str(r[0])):
+                flags.append("기존 양식과 중복 가능: " + sim[str(r[0])])
+            if names[nm(r[ix["필요서류(준비서류)"]])] > 1:
+                flags.append("같은 서류명이 여러 행에 있음(통합 검토)")
+            rel = str(r[ix["확정 연계문서/FM번호"]] or r[ix["관련 기존 문서(참고)"]] or "")
+            w.writerow([r[0], r[ix["구분"]], r[ix["번호"]], r[ix["필요서류(준비서류)"]], old, mapping.get(old, ""), r[ix["작성구분(자동추정)"]],
+                        r[ix["담당부서"]], r[ix["담당자"]], r[ix["목표완료월(제안)"]], ", ".join(dict.fromkeys(re.findall(r"SH-(?:QP|WI)-\d{3}", rel))), " | ".join(flags)])
+    # SQ 사본: 셀 전체가 SQ안 번호인 곳을 정식 번호로 교체 + 번호대응표 시트
+    wb = load_workbook(sq)
+    changed = 0
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for c in row:
+                if isinstance(c.value, str) and c.value in mapping:
+                    c.value = mapping[c.value]; changed += 1
+    mws = wb.create_sheet("번호대응표")
+    mws.append(["SQ안 번호(구)", "정식 SH-FM 번호", "필요서류(양식명)", "구분", "비고"])
+    names_by_old = {r[ix["FM문서번호"]]: r[ix["필요서류(준비서류)"]] for r in rows}
+    grp_by_old = {r[ix["FM문서번호"]]: r[ix["구분"]] for r in rows}
+    for old, new in mapping.items():
+        mws.append([old, new, names_by_old.get(old), grp_by_old.get(old), "사용자 지시로 정식 번호 배정(양식 미작성)"])
+    outsq = unique_path(adir / f"{sq.stem}_정식번호반영.xlsx")
+    wb.save(outsq)
+    # FM Master 새 파일
+    masters = sorted(master_files("FM_Master"), key=lambda f: f.stat().st_mtime)
+    cur = masters[-1]
+    mw = load_workbook(cur)
+    ws = mw["01_FM_Master"]
+    row = 2
+    while ws.cell(row, 1).value:
+        row += 1
+    tmpl = row - 1
+    byold = {r[ix["FM문서번호"]]: r for r in rows}
+    for old, new in mapping.items():
+        r = byold[old]
+        rel = ", ".join(dict.fromkeys(re.findall(r"SH-(?:QP|WI)-\d{3}", str(r[ix["확정 연계문서/FM번호"]] or r[ix["관련 기존 문서(참고)"]] or ""))))
+        flag = sim.get(str(r[0]))
+        vals = [new, r[ix["필요서류(준비서류)"]], r[ix["요구사항(세부 추진 항목)"]], rel or None, "Rev.00", "신규 배정", "번호 배정 (양식 미작성)",
+                f"SQ mark 필요서류 NO {r[0]} ({r[ix['구분']]} {r[ix['번호']]})", f"{sq.name} / SQ안 번호 {old}", r[ix["담당부서"]], None, None, None,
+                ("기존 양식과 중복 가능(확정 필요): " + flag) if flag else None, f"양식 작성(목표 {r[ix['목표완료월(제안)']]}) 후 승인 흐름 진행"]
+        for k, v in enumerate(vals, 1):
+            cell = ws.cell(row, k, v)
+            cell._style = copy(ws.cell(tmpl, k)._style)
+        row += 1
+    outm = unique_path(cur.parent / "SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.xlsx")
+    mw.save(outm)
+    first, last = list(mapping.values())[0], list(mapping.values())[-1]
+    for f_, note in ((outsq, f"SQ 필요서류 FM번호(안) {len(mapping)}건 → 정식 {first}~{last} 배정(사용자 지시)"), (outm, f"FM Master 에 SQ 신규 번호 {len(mapping)}건 등록({first}~{last})")):
+        log("revision_history.csv", [dt.date.today(), f_.stem, "", "", note, "system", ""])
+        log("workflow_log.csv", [now(), f_.name, "", "07_AUDIT" if f_ is outsq else "FM Master", str(f_.relative_to(ROOT)), "system", note])
+    make_diff(cur, outm)
+    print(f"[SQ NUMBER] {len(mapping)}건 배정 {first}~{last} | 대응표 {mapf.relative_to(ROOT)} | SQ 사본 {outsq.name}(셀 {changed}곳 교체) | Master {outm.name}")
 
 def fullcycle():
     """전체 사이클(승인 직전까지): 신규 검색 → 점검(+AUTO_DRAFT) → 수정완료분 재감사(+DIFF) → Release Gate → 승인 패키지.
@@ -1524,6 +1626,7 @@ if __name__ == "__main__":
     elif cmd == "fullaudit": fullaudit()
     elif cmd == "fullcycle": fullcycle()
     elif cmd == "sqaudit": sq_audit()
+    elif cmd == "sqnumber": sq_number()
     elif cmd == "fmregister": fm_master_register()
     elif cmd == "gatecheck": gatecheck()
     elif cmd == "status": status()

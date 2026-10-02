@@ -60,3 +60,7 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 06:46:16,SH_QMS_통합문서_Rev03_20260929.docx,,MASTER_REF,01_ORIGINAL/MASTER_REF/SH_QMS_통합문서_Rev03_20260929_수정본.docx,system,날짜 2026-09-01 반영(원본 유지)
 2026-10-02 06:46:16,SH_QMS_문서관리대장_Rev00_20260929.xlsx,,MASTER_REF,01_ORIGINAL/MASTER_REF/SH_QMS_문서관리대장_Rev00_20260929_수정본.xlsx,system,날짜 2026-09-01 반영(원본 유지)
 2026-10-02 06:57:29,SQ___________260930_SH.xlsx,,07_AUDIT/고객심사,SQ_필요서류_대조보고서.md,system,SQ 필요서류 240건 대조 보고서 생성
+2026-10-02 07:00:32,SQ___________260930_SH_정식번호반영.xlsx,,07_AUDIT,07_AUDIT/고객심사/SQ___________260930_SH_정식번호반영.xlsx,system,SQ 필요서류 FM번호(안) 240건 → 정식 SH-FM-123~SH-FM-362 배정(사용자 지시)
+2026-10-02 07:00:32,SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.xlsx,,FM Master,01_ORIGINAL/MASTER_REF/SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.xlsx,system,FM Master 에 SQ 신규 번호 240건 등록(SH-FM-123~SH-FM-362)
+2026-10-02 07:00:44,SQ___________260930_SH_정식번호반영.xlsx,,07_AUDIT/고객심사,SQ_필요서류_대조보고서_v2.md,system,SQ 필요서류 240건 대조 보고서 생성
+2026-10-02 07:00:59,SQ___________260930_SH_정식번호반영.xlsx,,07_AUDIT/고객심사,SQ_필요서류_대조보고서_v3.md,system,SQ 필요서류 240건 대조 보고서 생성
