@@ -88,3 +88,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-FM-102/104,Rev.03(DRAFT),Rev.03(DRAFT),"보관위치(안) 품질팀 서버로 통일(사용자 결정; 개정 초안 LOT정합_DRAFT.xlsx). 다른 양식 미변경",system,
 2026-10-06,SH-FM-101-121,Rev.03,Rev.03(DRAFT),"보관위치(안) 전 양식 품질팀 서버로 통일(사용자 결정; 개정 초안 LOT정합_DRAFT.xlsx, 안내 시트 포함). 보존기간은 102·104 3년, 나머지 5년 유지. 릴리스본 미수정",system,
 2026-10-06,SH-FM-101-121,Rev.03,Rev.03(DRAFT),"보존기간 전 양식 3년 통일(사용자 결정; 개정 초안 LOT정합_DRAFT.xlsx, 안내 시트 문구 포함). 릴리스본·FM Master·대장 미변경. 고객·법규 요구 확인 필요",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 품질팀 서버 접근권한: 쓰기는 품질팀만 가능 반영(사용자 확인); 읽기 대상·현장 기록 제출 방법·백업 확인 필요",system,
