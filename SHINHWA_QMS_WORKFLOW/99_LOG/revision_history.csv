@@ -197,3 +197,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SQ-부서별확인요청표,00,00,"통합·별도유지·비문서 결정(SQ_중복검토_결정.csv)을 열로 표기한 새 파일 _통합반영.xlsx 작성(원본 요청표 유지, 확인 결과·번호 변경 없음)",claude,
 2026-10-06,SH-FM-330,00,00,"점검 이력은 SH-FM-036 연결로 결정(사용자 지시): 결정 CSV 갱신, FM Master SQ중복통합6.xlsx 새 파일",claude,
 2026-10-06,SQ초안,00,00,통합(사용 안 함) 25개 번호의 초안 시트에 통합 표기를 추가한 사본을 03_EDIT/AUTO_DRAFT/SQ_통합표기_초안 에 저장(기존 초안 유지),claude,
+2026-10-06,부적합품관리대장,,,"사용자 업로드 현장 파일을 01_ORIGINAL/FM 에 보관(원본 미수정, 번호 미확정 HOLD)·검토보고 02_REVIEW/부적합품관리대장_검토보고_20261006.md",claude,
