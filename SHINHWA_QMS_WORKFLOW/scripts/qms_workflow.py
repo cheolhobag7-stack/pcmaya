@@ -84,6 +84,17 @@ def log(fname, row):
 def sha(p: Path):
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
+def find_identical(src: Path, dest_dir: Path, name=None):
+    """dest_dir 에 같은 이름(또는 _v2, _v3 …)으로 이미 저장된 '내용이 같은' 파일이 있으면 그 경로, 없으면 None."""
+    name = name or src.name
+    dest, n = dest_dir / name, 2
+    while dest.exists():
+        if dest.stat().st_size == src.stat().st_size and dest.read_bytes() == src.read_bytes():
+            return dest
+        dest = dest_dir / f"{Path(name).stem}_v{n}{Path(name).suffix}"
+        n += 1
+    return None
+
 def safe_copy(src: Path, dest_dir: Path, name=None) -> Path:
     """절대 덮어쓰지 않는 복사. 동일 내용이 이미 있으면 그 경로 반환, 다르면 _vN."""
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -2400,8 +2411,9 @@ def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
         w = csv.writer(fh)
         w.writerow(["원본 경로", "분류", "사유", "대상 경로", "크기(KB)", "수정일", "처리"])
         for f, cat, why, dst, size, mdate in sorted(plan, key=lambda x: (x[1], str(x[0]))):
-            if dst.exists() and dst.read_bytes() == f.read_bytes():
-                act = "이미 있음(동일)"; same += 1
+            ex = find_identical(f, dst.parent, dst.name)
+            if ex is not None:
+                act = "이미 있음(동일)" + ("" if ex == dst else f" → {ex.name}"); same += 1
             elif apply:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 act = f"복사 → {safe_copy(f, dst.parent, dst.name)}"; copied += 1
