@@ -82,8 +82,10 @@ drive_layout:
   sq: "08_SQ심사"
   customer: "09_고객대응(한온시스템)"
   unsorted: "99_미분류_확인필요"
-  # 2026-10-06 사용자 확인: 출하·수출→생산, 관리계획서·FMEA·ISIR·성적서·크래임·협정서·계측기·교정·GAUGE→품질, IATF·프로세스→QMS문서
-  qms_keywords: ["QMS", "절차서", "작업표준", "매뉴얼", "문서관리대장", "IATF", "프로세스"]   # 또는 파일명이 SH- / SH_ 로 시작
+  # 2026-10-06 사용자 확인: 출하·수출→생산, 관리계획서·FMEA·ISIR·성적서·크래임·협정서·계측기·교정·GAUGE→품질, IATF16949 시스템 폴더·절차서/매뉴얼/프로세스 파일명→QMS문서
+  qms_keywords: ["QMS", "문서관리대장"]   # 파일명·폴더 어디든 / 또는 파일명이 SH- / SH_ 로 시작
+  qms_name_keywords: ["절차서", "작업표준", "매뉴얼", "프로세스", "SHINHWA_QM", "SHINHWA_QP", "SHINHWA_WI", "SHINHWA_FM"]   # 파일명에만 적용(폴더 이름만으로 QMS 로 보내지 않음)
+  qms_folder_keywords: ["IATF16949 시스템"]   # 폴더에만 적용
   sq_keywords: ["SQ"]
   customer_keywords: ["한온", "HANON"]
   skip_names: ["thumbs.db", "desktop.ini", ".ds_store"]

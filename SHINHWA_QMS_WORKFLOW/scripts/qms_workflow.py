@@ -2344,6 +2344,23 @@ def folder_tree(root):
     print(f"[FOLDER TREE] {base} 아래에 {len(names)}개 폴더 준비: " + ", ".join(names))
     return base
 
+def classify_category(rel_dirs, fn, lay, kw):
+    """정리 분류: QMS 문서 > SQ > 단일 모듈 키워드 > 고객사 > 미분류. 반환 (분류키, 사유)
+    QMS: 파일명이 SH-/SH_ 로 시작, qms_keywords(파일명·폴더), qms_name_keywords(파일명만), qms_folder_keywords(폴더만)."""
+    hay = fn + " " + " ".join(rel_dirs)
+    low, fnl, fol = hay.lower(), fn.lower(), " ".join(rel_dirs).lower()
+    mod, mwhy = classify_module(rel_dirs, fn, kw)
+    if (fn.upper().startswith(("SH-", "SH_")) or any(w.lower() in low for w in lay["qms_keywords"])
+            or any(w.lower() in fnl for w in lay.get("qms_name_keywords", [])) or any(w.lower() in fol for w in lay.get("qms_folder_keywords", []))):
+        return "qms", "QMS 문서(SH-/키워드)"
+    if any(re.search(rf"(?<![A-Za-z]){w}(?![A-Za-z])", hay) for w in lay["sq_keywords"]):
+        return "sq", "SQ 심사 자료"
+    if mod:
+        return mod, mwhy
+    if any(w.lower() in low for w in lay["customer_keywords"]):
+        return "customer", "고객사(한온시스템)"
+    return "unsorted", mwhy
+
 def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
     """원본 폴더의 파일을 표준 폴더 구조로 '복사' 계획을 세운다(기본 미리보기). 원본은 읽기만 하며 이동·삭제하지 않는다.
     분류: QMS 문서(SH-/키워드) > SQ > 단일 모듈 키워드 > 한온시스템 > 그 외/여러 모듈은 99_미분류_확인필요. 하위는 파일 수정 연도 폴더."""
@@ -2367,19 +2384,7 @@ def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
                 continue
             if st.st_size > limit:
                 big.append(str(f)); continue
-            hay = (fn + " " + " ".join(f.relative_to(srcp).parts[:-1]))
-            low = hay.lower()
-            mod, mwhy = classify_module(f.relative_to(srcp).parts[:-1], fn, kw)
-            if fn.upper().startswith(("SH-", "SH_")) or any(w.lower() in low for w in lay["qms_keywords"]):
-                cat, why = "qms", "QMS 문서(SH-/키워드)"
-            elif any(re.search(rf"(?<![A-Za-z]){w}(?![A-Za-z])", hay) for w in lay["sq_keywords"]):
-                cat, why = "sq", "SQ 심사 자료"
-            elif mod:
-                cat, why = mod, mwhy
-            elif any(w.lower() in low for w in lay["customer_keywords"]):
-                cat, why = "customer", "고객사(한온시스템)"
-            else:
-                cat, why = "unsorted", mwhy
+            cat, why = classify_category(f.relative_to(srcp).parts[:-1], fn, lay, kw)
             year = dt.datetime.fromtimestamp(st.st_mtime).strftime("%Y")
             plan.append((f, cat, why, dest / lay[cat] / year / fn, st.st_size, dt.datetime.fromtimestamp(st.st_mtime).date()))
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
