@@ -1882,10 +1882,31 @@ def ops_qms_audit():
     print(f"[QMS AUDIT] PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']} → {out.relative_to(ROOT)}")
     return out
 
+def sheet_head_cells(p: Path, rows=10):
+    """엑셀(.xls/.xlsx/.xlsm)의 앞 rows 행 셀 텍스트 목록(공백 제거·소문자). 읽을 수 없으면 빈 목록."""
+    cells, ext = [], p.suffix.lower()
+    try:
+        if ext == ".xls":
+            import xlrd
+            wb = xlrd.open_workbook(str(p), on_demand=True)
+            for sh in wb.sheets():
+                for r in range(min(sh.nrows, rows)):
+                    cells.extend(sh.row_values(r))
+        elif ext in (".xlsx", ".xlsm"):
+            import openpyxl
+            wb = openpyxl.load_workbook(str(p), read_only=True, data_only=True)
+            for ws in wb.worksheets:
+                for row in ws.iter_rows(min_row=1, max_row=rows, values_only=True):
+                    cells.extend(row)
+    except Exception:
+        return []
+    return [re.sub(r"\s+", "", str(c).lower()) for c in cells if c not in (None, "")]
+
 def module_check(key):
     """현장 모듈 입력 점검: 11_INPUT/<모듈>/ 파일의 필수 항목 존재 확인 → 12_OUTPUT/REPORTS/<모듈>_check_*.csv"""
     cfg_key, folder = OPS_MODULES[key]
-    required = cfg("integrated_rules.yaml")["integrated_modules"][cfg_key]["required_fields"]
+    mod_cfg = cfg("integrated_rules.yaml")["integrated_modules"][cfg_key]
+    required, aliases = mod_cfg["required_fields"], mod_cfg.get("field_aliases") or {}
     src = IN_DIR / folder
     src.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
@@ -1897,7 +1918,10 @@ def module_check(key):
         if not text:
             rows.append([str(p.relative_to(ROOT)), key, "HOLD", "본문을 읽을 수 없음(스캔/미지원 형식)"])
             continue
-        miss = [x for x in required if x.lower() not in text.lower()]
+        compact = re.sub(r"\s+", "", text.lower())            # '품 명' 처럼 글자 사이에 공백이 있는 제목도 찾도록 공백을 없애 비교
+        heads = sheet_head_cells(p) if aliases else []
+        ok_alias = lambda x: any(re.sub(r"\s+", "", a.lower()) in heads for a in aliases.get(x, []))   # 열 제목이 동의어와 정확히 같을 때만
+        miss = [x for x in required if re.sub(r"\s+", "", x.lower()) not in compact and not ok_alias(x)]
         rows.append([str(p.relative_to(ROOT)), key, "PASS" if not miss else "HOLD", "; ".join(miss)])
     if not rows:
         rows.append([f"11_INPUT/{folder}", key, "NO_DATA", "입력 데이터 없음"])
@@ -1950,6 +1974,35 @@ def module_words(key):
     out.write_text("\n".join(L) + "\n", encoding="utf-8")
     print(f"[MODULE WORDS {key.upper()}] 엑셀 {nfiles}개 / 제목 후보 {len(word_files)}개 → {out.relative_to(ROOT)}")
     return out
+
+def record_inventory():
+    """모듈별 '기록 종류 있음/없음' 현황: 11_INPUT/<모듈>/ 파일명에 설정(record_types)의 키워드가 있는지로만 판단한다(내용은 판정하지 않음).
+    → 12_OUTPUT/REPORTS/record_inventory_*.md / .csv"""
+    types = cfg("integrated_rules.yaml").get("record_types") or {}
+    rows, L = [], ["# 현장 모듈 기록 종류 있음/없음 현황 (파일명 기준)", f"- 생성: {now()}", "- **주의**: 파일 이름의 키워드로만 판단합니다. '있음'은 해당 이름의 파일이 있다는 뜻이며 내용·최신성은 확인하지 않았습니다. 키워드는 `00_CONFIG/integrated_rules.yaml` 의 `record_types` 에서 담당자가 수정합니다.", ""]
+    for key, (cfg_key, folder) in OPS_MODULES.items():
+        src = IN_DIR / folder
+        names = sorted({p.name for p in src.rglob("*") if p.is_file() and p.name != ".gitkeep"}) if src.exists() else []
+        L += [f"## {key} (파일 {len(names)}개)", ""]
+        if not names:
+            L += ["- NO_DATA: 입력 파일이 없음", ""]
+        L += ["| 기록 종류 | 상태 | 파일 수 | 예시 |", "|---|---|---|---|"]
+        for rtype, kws in (types.get(key) or {}).items():
+            hits = [n for n in names if any(re.sub(r"\s+", "", k.lower()) in re.sub(r"\s+", "", n.lower()) for k in kws)]
+            st = "있음" if hits else ("없음" if names else "NO_DATA")
+            rows.append([key, rtype, st, len(hits), "; ".join(hits[:3])])
+            L.append(f"| {rtype} | {st} | {len(hits)} | {'; '.join(hits[:2])} |")
+        L.append("")
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    stamp = f"{dt.datetime.now():%Y%m%d_%H%M%S}"
+    mdp = unique_path(OUT_DIR / "REPORTS" / f"record_inventory_{stamp}.md")
+    mdp.write_text("\n".join(L) + "\n", encoding="utf-8")
+    cp = unique_path(OUT_DIR / "REPORTS" / f"record_inventory_{stamp}.csv")
+    with open(cp, "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh); w.writerow(["module", "record_type", "status", "files", "examples"]); w.writerows(rows)
+    c = collections.Counter(r[2] for r in rows)
+    print("[RECORD INVENTORY] " + " / ".join(f"{k} {v}" for k, v in c.items()) + f" → {mdp.relative_to(ROOT)}")
+    return rows
 
 def integrated_audit():
     """QMS + 현장 모듈 7종 통합 점검 → 12_OUTPUT/REPORTS/integrated_audit_*.csv/md"""
@@ -2655,6 +2708,7 @@ if __name__ == "__main__":
     elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
+    elif cmd == "recordinventory": record_inventory()
     elif cmd == "modulewords" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_words(sys.argv[2])
     elif cmd == "modulecheck" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_check(sys.argv[2])
     elif cmd == "collectactions": collect_actions()
