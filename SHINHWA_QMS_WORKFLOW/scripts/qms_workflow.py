@@ -2448,6 +2448,83 @@ def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
         print("  원본 폴더는 그대로입니다. 복사본을 확인한 뒤 원본 정리는 사람이 직접 하세요.")
     return out
 
+def sq_match(plan_csv):
+    """SQ 필요서류 240건(SH-FM-123~362)과 E 드라이브 정리 계획(organizeplan CSV)의 08_SQ심사·00_QMS문서 파일을 '파일명'으로 대응시킨다(내용은 읽지 않음).
+    판정: 이름 일치 / 후보(사람 확인) / 같은 SQ 번호 폴더에 자료만 있음 / 자료 없음. → 07_AUDIT/고객심사/SQ_기존자료_대응표.csv, SQ_기존자료_대응보고서.md
+    ※ '이름 일치'는 파일명이 비슷하다는 뜻이며 요구사항을 충족한다는 뜻이 아니다. 충족 여부는 담당자가 내용을 보고 확인한다."""
+    audit = ROOT / "07_AUDIT" / "고객심사"
+    sq_rows = list(csv.DictReader(open(audit / "SQ_FM번호_배정대응표.csv", encoding="utf-8-sig")))
+    dec = {r["정식 SH-FM 번호"]: r["결정"] for r in csv.DictReader(open(audit / "SQ_중복검토_결정.csv", encoding="utf-8-sig"))}
+    plan = [r for r in csv.DictReader(open(plan_csv, encoding="utf-8-sig")) if r["분류"] in ("08_SQ심사", "00_QMS문서")]
+    norm = lambda t: re.sub(r"[^0-9a-z가-힣]", "", t.lower())
+    bigr = lambda t: {t[i:i + 2] for i in range(len(t) - 1)} or {t}
+    num_rx = re.compile(r"^\s*(\d+)\s*\.?\s*-\s*(\d+)")
+    files, seen = [], set()
+    for r in plan:
+        parts = r["원본 경로"].replace("/", "\\").split("\\")[1:]
+        fn, dirs = parts[-1], parts[:-1]
+        key = (fn.lower(), r["분류"])
+        if key in seen:
+            continue                                    # 같은 이름이 여러 폴더에 있으면 한 건으로
+        seen.add(key)
+        nos = {f"{m.group(1)}-{m.group(2)}" for d in dirs for m in [num_rx.match(d)] if m}
+        files.append((fn, norm(Path(fn).stem), nos, r["분류"], "\\".join(parts)))
+    out_rows, tier_c = [], collections.Counter()
+    for q in sq_rows:
+        name, no = q["필요서류(양식명)"], q["번호"]
+        n = norm(re.sub(r"\(.*?\)", "", name)) or norm(name)
+        nb = bigr(n)
+        scored = []
+        for fn, fnn, nos, cat, rel in files:
+            if len(n) >= 3 and (n in fnn or (len(fnn) >= 4 and fnn in n and len(fnn) >= 0.7 * len(n))):
+                sc = 1.0            # 파일명이 서류명을 포함하거나, 파일명이 서류명의 대부분일 때만(체크시트·관리대장 같은 일반 이름은 제외)
+            else:
+                fb = bigr(fnn)
+                sc = 2 * len(nb & fb) / (len(nb) + len(fb)) if fb else 0.0
+            if len(fnn) <= 5:
+                sc = min(sc, 0.65)      # 체크시트·관리대장 같은 짧은 일반 이름은 '이름 일치'로 보지 않고 후보로만 둔다
+            same_no = no in nos
+            scored.append((sc + (0.15 if same_no else 0), sc, same_no, fn, cat, rel))
+        scored.sort(key=lambda x: -x[0])
+        best = scored[0] if scored else None
+        same_folder = [x for x in scored if x[2]]
+        if best and best[1] >= 0.7:
+            tier = "이름 일치"
+        elif best and (best[1] >= 0.4 or (best[2] and best[1] >= 0.25)):
+            tier = "후보(사람 확인)"
+        elif same_folder:
+            tier = "같은 SQ 번호 폴더에 자료만 있음"
+        else:
+            tier = "자료 없음"
+        tier_c[tier] += 1
+        cands = [x for x in scored if x[1] >= 0.25][:3] if tier in ("이름 일치", "후보(사람 확인)") else same_folder[:3]
+        memo = ""
+        if tier in ("이름 일치", "후보(사람 확인)") and q["작성구분"] == "신규 작성 필요":
+            memo = "SQ안은 '신규 작성 필요'인데 비슷한 기존 자료가 있음 — 재사용 가능 여부 확인"
+        elif tier == "자료 없음" and q["작성구분"] == "기존 절차 연계":
+            memo = "'기존 절차 연계'로 표시됐으나 E 드라이브 1차 범위에서 자료를 찾지 못함"
+        out_rows.append([q["SQ NO"], q["구분"], no, name, q["정식 SH-FM 번호"], q["작성구분"], dec.get(q["정식 SH-FM 번호"], ""), tier,
+                         f"{best[1]:.2f}" if best else "", len(same_folder)] + [f"{c[3]} [{c[4]}] ({c[5]})" for c in cands] + [""] * (3 - len(cands)) + [memo])
+    hdr = ["SQ NO", "구분", "번호", "필요서류(양식명)", "정식 SH-FM 번호", "SQ안 작성구분", "중복검토 결정", "판정", "최고 유사도", "같은 번호 폴더 파일 수", "후보1", "후보2", "후보3", "메모"]
+    cp = unique_path(audit / "SQ_기존자료_대응표.csv")
+    with open(cp, "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh); w.writerow(hdr); w.writerows(out_rows)
+    by_gu = collections.defaultdict(collections.Counter)
+    for r in out_rows:
+        by_gu[r[1]][r[7]] += 1
+    tiers = ["이름 일치", "후보(사람 확인)", "같은 SQ 번호 폴더에 자료만 있음", "자료 없음"]
+    L = ["# SQ 필요서류 ↔ E 드라이브 기존 자료 대응 (파일명 기준)", f"- 생성: {now()}", f"- 입력: {Path(plan_csv).name} (08_SQ심사·00_QMS문서 서로 다른 파일 {len(files)}개)", f"- SQ 필요서류: {len(sq_rows)}건",
+         "- **주의**: 파일 이름만 비교했습니다(내용 미확인). '이름 일치'는 파일명이 비슷하다는 뜻이며 요구사항 충족 여부는 담당자가 확인해야 합니다.", "", "## 판정 요약", "", "| 판정 | 건수 |", "|---|---|"]
+    L += [f"| {t} | {tier_c[t]} |" for t in tiers]
+    L += ["", "## 구분별", "", "| 구분 | " + " | ".join(tiers) + " |", "|---|" + "---|" * len(tiers)]
+    L += [f"| {g} | " + " | ".join(str(c[t]) for t in tiers) + " |" for g, c in sorted(by_gu.items())]
+    L += ["", "※ 상세는 `SQ_기존자료_대응표.csv` (후보 파일 경로 포함). 사람이 후보를 확인한 뒤에만 '기존 자료 사용'으로 확정합니다(번호·내용은 임의 생성하지 않음)."]
+    rp = unique_path(audit / "SQ_기존자료_대응보고서.md")
+    rp.write_text("\n".join(L) + "\n", encoding="utf-8")
+    log("workflow_log.csv", [now(), Path(plan_csv).name, "", "sqmatch", str(cp.relative_to(ROOT)), "system", " / ".join(f"{t} {tier_c[t]}" for t in tiers)])
+    print("[SQ MATCH] " + ", ".join(f"{t} {tier_c[t]}" for t in tiers) + f" → {cp.relative_to(ROOT)}")
+    return cp
+
 def make_light_package():
     """PC 에서 드라이브 조사·정리·복사(drivescan/organizeplan/inputsync)만 쓸 수 있는 가벼운 ZIP 을 만든다.
     경로가 짧고(최대 약 60자) 파일이 적어, 전체 저장소 ZIP 이 풀리지 않는 PC 에서도 풀린다. → LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip"""
@@ -2515,6 +2592,7 @@ if __name__ == "__main__":
     elif cmd == "mcphealth": mcp_health_check()
     elif cmd == "foldertree" and len(sys.argv) > 2: folder_tree(sys.argv[2])
     elif cmd == "makelight": make_light_package()
+    elif cmd == "sqmatch" and len(sys.argv) > 2: sq_match(sys.argv[2])
     elif cmd == "drivescan" and len(sys.argv) > 2: drive_scan(sys.argv[2], opt_list("--only"), opt_list("--exclude"))
     elif cmd == "dupscan" and len(sys.argv) > 2: dup_scan(sys.argv[2], opt_list("--only"))
     elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))

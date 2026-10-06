@@ -93,3 +93,4 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-02 07:31:45,/tmp/claude-0/-home-user-pcmaya/0dd4b906-3204-5780-afc8-a35da5d3aa53/scratchpad/fakeE2,,organize,/tmp/claude-0/-home-user-pcmaya/0dd4b906-3204-5780-afc8-a35da5d3aa53/scratchpad/neatroot,system,"7개 복사(원본 유지), 동일 0"
 2026-10-02 07:32:00,organizeplan 시험,,organize,(임시 폴더),system,시험 보고서 2개 삭제 — 실제 파일 정리 아님
 2026-10-02 07:34:52,drivescan/inputsync 시험,,inputsync,(임시 폴더),system,시험 보고서 2개 삭제 — 실제 드라이브 조사 아님
+2026-10-06 02:09:13,E드라이브_정리계획_20261006.csv,,sqmatch,07_AUDIT/고객심사/SQ_기존자료_대응표.csv,system,이름 일치 19 / 후보(사람 확인) 109 / 같은 SQ 번호 폴더에 자료만 있음 41 / 자료 없음 71
