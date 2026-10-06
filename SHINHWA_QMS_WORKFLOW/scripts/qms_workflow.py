@@ -13,6 +13,8 @@
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
   python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
   python3 scripts/qms_workflow.py makelight   # PC 용 가벼운 ZIP(LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip) 생성
+  python3 scripts/qms_workflow.py dupscan <폴더> [--only A,B]   # 최상위 폴더 간 중복 조사(이름+크기, 읽기 전용)
+  (drivescan/organizeplan/inputsync 공통 옵션: --only 폴더A,폴더B  --exclude 폴더C  ← 최상위 폴더 이름)
   python3 scripts/qms_workflow.py drivescan <폴더>   # 분류 키워드 조정용 현황 조사(읽기 전용, 이름만 집계)
   python3 scripts/qms_workflow.py foldertree <루트>                       # 정리용 표준 폴더 구조 생성
   python3 scripts/qms_workflow.py organizeplan <원본폴더> <루트> [--apply]  # 파일을 표준 구조로 복사 계획(기본 미리보기, 원본 유지)
@@ -2142,6 +2144,21 @@ def mcp_safe_start():
         print("[MCP SAFE START] FAIL 항목이 있어 외부 연동(MCP) 사용은 보류합니다. 로컬 QMS 운영은 계속합니다.")
     full_operation()
 
+def opt_list(flag):
+    """명령행 옵션 '--only 폴더A,폴더B' / '--exclude 폴더C' 값을 목록으로 읽는다(최상위 폴더 이름, 대소문자 무시)."""
+    if flag in sys.argv:
+        i = sys.argv.index(flag)
+        if i + 1 < len(sys.argv):
+            return [x.strip().lower() for x in sys.argv[i + 1].split(",") if x.strip()]
+    return []
+
+def prune_scope(base, dp, dns, fns, only, exclude):
+    """최상위 폴더 범위 제한: only 가 있으면 그 폴더만, exclude 는 제외. only 가 있으면 루트 직하 파일도 제외한다."""
+    if Path(dp) == base:
+        dns[:] = [d for d in dns if (not only or d.lower() in only) and d.lower() not in exclude]
+        if only:
+            fns[:] = []
+
 def classify_module(rel_parts, fn, kw):
     """모듈 분류: ① 가까운 상위 폴더부터 올라가며 '한 모듈'만 맞는 폴더 이름 ② 파일명 ③ 상위 폴더 전체. 반환 (모듈|None, 사유)"""
     mods_of = lambda text: [k for k, ws in kw.items() if any(w.lower() in text.lower() for w in ws)]
@@ -2159,7 +2176,7 @@ def classify_module(rel_parts, fn, kw):
         return allm[0], "상위 폴더 전체"
     return None, ("여러 모듈(폴더): " + "/".join(allm)) if allm else "키워드 없음"
 
-def drive_scan(src):
+def drive_scan(src, only=(), exclude=()):
     """분류 키워드 조정용 현황 조사(읽기 전용): 확장자별·최상위 폴더별 파일 수, 자주 나오는 이름 토큰, 현재 규칙의 분류 결과·미분류 토큰.
     파일 내용은 읽지 않으며 이름만 집계한다. → 12_OUTPUT/REPORTS/drivescan_*.md"""
     base = Path(src).expanduser()
@@ -2172,6 +2189,7 @@ def drive_scan(src):
     print(f"[DRIVE SCAN] 조사 시작: {base}  (파일이 많으면 몇 분 걸립니다. 중단하려면 Ctrl+C)", flush=True)
     for dp, dns, fns in os.walk(base):
         dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
+        prune_scope(base, dp, dns, fns, only, exclude)
         for fn in fns:
             if fn.startswith("~$") or fn.lower() in ("thumbs.db", "desktop.ini"):
                 continue
@@ -2191,7 +2209,7 @@ def drive_scan(src):
                     tok_un[t] += 1
             if not mod and len(sample_un) < 25:
                 sample_un.append(f"{f.relative_to(base)}  ({why})")
-    L = ["# 드라이브 현황 조사(분류 키워드 조정용)", f"- 생성: {now()}", f"- 대상: {base} (이름만 집계, 내용은 읽지 않음)", f"- 파일 {total}개", "",
+    L = ["# 드라이브 현황 조사(분류 키워드 조정용)", f"- 생성: {now()}", f"- 대상: {base} (이름만 집계, 내용은 읽지 않음)" + (f" / 포함 폴더: {', '.join(only)}" if only else "") + (f" / 제외 폴더: {', '.join(exclude)}" if exclude else ""), f"- 파일 {total}개", "",
          "## 현재 키워드 규칙의 분류 결과", "", "| 분류 | 파일 수 |", "|---|---|"] + [f"| {k} | {v} |" for k, v in sorted(res_c.items())]
     L += ["", "## 확장자별", ""] + [f"- {k}: {v}" for k, v in ext_c.most_common(12)]
     L += ["", "## 최상위 폴더별 파일 수 (상위 25)", ""] + [f"- {k}: {v}" for k, v in top_c.most_common(25)]
@@ -2205,7 +2223,58 @@ def drive_scan(src):
     print(f"[DRIVE SCAN] 파일 {total}개 / 분류 " + ", ".join(f"{k} {v}" for k, v in sorted(res_c.items())) + f" → {out.relative_to(ROOT)}")
     return out
 
-def input_sync(src, apply=False):
+def dup_scan(src, folders=()):
+    """최상위 폴더 간 중복 조사(읽기 전용): 파일 이름+크기가 같으면 같은 파일 후보로 본다(내용은 읽지 않음).
+    각 폴더의 파일 수, 다른 폴더에도 있는 파일 수, 고유 파일 수를 보고한다. → 12_OUTPUT/REPORTS/dupscan_*.md"""
+    base = Path(src).expanduser()
+    if not base.exists():
+        sys.exit(f"폴더를 찾을 수 없음: {src}")
+    want = [x.lower() for x in folders]
+    skip = {"$recycle.bin", "system volume information", "windows", "program files", "program files (x86)", ".git", "node_modules", "__pycache__", "appdata"}
+    seen, total = collections.defaultdict(set), 0       # (이름,크기) → 최상위 폴더 집합
+    per_top = collections.defaultdict(list)
+    print(f"[DUP SCAN] 조사 시작: {base}  (이름·크기만 비교, 내용은 읽지 않음. 중단: Ctrl+C)", flush=True)
+    for dp, dns, fns in os.walk(base):
+        dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
+        if Path(dp) == base:
+            dns[:] = [d for d in dns if not want or d.lower() in want]
+            fns[:] = []
+        for fn in fns:
+            if fn.startswith("~$") or fn.lower() in ("thumbs.db", "desktop.ini"):
+                continue
+            f = Path(dp) / fn
+            try:
+                size = f.stat().st_size
+            except OSError:
+                continue
+            top = f.relative_to(base).parts[0]
+            key = (fn.lower(), size)
+            seen[key].add(top); per_top[top].append(key)
+            total += 1
+            if total % 5000 == 0:
+                print(f"  ... {total:,}개 확인함", flush=True)
+    L = ["# 폴더 간 중복 조사 (이름+크기 기준, 읽기 전용)", f"- 생성: {now()}", f"- 대상: {base}", f"- 파일 {total}개", "",
+         "| 최상위 폴더 | 파일 수 | 다른 폴더에도 있음 | 이 폴더에만 있음 |", "|---|---|---|---|"]
+    for top, keys in sorted(per_top.items(), key=lambda x: -len(x[1])):
+        shared = sum(1 for k in keys if len(seen[k]) > 1)
+        L.append(f"| {top} | {len(keys)} | {shared} | {len(keys) - shared} |")
+    tops = sorted(per_top)
+    L += ["", "## 폴더 쌍별 겹치는 파일 수(이름+크기 같음)", "", "| 폴더 A | 폴더 B | 겹침 |", "|---|---|---|"]
+    pair = collections.Counter()
+    for k, ts in seen.items():
+        ts = sorted(ts)
+        for i in range(len(ts)):
+            for j in range(i + 1, len(ts)):
+                pair[(ts[i], ts[j])] += 1
+    L += [f"| {a} | {b} | {n} |" for (a, b), n in pair.most_common(30)]
+    L += ["", "※ 이름과 크기만 같은 후보입니다. 같은 파일 여부는 사람이 확인하세요. 아무것도 이동·삭제하지 않았습니다."]
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    out = unique_path(OUT_DIR / "REPORTS" / f"dupscan_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"[DUP SCAN] 파일 {total}개 / 폴더 {len(per_top)}개 → {out.relative_to(ROOT)}")
+    return out
+
+def input_sync(src, apply=False, only=(), exclude=()):
     """로컬 폴더(예: E:\\)의 현장 파일을 모듈별로 11_INPUT 에 '복사'한다. 원본 폴더는 읽기만 한다(수정·삭제·이동 없음).
     기본은 미리보기(dry-run)이며 --apply 일 때만 복사한다. 같은 내용은 건너뛰고, 같은 이름·다른 내용은 _vN 으로 새로 저장한다.
     두 모듈 이상에 걸리거나 분류할 수 없는 파일은 복사하지 않고 목록으로 보고한다."""
@@ -2218,6 +2287,7 @@ def input_sync(src, apply=False):
     plan, ambiguous, unmatched, too_big = [], [], 0, []
     for dp, dns, fns in os.walk(base):
         dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
+        prune_scope(base, dp, dns, fns, only, exclude)
         for fn in fns:
             f = Path(dp) / fn
             if f.suffix.lower() not in exts or fn.startswith("~$"):
@@ -2274,7 +2344,7 @@ def folder_tree(root):
     print(f"[FOLDER TREE] {base} 아래에 {len(names)}개 폴더 준비: " + ", ".join(names))
     return base
 
-def organize_plan(src, dest_root, apply=False):
+def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
     """원본 폴더의 파일을 표준 폴더 구조로 '복사' 계획을 세운다(기본 미리보기). 원본은 읽기만 하며 이동·삭제하지 않는다.
     분류: QMS 문서(SH-/키워드) > SQ > 단일 모듈 키워드 > 한온시스템 > 그 외/여러 모듈은 99_미분류_확인필요. 하위는 파일 수정 연도 폴더."""
     srcp, dest = Path(src).expanduser(), Path(dest_root).expanduser()
@@ -2286,6 +2356,7 @@ def organize_plan(src, dest_root, apply=False):
     plan, big = [], []
     for dp, dns, fns in os.walk(srcp):
         dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != dest.resolve()]
+        prune_scope(srcp, dp, dns, fns, only, exclude)
         for fn in fns:
             f = Path(dp) / fn
             if fn.lower() in lay["skip_names"] or fn.startswith("~$") or fn.lower().endswith(".tmp"):
@@ -2401,9 +2472,10 @@ if __name__ == "__main__":
     elif cmd == "mcphealth": mcp_health_check()
     elif cmd == "foldertree" and len(sys.argv) > 2: folder_tree(sys.argv[2])
     elif cmd == "makelight": make_light_package()
-    elif cmd == "drivescan" and len(sys.argv) > 2: drive_scan(sys.argv[2])
-    elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv)
-    elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv)
+    elif cmd == "drivescan" and len(sys.argv) > 2: drive_scan(sys.argv[2], opt_list("--only"), opt_list("--exclude"))
+    elif cmd == "dupscan" and len(sys.argv) > 2: dup_scan(sys.argv[2], opt_list("--only"))
+    elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))
+    elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))
     elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
