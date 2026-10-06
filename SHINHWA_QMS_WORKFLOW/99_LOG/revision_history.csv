@@ -154,3 +154,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"5.3 시험 대상 LOT 세부 선정 기준은 두지 않음(사용자 확인); 후속 확인 목록 정리",system,
 2026-10-06,FM-101-121,00,03,원본↔수정본 DIFF 생성 +95/-95: SH-FM-101-121_현장작성양식_Rev03_수정본3__vs__SH-FM-101-121_현장작성양식_Rev00.md,system,
 2026-10-06,SH-QP-018 / SH-FM-101-121,Rev.03(수정본3→4),,"최신 초안 재저장·recheck(사용자 지시): SH-QP-018 Rev03_수정본4.docx=HOLD(승인 전), SH-FM-101-121 Rev03_수정본3.xlsx(공급자 LOT 통일)=HOLD, 각 승인대기 패키지 생성·이전 패키지(QP-018 수정본3, FM 수정본2) STATUS 에 대체됨 표기(미삭제)",system,
+2026-10-06,SH-FM-101-121,Rev.03,Rev.03(수정본3),"사용자 결정: 현장작성양식은 Rev.03 유지(Rev 올리지 않음). 릴리스된 Rev.03(05_FINAL/RELEASED/SH-FM-101-121/Rev03)과 번호 동일 — 승인·finalize 시 기존 Rev03 은 06_HISTORY 로 이동되며, 변경 내용(보존 3년·보관 품질팀 서버·SH-FM-104 입고 LOT/공급자 LOT 열)의 개정 사유·개정일 기록 필요(개정일 미확정, 임의 기입 금지)",system,
