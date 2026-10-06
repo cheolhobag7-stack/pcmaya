@@ -1920,7 +1920,14 @@ def module_check(key):
             continue
         compact = re.sub(r"\s+", "", text.lower())            # '품 명' 처럼 글자 사이에 공백이 있는 제목도 찾도록 공백을 없애 비교
         heads = sheet_head_cells(p) if aliases else []
-        ok_alias = lambda x: any(re.sub(r"\s+", "", a.lower()) in heads for a in aliases.get(x, []))   # 열 제목이 동의어와 정확히 같을 때만
+        def ok_alias(x):                       # 열 제목이 동의어와 정확히 같을 때만('re:' 로 시작하면 정규식 전체 일치)
+            for a in aliases.get(x, []):
+                if a.startswith("re:"):
+                    if any(re.fullmatch(a[3:], h) for h in heads):
+                        return True
+                elif re.sub(r"\s+", "", a.lower()) in heads:
+                    return True
+            return False
         miss = [x for x in required if re.sub(r"\s+", "", x.lower()) not in compact and not ok_alias(x)]
         rows.append([str(p.relative_to(ROOT)), key, "PASS" if not miss else "HOLD", "; ".join(miss)])
     if not rows:
