@@ -92,3 +92,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 읽기 권한: 품질팀·현장 부서 모두 가능 반영(사용자 확인); 현장 기록 제출 방법·백업 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 현장 기록은 자재출하팀이 스캔해 서버에 저장 반영(사용자 확인); 쓰기 품질팀만과 충돌 — 권한 범위·스캔 기한·원본 처리·백업 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 자재출하팀은 저장(업로드) 전용 권한, 수정·삭제는 품질팀만 — 권한 충돌 정리(사용자 결정); 스캔 기한·원본 처리·확인 절차·백업 확인 필요",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 스캔 기한 작성 후 3일 이내 반영(사용자 확인); 달력일/영업일·원본 처리·확인 절차·백업 확인 필요",system,
