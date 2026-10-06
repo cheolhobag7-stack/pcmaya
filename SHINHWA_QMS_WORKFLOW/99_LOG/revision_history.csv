@@ -70,3 +70,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.03,Rev.04(DRAFT),"사용자 결정 반영 초안 작성: LOT 번호 기존 체계 유지, 보존 3년·추적 목표 1시간 반영(03_EDIT/AUTO_DRAFT/SH-QP-018_식별및추적성관리절차서_Rev04_DRAFT.md, 미승인·[확인 필요] 잔존)",system,
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"3.2 기존 LOT 번호 형식 L260817-0019 반영(사용자 확인; 각 자리 의미는 확인 필요)",system,
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"3.2 LOT 번호 자리 의미 반영(사용자 확인: L+생산일 YYMMDD+일별 순번 4자리)",system,
+2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"3.2 입고·공정·완제품 LOT 동일 형식 반영(사용자 확인); 입고 LOT 일자 기준은 확인 필요",system,
