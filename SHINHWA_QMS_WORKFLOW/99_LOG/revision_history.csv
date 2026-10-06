@@ -61,3 +61,8 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-02,SH-FM-337-356_SQ낮음_양식초안_Rev00,00,,"SQ 낮음 양식 초안 20종 생성(SH-FM-337~SH-FM-356, 초안·미승인)",system,
 2026-10-02,SH_FM_Master_Rev00_20260929_수정본_SQ중복통합,,,"SQ 중복 통합 18건 확정(사용자 지시): 계측기관리대장 SH-FM-173→023, 설비일상점검표 126/141→101, 장기재고점검 269→118, 같은 서류명 반복 14건 통합. 결정표 SQ_중복검토_결정.csv / 새 파일 SH_FM_Master_Rev00_20260929_수정본_SQ중복통합.xlsx",system,
 2026-10-02,SH_FM_Master_Rev00_20260929_수정본_SQ중복통합,00,00,원본↔수정본 DIFF 생성 +18/-18: SH_FM_Master_Rev00_20260929_수정본_SQ중복통합__vs__SH_FM_Master_Rev00_20260929_수정본_SQ번호배정.md,system,
+2026-10-06,미정(LOT관리기준서 9/21본),,,원본 등록(업로드 저장): 01_ORIGINAL/LOT관리기준서_보완본_Rev04_문서번호미정.docx — 분류 불가→02_REVIEW/내용보완필요,system,
+2026-10-06,미정(LOT관리기준서 9/15본),,,원본 등록(업로드 저장): 01_ORIGINAL/LOT관리기준서_통합보완본_Rev04_0915본.docx — 같은 Rev.04 의 다른 버전,system,
+2026-10-06,QP-MAT-01(제정 예정),,Rev.0,원본 등록(업로드 저장): 01_ORIGINAL/LOT추적성관리_프로세스_SOP_Rev0.docx,system,
+2026-10-06,QP-MAT-01(제정 예정),Rev.0,Rev.1 검토안,"원본 등록(업로드 저장, 미승인): 01_ORIGINAL/LOT추적성관리_프로세스_SOP_Rev1_검토안.docx",system,
+2026-10-06,LOT 문서 4건,,,검토보고 작성: 02_REVIEW/LOT문서_검토보고_20261006.md (HOLD),system,
