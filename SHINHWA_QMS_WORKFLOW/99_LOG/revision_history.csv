@@ -136,3 +136,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 실패 알림 수단=메일 반영(사용자 확인); 수신 주소(담당자 확정 후)·재실행 기한·기록 방법 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 재실행 기한=알게 된 날 다음날까지 반영(사용자 확인; 달력일 가정); 재실행 불가 시 조치·실패 기록 방법 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 재실행 불가 시 품질책임자에게 보고 반영(사용자 확인); 보고 방법·시한·실패 기록 방법 확인 필요",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 품질책임자 보고=메일·당일 안(재실행 불가 확인일 가정) 반영(사용자 확인); 실패 기록 방법 확인 필요",system,
