@@ -88,5 +88,16 @@ drive_layout:
   qms_folder_keywords: ["IATF16949 시스템"]   # 폴더에만 적용
   sq_keywords: ["SQ"]
   customer_keywords: ["한온", "HANON"]
+  # 2026-10-06 사용자 확인: 다른 규칙으로 분류되지 않은(미분류) 파일에만 적용하는 폴더 이름 → 분류
+  folder_overrides:
+    "자격인증": training
+    "CLAIM": quality
+    "이상발생보고서": quality
+    "특별특성": quality
+    "조도측정": safety
+    "작업표준서": qms
+    "협력사 평가": quality
+    "공급능력 관리": quality
+    "인증서": sq
   skip_names: ["thumbs.db", "desktop.ini", ".ds_store"]
   max_file_mb: 200

@@ -2359,6 +2359,9 @@ def classify_category(rel_dirs, fn, lay, kw):
         return mod, mwhy
     if any(w.lower() in low for w in lay["customer_keywords"]):
         return "customer", "고객사(한온시스템)"
+    for name, target in (lay.get("folder_overrides") or {}).items():       # 미분류일 때만: 사용자가 확인한 폴더 이름 → 분류
+        if any(name.lower() in d.lower() for d in rel_dirs):
+            return target, f"폴더 지정({name})"
     return "unsorted", mwhy
 
 def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
@@ -2402,6 +2405,20 @@ def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
             else:
                 act = "복사 예정"
             w.writerow([f, lay[cat], why, dst, size // 1024, mdate, act])
+    stale = []                                   # 이전 실행에서 99_미분류에 복사됐다가 지금은 다른 분류가 된 같은 내용의 복사본(삭제하지 않고 목록만)
+    for f, cat, why, dst, size, mdate in plan:
+        if cat != "unsorted":
+            old_copy = dest / lay["unsorted"] / dst.parent.name / f.name
+            try:
+                if old_copy.exists() and old_copy.stat().st_size == size and old_copy.read_bytes() == f.read_bytes():
+                    stale.append(old_copy)
+            except OSError:
+                pass
+    if stale:
+        sp = unique_path(OUT_DIR / "REPORTS" / f"organize_stale99_{dt.datetime.now():%Y%m%d_%H%M%S}.csv")
+        with open(sp, "w", newline="", encoding="utf-8-sig") as fh:
+            csv.writer(fh).writerows([["99_미분류_확인필요 에 남아 있는 옛 복사본(새 위치에 같은 파일이 있음, 삭제는 사람이 확인 후)"]] + [[str(x)] for x in stale])
+        print(f"  99_미분류 에 남은 옛 복사본 {len(stale)}개 → {sp.relative_to(ROOT)} (삭제하지 않음)")
     cnt = collections.Counter(lay[c] for _, c, *_ in plan)
     print(f"[ORGANIZE] {'복사 ' + str(copied) + '개' if apply else '미리보기: 복사 예정 ' + str(len(plan) - same) + '개'} / 동일 {same} / 용량초과 {len(big)} → {out.relative_to(ROOT)}")
     print("  분류별: " + ", ".join(f"{k} {v}" for k, v in sorted(cnt.items())))
