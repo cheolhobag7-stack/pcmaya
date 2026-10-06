@@ -133,3 +133,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-FM-[번호 미정],,,"백업 복구 점검 기록 초안: 보존기간 3년 반영(사용자 확인), QP-018 초안 7.4 반영",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 별도 장비는 담당자 확정 후 지정(사용자 확인; 지정 전 미정 유지). 백업 실패 조치 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 실패 시 담당자에게 알림 반영(사용자 확인; 대상=품질팀 담당자 가정); 알림 수단·재실행 기한·기록 방법 확인 필요",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 실패 알림 수단=메일 반영(사용자 확인); 수신 주소(담당자 확정 후)·재실행 기한·기록 방법 확인 필요",system,
