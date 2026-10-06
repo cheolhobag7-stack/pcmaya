@@ -162,3 +162,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-FM-262,,,"SQ_FM번호_배정대응표 정정본 작성(사용자 지시): SQ_FM번호_배정대응표_정정본.csv — SH-FM-262 연계 SH-WI-001→SH-QP-018·SH-WI-005, 플래그에 정정·통합 표기(원본 CSV 유지). qms_workflow.py 가 정정본을 우선 읽도록 sq_map_file 추가, makelight 재생성",system,
 2026-10-06,SH-FM-[번호 미정](기록 인계대장),,,"신규 SH-FM 번호는 담당자 확정 후 지정(사용자 확인; 지정 전까지 미정 유지). QP-018 초안 7.4 반영",system,
 2026-10-06,SH-FM-[번호 미정](백업 복구 점검 기록),,,"신규 SH-FM 번호는 담당자 확정 후 지정(사용자 확인; 지정 전까지 미정 유지). QP-018 초안 7.4 반영",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 백업 실패 알림 수신 메일 주소·백업 별도 장비는 담당자 확정 후 지정으로 확인(사용자 확인; 초안 문구 기존과 동일, 변경 없음)",system,
