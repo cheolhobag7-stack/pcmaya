@@ -169,3 +169,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"시행일은 담당자 확정 후 지정으로 표기(사용자 확인; 지정 전까지 미정, 임의 기입 금지). md·Word 초안 갱신, 수정완료 수정본5 에는 미반영(표기 변경만)",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"작성·검토·승인은 직책만 표기(주관부서 담당 / 품질책임자 / 대표이사·권한자, 현행 Rev.03 표기와 동일; 사용자 확인). 성명·서명·일자 미기재. md·Word 초안 갱신",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"작성 표기는 직책만(주관부서 담당)으로 유지, 구체 부서명 미기재 확정(사용자 확인; 초안 변경 없음)",system,
+2026-10-06,SH-FM-101-121,Rev.03,Rev.03(DRAFT),"현장작성양식 개정일은 담당자 확정 후 지정(사용자 확인): 개정 초안(AUTO_DRAFT) 21개 시트+안내 시트의 개정일 2026-09-01 → 담당자 확정 후 지정 표기(제정일 2026-09-01 유지). 수정완료 수정본3 에는 미반영",system,
