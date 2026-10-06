@@ -1191,7 +1191,7 @@ def sq_audit():
                 first = t.splitlines()[0].replace(n.strip(), "").strip() if t else ""
                 if first:
                     known.setdefault(n.strip(), first)
-    mapf_ = adir / "SQ_FM번호_배정대응표.csv"
+    mapf_ = sq_map_file(adir)
     if mapf_.exists():   # SQ 필요서류에 새로 배정한 번호는 '기존 양식' 후보에서 제외 (자기 자신과 매칭 방지)
         assigned = {r["정식 SH-FM 번호"] for r in csv.DictReader(open(mapf_, encoding="utf-8-sig"))}
         known = {k: v for k, v in known.items() if k not in assigned}
@@ -1357,7 +1357,7 @@ def sq_drafts(priority="높음", overwrite=False):
     from openpyxl import Workbook, load_workbook
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
     adir = ROOT / "07_AUDIT" / "고객심사"
-    mp = adir / "SQ_FM번호_배정대응표.csv"
+    mp = sq_map_file(adir)
     if not mp.exists():
         sys.exit("먼저 sqnumber 로 정식 번호를 배정하세요")
     sqf = sorted(adir.glob("SQ*정식번호반영*.xlsx"), key=lambda f: f.stat().st_mtime)[-1]
@@ -1824,6 +1824,11 @@ CUST_DIR, BACKUP_DIR = ROOT / "15_CUSTOMER_RESPONSE", ROOT / "16_BACKUP"
 AUDIT_KINDS = {"internal": "INTERNAL", "customer": "CUSTOMER", "certification": "CERTIFICATION"}   # 14_AUDIT 하위 (OPERATION 패키지 구조)
 AUDIT_DIR = ROOT / "14_AUDIT"
 
+def sq_map_file(adir: Path) -> Path:
+    """SQ 번호 배정대응표: 정정본(`_정정본*.csv`, 가장 최근)이 있으면 그것을, 없으면 원래 파일을 읽는다(원본은 유지)."""
+    fixed = sorted(adir.glob("SQ_FM번호_배정대응표_정정본*.csv"), key=lambda f: f.stat().st_mtime)
+    return fixed[-1] if fixed else adir / "SQ_FM번호_배정대응표.csv"
+
 def latest_file(folder: Path, pattern: str):
     fs = sorted(folder.glob(pattern), key=lambda f: f.stat().st_mtime) if folder.exists() else []
     return fs[-1] if fs else None
@@ -2107,7 +2112,7 @@ def dashboard_data():
     af = latest_file(OUT_DIR / "ACTION_ITEMS", "action_items_*.csv")
     acts = read_csv_rows(af)
     sq = {}
-    mp = ROOT / "07_AUDIT" / "고객심사" / "SQ_FM번호_배정대응표.csv"
+    mp = sq_map_file(ROOT / "07_AUDIT" / "고객심사")
     if mp.exists():
         sq = {"required_docs": len(read_csv_rows(mp)), "number_assigned": len(read_csv_rows(mp)),
               "drafts_created": sum(1 for _ in (D["edit"] / "AUTO_DRAFT").glob("SQ_*_초안/*.xlsx")), "approved_forms": 0}
@@ -2194,7 +2199,7 @@ def audit_package(kind):
             ("MANAGEMENT", MGMT_DIR, ["WEEKLY/*", "MONTHLY/*"]),
             ("RELEASE", D["final"] / "RELEASED", ["배포목록.csv", "최종보고서*", "무결성검사*"])]
     if kind in ("customer", "certification"):
-        srcs.append(("SQ", ROOT / "07_AUDIT" / "고객심사", ["SQ_필요서류_대조보고서*", "SQ_FM번호_배정대응표.csv", "SQ_중복검토_*"]))
+        srcs.append(("SQ", ROOT / "07_AUDIT" / "고객심사", ["SQ_필요서류_대조보고서*", "SQ_FM번호_배정대응표*.csv", "SQ_중복검토_*"]))
     n = 0
     for name, base, pats in srcs:
         (pkg / name).mkdir()
@@ -2600,7 +2605,7 @@ def sq_match(plan_csv):
     판정: 이름 일치 / 후보(사람 확인) / 같은 SQ 번호 폴더에 자료만 있음 / 자료 없음. → 07_AUDIT/고객심사/SQ_기존자료_대응표.csv, SQ_기존자료_대응보고서.md
     ※ '이름 일치'는 파일명이 비슷하다는 뜻이며 요구사항을 충족한다는 뜻이 아니다. 충족 여부는 담당자가 내용을 보고 확인한다."""
     audit = ROOT / "07_AUDIT" / "고객심사"
-    sq_rows = list(csv.DictReader(open(audit / "SQ_FM번호_배정대응표.csv", encoding="utf-8-sig")))
+    sq_rows = list(csv.DictReader(open(sq_map_file(audit), encoding="utf-8-sig")))
     dec = {r["정식 SH-FM 번호"]: r["결정"] for r in csv.DictReader(open(audit / "SQ_중복검토_결정.csv", encoding="utf-8-sig"))}
     plan = [r for r in csv.DictReader(open(plan_csv, encoding="utf-8-sig")) if r["분류"] in ("08_SQ심사", "00_QMS문서")]
     norm = lambda t: re.sub(r"[^0-9a-z가-힣]", "", t.lower())
