@@ -2334,9 +2334,9 @@ def input_sync(src, apply=False, only=(), exclude=()):
     L += ["## 모듈별 복사 대상", "", "| 모듈 | 파일 | 처리 |", "|---|---|---|"]
     for mod, f in sorted(plan, key=lambda x: (x[0], str(x[1]))):
         dest_dir = IN_DIR / OPS_MODULES[mod][1]
-        existing = dest_dir / f.name
-        if existing.exists() and existing.read_bytes() == f.read_bytes():
-            act = "이미 있음(동일)"; same += 1
+        ex = find_identical(f, dest_dir)
+        if ex is not None:
+            act = "이미 있음(동일)" + ("" if ex.name == f.name else f" → {ex.name}"); same += 1
         elif apply:
             dst = safe_copy(f, dest_dir)
             act = f"복사 → {dst.relative_to(ROOT)}"; copied += 1
