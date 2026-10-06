@@ -1,0 +1,38 @@
+{
+  "file": "SH-QP-018_식별및추적성관리절차서_Rev03_수정본.md",
+  "checked": "2026-10-06 04:57:30",
+  "sha256": "a4c7c15fa85eeec75190875a54f92a6fde18f5d829450a69e0390c75974dc2c4",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "회사명 미표기 ((주)신화에이치앤티, 주식회사 신화에이치앤티, 신화에이치앤티)",
+      "suggestion": "회사명 (주)신화에이치앤티 표기"
+    },
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '식별및추적성관리절차서' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    },
+    {
+      "category": "내용보완",
+      "message": "필수 항목 '적용범위' 누락",
+      "suggestion": "'적용범위' 항목 작성"
+    },
+    {
+      "category": "내용보완",
+      "message": "필수 항목 '책임과 권한' 누락",
+      "suggestion": "'책임과 권한' 항목 작성"
+    },
+    {
+      "category": "내용보완",
+      "message": "페이지 번호 없음",
+      "suggestion": "머리글/바닥글에 Page X of Y 삽입"
+    },
+    {
+      "category": "내용보완",
+      "message": "목차 없음",
+      "suggestion": "목차 삽입"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "file": "SH-FM-번호미정_백업복구점검기록_수정본.xlsx",
+  "checked": "2026-10-06 04:57:30",
+  "sha256": "3e35c708791c06b8188d71f8185585f49cc216440bbabd380a614f8c1c6e1aa9",
+  "units": [],
+  "issues": [
+    {
+      "category": "문서번호",
+      "message": "파일명에서 문서번호를 찾을 수 없음",
+      "suggestion": "파일명 앞에 문서번호 부여 [확인 필요]"
+    },
+    {
+      "category": "개정번호",
+      "message": "파일명에 Rev 표기 없음",
+      "suggestion": "파일명에 _Rev.NN 추가 (초기 문서는 Rev.00)"
+    },
+    {
+      "category": "내용보완",
+      "message": "파일명에서 문서명을 찾을 수 없음 (형식: 문서번호_문서명_Rev.NN)",
+      "suggestion": "문서명 [확인 필요]"
+    },
+    {
+      "category": "내용보완",
+      "message": "결재란 항목 누락: 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    }
+  ]
+}
