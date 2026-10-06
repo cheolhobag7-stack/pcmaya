@@ -11,7 +11,7 @@
   python3 scripts/qms_workflow.py package F  # 04_APPROVAL/PACKAGES 승인 패키지 생성(Gate/검토요약/DIFF/체크리스트)
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
-  python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
+  python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply] [--match 키워드1,키워드2]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
   python3 scripts/qms_workflow.py makelight   # PC 용 가벼운 ZIP(LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip) 생성
   python3 scripts/qms_workflow.py dupscan <폴더> [--only A,B]   # 최상위 폴더 간 중복 조사(이름+크기, 읽기 전용)
   (drivescan/organizeplan/inputsync 공통 옵션: --only 폴더A,폴더B  --exclude 폴더C  ← 최상위 폴더 이름)
@@ -2430,7 +2430,7 @@ def dup_scan(src, folders=()):
     print(f"[DUP SCAN] 파일 {total}개 / 폴더 {len(per_top)}개 → {out.relative_to(ROOT)}")
     return out
 
-def input_sync(src, apply=False, only=(), exclude=()):
+def input_sync(src, apply=False, only=(), exclude=(), match=(), force_mod=None):
     """로컬 폴더(예: E:\\)의 현장 파일을 모듈별로 11_INPUT 에 '복사'한다. 원본 폴더는 읽기만 한다(수정·삭제·이동 없음).
     기본은 미리보기(dry-run)이며 --apply 일 때만 복사한다. 같은 내용은 건너뛰고, 같은 이름·다른 내용은 _vN 으로 새로 저장한다.
     두 모듈 이상에 걸리거나 분류할 수 없는 파일은 복사하지 않고 목록으로 보고한다."""
@@ -2448,6 +2448,8 @@ def input_sync(src, apply=False, only=(), exclude=()):
             f = Path(dp) / fn
             if f.suffix.lower() not in exts or fn.startswith("~$"):
                 continue
+            if match and not any(m in re.sub(r"\s+", "", (fn + " " + str(f.parent.relative_to(base))).lower()) for m in match):
+                continue                                   # --match: 파일명·폴더명에 키워드가 있는 파일만
             try:
                 size = f.stat().st_size
             except OSError:
@@ -2455,7 +2457,7 @@ def input_sync(src, apply=False, only=(), exclude=()):
             if size > limit:
                 too_big.append(str(f)); continue
             rel = f.relative_to(base).parts
-            mod, why = classify_module(rel[:-1], fn, rules["keywords"])
+            mod, why = (force_mod, "지정") if force_mod else classify_module(rel[:-1], fn, rules["keywords"])
             if mod:
                 plan.append((mod, f))
             elif why.startswith("여러"):
@@ -2795,7 +2797,8 @@ if __name__ == "__main__":
     elif cmd == "namefind" and len(sys.argv) > 3: name_find(sys.argv[2], [k for k in sys.argv[3].split(",") if k.strip()], opt_list("--only"), opt_list("--exclude"))
     elif cmd == "dupscan" and len(sys.argv) > 2: dup_scan(sys.argv[2], opt_list("--only"))
     elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))
-    elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))
+    elif cmd == "inputsync" and len(sys.argv) > 2 and opt_list("--as") and opt_list("--as")[0] not in OPS_MODULES: sys.exit("--as 는 " + "/".join(OPS_MODULES) + " 중 하나여야 합니다")
+    elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"), match=[re.sub(r"\s+", "", m) for m in opt_list("--match")], force_mod=(opt_list("--as") or [None])[0] if (opt_list("--as") or [None])[0] in OPS_MODULES else None)
     elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
