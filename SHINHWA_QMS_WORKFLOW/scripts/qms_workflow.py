@@ -1622,6 +1622,12 @@ def split_pdf(path):
             for other in wb.sheetnames:
                 if other != t:
                     del wb[other]
+            ws = wb[t]  # 임시 사본에만 적용: 가로 한 쪽 폭에 맞춰 열이 쪽 밖으로 잘리지 않게 함
+            ws.page_setup.orientation = "landscape"
+            ws.page_setup.paperSize = ws.PAPERSIZE_A4
+            ws.sheet_properties.pageSetUpPr = openpyxl.worksheet.properties.PageSetupProperties(fitToPage=True)
+            ws.page_setup.fitToWidth = 1
+            ws.page_setup.fitToHeight = 0
             tmp = Path(td) / f"{t}.xlsx"
             wb.save(tmp)
             r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", td, str(tmp)],
