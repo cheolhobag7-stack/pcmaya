@@ -78,3 +78,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"5.2 소요시간 측정 기준=추적 요청 시각~결과 확인 시각 반영(사용자 확인)",system,
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"5.3 추적성 시험 주기=분기 1회 반영(사용자 확인); 대상 LOT 선정 기준 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"5.3 시험 대상 LOT=순추적·역추적 각 1건 반영(사용자 확인)",system,
+2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"7.1 보존 기산점=생산일, 보관 위치=품질팀 서버 반영(사용자 확인); 폐기 권한 확인 필요",system,
