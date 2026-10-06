@@ -144,3 +144,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-FM-번호미정_백업복구점검기록_수정본,,,"AUTO_DRAFT 생성(수정 필요 4건, 미확정): SH-FM-번호미정_백업복구점검기록_수정본_수정필요사항_20261006045730.md",system,
 2026-10-06,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 6건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본_수정필요사항_20261006045730.md",system,
 2026-10-06,SH-QP-018 / SH-FM-101-121 / 신규 SH-FM 2종,Rev.03(DRAFT),,"초안 4건을 03_EDIT/수정완료에 복사 저장 후 recheck(사용자 지시): QP-018 md=FAIL(회사명·문서명 표기·적용범위·책임과 권한·페이지번호·목차), FM-101-121 Rev03_수정본2=HOLD(승인대기 패키지, 21시트 미승인·FINAL 불가), 인계대장·복구점검 기록=FAIL(문서번호 미정)",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(수정본2),"적용범위(전 부서 현장 기록)·책임과 권한 추가, Word 변환(Page X of Y·목차) 후 03_EDIT/수정완료/SH-QP-018_식별및추적성관리절차서_Rev03_수정본2.docx 저장·recheck: 종합 HOLD(승인 전), 승인대기 패키지 생성. [확인 필요] 항목 잔존(시행일·작성/검토/승인자·백업 장비·메일 주소 등)",system,
