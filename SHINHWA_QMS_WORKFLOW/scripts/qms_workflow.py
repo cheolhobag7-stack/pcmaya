@@ -2420,17 +2420,21 @@ def organize_plan(src, dest_root, apply=False, only=(), exclude=()):
             else:
                 act = "복사 예정"
             w.writerow([f, lay[cat], why, dst, size // 1024, mdate, act])
-    stale = []                                   # 이전 실행에서 99_미분류에 복사됐다가 지금은 다른 분류가 된 같은 내용의 복사본(삭제하지 않고 목록만)
+    stale = []                                   # 이전 실행에서 다른 분류 폴더에 복사됐다가 지금은 옮겨진 같은 내용의 복사본(삭제하지 않고 목록만)
+    planned = {str(d).lower() for _, _, _, d, _, _ in plan}   # 이번 계획에서 다른 원본이 쓰는 위치는 옛 복사본이 아니므로 제외(같은 파일이 두 폴더에 각각 있는 경우)
     for f, cat, why, dst, size, mdate in plan:
         for other in [lay[k] for k in ("qms", "lot", "safety", "equipment", "training", "production", "inventory", "quality", "sq", "customer", "unsorted")]:
             if other == lay[cat]:
                 continue
             old_copy = dest / other / dst.parent.name / f.name
+            if str(old_copy).lower() in planned:
+                continue
             try:
                 if old_copy.exists() and old_copy.stat().st_size == size and old_copy.read_bytes() == f.read_bytes():
                     stale.append(old_copy)
             except OSError:
                 pass
+    stale = list(dict.fromkeys(stale))
     if stale:
         sp = unique_path(OUT_DIR / "REPORTS" / f"organize_stale99_{dt.datetime.now():%Y%m%d_%H%M%S}.csv")
         with open(sp, "w", newline="", encoding="utf-8-sig") as fh:
