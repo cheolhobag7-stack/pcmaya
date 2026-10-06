@@ -2169,6 +2169,7 @@ def drive_scan(src):
     skip = {"$recycle.bin", "system volume information", "windows", "program files", "program files (x86)", ".git", "node_modules", "__pycache__", "appdata"}
     ext_c, top_c, res_c, tok_all, tok_un, total = collections.Counter(), collections.Counter(), collections.Counter(), collections.Counter(), collections.Counter(), 0
     sample_un = []
+    print(f"[DRIVE SCAN] 조사 시작: {base}  (파일이 많으면 몇 분 걸립니다. 중단하려면 Ctrl+C)", flush=True)
     for dp, dns, fns in os.walk(base):
         dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
         for fn in fns:
@@ -2177,6 +2178,8 @@ def drive_scan(src):
             f = Path(dp) / fn
             rel = f.relative_to(base).parts
             total += 1
+            if total % 2000 == 0:
+                print(f"  ... {total:,}개 확인함", flush=True)
             ext_c[f.suffix.lower() or "(없음)"] += 1
             top_c[rel[0] if len(rel) > 1 else "(루트 직하)"] += 1
             mod, why = classify_module(rel[:-1], fn, kw)
