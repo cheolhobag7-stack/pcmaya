@@ -1,3 +1,4 @@
 PyYAML>=6.0
 pypdf>=4.0   # PDF 본문 검사 (pdftotext 가 없는 PC용 대체)
 openpyxl>=3.1   # fmregister (FM Master 등록 시에만 필요)
+xlrd>=2.0   # 구형 .xls 본문 읽기(modulecheck 등)

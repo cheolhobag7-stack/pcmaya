@@ -134,6 +134,18 @@ def extract_text(p: Path) -> str:
             return html.unescape(re.sub(r"<[^>]+>", " ", xml))
         if ext in {".txt", ".md", ".csv"}:
             return p.read_text(encoding="utf-8", errors="ignore")
+        if ext == ".xls":                      # 구형 엑셀: xlrd 가 설치돼 있으면 읽고, 없으면 읽을 수 없음으로 둔다
+            try:
+                import xlrd
+            except ImportError:
+                return ""
+            wb = xlrd.open_workbook(str(p), on_demand=True)
+            out = []
+            for sh in wb.sheets():
+                for r in range(sh.nrows):
+                    out.extend(str(c) for c in sh.row_values(r) if c not in ("", None))
+                wb.unload_sheet(sh.name)
+            return " ".join(out)
         if ext == ".pdf":
             return pdf_text(p)
     except Exception:
