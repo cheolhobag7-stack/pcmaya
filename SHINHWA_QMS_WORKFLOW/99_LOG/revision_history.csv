@@ -74,3 +74,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"3.2 입고 LOT 일자 기준=입고일 반영(사용자 확인)",system,
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"3.2/3.4 입고 LOT·공급사 LOT 입고대장 동시 기록 반영(사용자 확인); 입고대장 양식번호 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"3.4 입고대장=SH-FM-102 포함 반영(사용자 확인); FM-102 양식 내 입고 LOT·공급사 LOT 항목 대조 필요",system,
+2026-10-06,SH-QP-018,Rev.04(DRAFT),Rev.04(DRAFT),"5.2 추적 목표시간 범위를 입고~출하 전 구간 1시간으로 명확화(사용자 확인); 측정 시작·종료 시점 확인 필요",system,
