@@ -1628,6 +1628,18 @@ def split_pdf(path):
             ws.sheet_properties.pageSetUpPr = openpyxl.worksheet.properties.PageSetupProperties(fitToPage=True)
             ws.page_setup.fitToWidth = 1
             ws.page_setup.fitToHeight = 0
+            # 작성칸(빈 행)에 테두리가 없으면 인쇄 시 보이지 않으므로 임시 사본에만 얇은 테두리를 그린다
+            hdr = next((r for r in range(3, min(ws.max_row, 12) + 1)
+                        if sum(1 for c in ws[r] if c.value not in (None, "")) >= 3), None)
+            if hdr:
+                thin = openpyxl.styles.Side(style="thin", color="999999")
+                box = openpyxl.styles.Border(left=thin, right=thin, top=thin, bottom=thin)
+                for r in range(hdr + 1, ws.max_row + 1):
+                    for c in range(1, ws.max_column + 1):
+                        cell = ws.cell(r, c)
+                        if not (cell.border and cell.border.left and cell.border.left.style):
+                            cell.border = box
+                ws.print_area = f"A1:{openpyxl.utils.get_column_letter(ws.max_column)}{ws.max_row}"
             tmp = Path(td) / f"{t}.xlsx"
             wb.save(tmp)
             r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", td, str(tmp)],
