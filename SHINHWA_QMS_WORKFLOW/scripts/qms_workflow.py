@@ -1932,7 +1932,7 @@ def module_check(key):
     print(f"[MODULE {key.upper():9}] " + " / ".join(f"{k} {v}" for k, v in c.items()) + f" → {out.relative_to(ROOT)}")
     return rows
 
-def module_words(key):
+def module_words(key, like=()):
     """모듈 폴더의 엑셀 파일 윗부분(앞 10행)에 자주 나오는 열 제목 후보를 집계한다(읽기 전용). 필수 항목 동의어를 정할 때 쓴다.
     → 12_OUTPUT/REPORTS/<모듈>_words_*.md  ※ 이름(제목)만 집계하며, 동의어 추가는 사용자 확인 후에만 한다."""
     cfg_key, folder = OPS_MODULES[key]
@@ -1968,6 +1968,10 @@ def module_words(key):
     L += [f"- {r}: " + str(len(set().union(*[fs for w, fs in word_files.items() if r.lower() in w.lower()]))) + "개 파일" for r in required]
     L += ["", "## 자주 나오는 제목 (파일 수 순, 상위 80)", "", "| 제목 | 파일 수 |", "|---|---|"]
     L += [f"| {w} | {len(fs)} |" for w, fs in sorted(word_files.items(), key=lambda x: -len(x[1]))[:80]]
+    if like:
+        cand = {w: fs for w, fs in word_files.items() if len(w) <= 10 and any(k.lower() in w.lower() for k in like)}
+        L += ["", f"## '{', '.join(like)}' 가 들어간 짧은 제목 (파일 수 순)", "", "| 제목 | 파일 수 |", "|---|---|"]
+        L += [f"| {w} | {len(fs)} |" for w, fs in sorted(cand.items(), key=lambda x: -len(x[1]))[:60]] or ["| (없음) | 0 |"]
     L += ["", "※ 파일 이름·제목만 집계했습니다. 필수 항목의 동의어(예: 품번↔품목)는 사용자가 확인한 뒤에만 설정에 추가합니다."]
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
     out = unique_path(OUT_DIR / "REPORTS" / f"{key}_words_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
@@ -1975,10 +1979,17 @@ def module_words(key):
     print(f"[MODULE WORDS {key.upper()}] 엑셀 {nfiles}개 / 제목 후보 {len(word_files)}개 → {out.relative_to(ROOT)}")
     return out
 
-def record_inventory():
+def record_inventory(plan_csv=None):
     """모듈별 '기록 종류 있음/없음' 현황: 11_INPUT/<모듈>/ 파일명에 설정(record_types)의 키워드가 있는지로만 판단한다(내용은 판정하지 않음).
     → 12_OUTPUT/REPORTS/record_inventory_*.md / .csv"""
     types = cfg("integrated_rules.yaml").get("record_types") or {}
+    plan_csv = plan_csv or latest_file(OUT_DIR / "REPORTS", "organize_plan_*.csv")        # '없음'인 기록 종류는 08_SQ심사·00_QMS문서 폴더(11_INPUT 에 넣지 않은 자료)에 있는지 참고로 표시
+    sq_names = []
+    if plan_csv and Path(plan_csv).exists():
+        for r in csv.DictReader(open(plan_csv, encoding="utf-8-sig")):
+            if r.get("분류") in ("08_SQ심사", "00_QMS문서"):
+                sq_names.append(r["원본 경로"].replace("/", "\\").split("\\")[-1])
+        sq_names = sorted(set(sq_names))
     rows, L = [], ["# 현장 모듈 기록 종류 있음/없음 현황 (파일명 기준)", f"- 생성: {now()}", "- **주의**: 파일 이름의 키워드로만 판단합니다. '있음'은 해당 이름의 파일이 있다는 뜻이며 내용·최신성은 확인하지 않았습니다. 키워드는 `00_CONFIG/integrated_rules.yaml` 의 `record_types` 에서 담당자가 수정합니다.", ""]
     for key, (cfg_key, folder) in OPS_MODULES.items():
         src = IN_DIR / folder
@@ -1990,8 +2001,13 @@ def record_inventory():
         for rtype, kws in (types.get(key) or {}).items():
             hits = [n for n in names if any(re.sub(r"\s+", "", k.lower()) in re.sub(r"\s+", "", n.lower()) for k in kws)]
             st = "있음" if hits else ("없음" if names else "NO_DATA")
-            rows.append([key, rtype, st, len(hits), "; ".join(hits[:3])])
-            L.append(f"| {rtype} | {st} | {len(hits)} | {'; '.join(hits[:2])} |")
+            note = ""
+            if st != "있음" and sq_names:
+                sq_hits = [n for n in sq_names if any(re.sub(r"\s+", "", k.lower()) in re.sub(r"\s+", "", n.lower()) for k in kws)]
+                if sq_hits:
+                    note = f"(참고: SQ·QMS 폴더에 {len(sq_hits)}개 — {'; '.join(sq_hits[:2])})"
+            rows.append([key, rtype, st, len(hits), "; ".join(hits[:3]), note])
+            L.append(f"| {rtype} | {st} | {len(hits)} | {'; '.join(hits[:2]) or note} |")
         L.append("")
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
     stamp = f"{dt.datetime.now():%Y%m%d_%H%M%S}"
@@ -1999,7 +2015,7 @@ def record_inventory():
     mdp.write_text("\n".join(L) + "\n", encoding="utf-8")
     cp = unique_path(OUT_DIR / "REPORTS" / f"record_inventory_{stamp}.csv")
     with open(cp, "w", newline="", encoding="utf-8-sig") as fh:
-        w = csv.writer(fh); w.writerow(["module", "record_type", "status", "files", "examples"]); w.writerows(rows)
+        w = csv.writer(fh); w.writerow(["module", "record_type", "status", "files", "examples", "sq_folder_note"]); w.writerows(rows)
     c = collections.Counter(r[2] for r in rows)
     print("[RECORD INVENTORY] " + " / ".join(f"{k} {v}" for k, v in c.items()) + f" → {mdp.relative_to(ROOT)}")
     return rows
@@ -2708,8 +2724,8 @@ if __name__ == "__main__":
     elif cmd == "mcpsafestart": mcp_safe_start()
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
-    elif cmd == "recordinventory": record_inventory()
-    elif cmd == "modulewords" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_words(sys.argv[2])
+    elif cmd == "recordinventory": record_inventory(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "modulewords" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_words(sys.argv[2], [x for x in (sys.argv[3].split(",") if len(sys.argv) > 3 else []) if x])
     elif cmd == "modulecheck" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_check(sys.argv[2])
     elif cmd == "collectactions": collect_actions()
     elif cmd == "dashboarddata": dashboard_data()
