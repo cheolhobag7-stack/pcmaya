@@ -152,3 +152,5 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-WI-005,Rev.03,Rev.03(수정본2),"문구 정리안 적용(사용자 지시): 01_ORIGINAL/MASTER_REF/SH_QMS_통합문서_Rev03_20260929_수정본2.docx 새 파일에 SH-WI-005 8곳 반영(원본·_수정본 유지); 용어 공급자 LOT 로 통일(QP-018 초안·FM-104 개정 초안). crosscheck PASS 35/FAIL 0",system,
 2026-10-06,SH-QP-018 / SH-WI-005,Rev.03(DRAFT),Rev.03(DRAFT),"추적성 시험 기록은 기존 양식 유지 확정(사용자 확인): QP-018 초안 5.3 에 명시, WI-005 정리안 종결(통합문서 수정본2 는 이미 기존 문구 유지). 신규 양식·번호 없음",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"5.3 시험 대상 LOT 세부 선정 기준은 두지 않음(사용자 확인); 후속 확인 목록 정리",system,
+2026-10-06,FM-101-121,00,03,원본↔수정본 DIFF 생성 +95/-95: SH-FM-101-121_현장작성양식_Rev03_수정본3__vs__SH-FM-101-121_현장작성양식_Rev00.md,system,
+2026-10-06,SH-QP-018 / SH-FM-101-121,Rev.03(수정본3→4),,"최신 초안 재저장·recheck(사용자 지시): SH-QP-018 Rev03_수정본4.docx=HOLD(승인 전), SH-FM-101-121 Rev03_수정본3.xlsx(공급자 LOT 통일)=HOLD, 각 승인대기 패키지 생성·이전 패키지(QP-018 수정본3, FM 수정본2) STATUS 에 대체됨 표기(미삭제)",system,
