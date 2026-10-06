@@ -1942,13 +1942,13 @@ def module_check(key):
     print(f"[MODULE {key.upper():9}] " + " / ".join(f"{k} {v}" for k, v in c.items()) + f" → {out.relative_to(ROOT)}")
     return rows
 
-def module_words(key, like=()):
+def module_words(key, like=(), file_kw=""):
     """모듈 폴더의 엑셀 파일 윗부분(앞 10행)에 자주 나오는 열 제목 후보를 집계한다(읽기 전용). 필수 항목 동의어를 정할 때 쓴다.
     → 12_OUTPUT/REPORTS/<모듈>_words_*.md  ※ 이름(제목)만 집계하며, 동의어 추가는 사용자 확인 후에만 한다."""
     cfg_key, folder = OPS_MODULES[key]
     required = cfg("integrated_rules.yaml")["integrated_modules"][cfg_key]["required_fields"]
     src = IN_DIR / folder
-    word_files, nfiles = collections.defaultdict(set), 0
+    word_files, nfiles, per_file = collections.defaultdict(set), 0, {}
     for p in sorted(src.rglob("*")) if src.exists() else []:
         ext = p.suffix.lower()
         if ext not in (".xlsx", ".xlsm", ".xls") or not p.is_file():
@@ -1970,10 +1970,15 @@ def module_words(key, like=()):
         except Exception:
             continue
         nfiles += 1
+        titles = []
         for c in cells:
             t = re.sub(r"\s+", " ", str(c)).strip() if c is not None else ""
             if 2 <= len(t) <= 14 and not re.fullmatch(r"[\d\.\-/: ]+", t):
                 word_files[t].add(p.name)
+            if t and len(t) <= 24 and not re.fullmatch(r"[\d\.\-/: ]+", t) and t not in titles:
+                titles.append(t)
+        if file_kw and file_kw.lower() in p.name.lower():
+            per_file[p.name] = titles
     L = [f"# {key} 열 제목 후보 (앞 10행, 읽을 수 있는 엑셀 {nfiles}개)", f"- 생성: {now()}", "", "## 현재 필수 항목이 들어 있는 파일 수", ""]
     L += [f"- {r}: " + str(len(set().union(*[fs for w, fs in word_files.items() if r.lower() in w.lower()]))) + "개 파일" for r in required]
     L += ["", "## 자주 나오는 제목 (파일 수 순, 상위 80)", "", "| 제목 | 파일 수 |", "|---|---|"]
@@ -1982,6 +1987,12 @@ def module_words(key, like=()):
         cand = {w: fs for w, fs in word_files.items() if len(w) <= 10 and any(k.lower() in w.lower() for k in like)}
         L += ["", f"## '{', '.join(like)}' 가 들어간 짧은 제목 (파일 수 순)", "", "| 제목 | 파일 수 |", "|---|---|"]
         L += [f"| {w} | {len(fs)} |" for w, fs in sorted(cand.items(), key=lambda x: -len(x[1]))[:60]] or ["| (없음) | 0 |"]
+    if file_kw:
+        L += ["", f"## 파일명에 '{file_kw}' 가 들어간 파일의 제목(앞 10행, 나온 순서, 최대 6개 파일)", ""]
+        for name, titles in list(per_file.items())[:6]:
+            L += [f"### {name}", "", "- " + " | ".join(titles[:80]), ""]
+        if not per_file:
+            L += ["- (해당하는 읽을 수 있는 엑셀 파일 없음)"]
     L += ["", "※ 파일 이름·제목만 집계했습니다. 필수 항목의 동의어(예: 품번↔품목)는 사용자가 확인한 뒤에만 설정에 추가합니다."]
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
     out = unique_path(OUT_DIR / "REPORTS" / f"{key}_words_{dt.datetime.now():%Y%m%d_%H%M%S}.md")
@@ -2735,7 +2746,7 @@ if __name__ == "__main__":
     elif cmd == "qmsaudit": ops_qms_audit()
     elif cmd == "integratedaudit": integrated_audit()
     elif cmd == "recordinventory": record_inventory(sys.argv[2] if len(sys.argv) > 2 else None)
-    elif cmd == "modulewords" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_words(sys.argv[2], [x for x in (sys.argv[3].split(",") if len(sys.argv) > 3 else []) if x])
+    elif cmd == "modulewords" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_words(sys.argv[2], [x for x in (sys.argv[3].split(",") if len(sys.argv) > 3 and not sys.argv[3].startswith("--") else []) if x], (sys.argv[sys.argv.index("--file") + 1] if "--file" in sys.argv and sys.argv.index("--file") + 1 < len(sys.argv) else ""))
     elif cmd == "modulecheck" and len(sys.argv) > 2 and sys.argv[2] in OPS_MODULES: module_check(sys.argv[2])
     elif cmd == "collectactions": collect_actions()
     elif cmd == "dashboarddata": dashboard_data()
