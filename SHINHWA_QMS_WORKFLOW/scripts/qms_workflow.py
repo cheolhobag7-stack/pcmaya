@@ -38,6 +38,7 @@
   python3 scripts/qms_workflow.py rollbackcheck # 롤백 백업 후보 목록(자동 복원 없음)
   python3 scripts/qms_workflow.py integrity  # 05_FINAL/RELEASED 전체 SHA-256 무결성 검사
   python3 scripts/qms_workflow.py finalize   # 승인완료 재검증 → 05_FINAL + PDF + 배포본 + 06_HISTORY
+  python3 scripts/qms_workflow.py splitpdf F # 양식 워크북(xlsx)을 시트(양식)별 PDF 로 분리(LibreOffice 필요; 승인·릴리스본만 배포용, 그 외는 '미승인_' 미리보기)
 
 절대 규칙(코드로 강제):
   - 원본은 삭제/덮어쓰기 하지 않는다. 단계 이동은 모두 '복사'이며, 기존 파일과 이름이 겹치면 _vN 으로 새로 저장한다.
@@ -1592,8 +1593,55 @@ def to_pdf(src: Path, outdir: Path):
     return out
 
 RELEASED = D["final"] / "RELEASED"
+
 DISTRIBUTION = D["final"] / "DISTRIBUTION"          # 배포목록·최종보고서·무결성 CSV 스냅샷
 ROLLBACK = D["hist"] / "ROLLBACK_BACKUP"            # 기존 FINAL 교체 전 롤백용 백업 (자동 복원은 하지 않음)
+
+def split_pdf(path):
+    """양식 워크북(xlsx)을 양식(시트)별 PDF 로 분리한다. LibreOffice(soffice)가 있는 PC 에서 쓴다.
+    - 승인·릴리스된 파일(05_FINAL/RELEASED 안)만 05_FINAL/배포본/양식별PDF/<파일명>/ 에 저장한다.
+    - 그 밖의 파일(승인 전)은 03_EDIT/PDF_미리보기/<파일명>/ 에 '미승인_' 접두어로 저장한다(배포본 아님).
+    - 원본 워크북은 수정하지 않는다(임시 폴더에서 시트 하나만 남긴 사본을 변환). 기존 PDF 는 덮어쓰지 않는다(_vN)."""
+    import tempfile, openpyxl
+    src = Path(path)
+    if not src.exists() or src.suffix.lower() != ".xlsx":
+        sys.exit(f"xlsx 파일을 지정하세요: {path}")
+    if not shutil.which("soffice"):
+        sys.exit("soffice 없음: LibreOffice 가 설치되고 PATH 에 잡힌 PC 에서 실행하세요")
+    released = RELEASED.resolve() in src.resolve().parents
+    outdir = (D["final"] / "배포본" / "양식별PDF" if released else D["edit"] / "PDF_미리보기") / src.stem
+    outdir.mkdir(parents=True, exist_ok=True)
+    prefix = "" if released else "미승인_"
+    wb0 = openpyxl.load_workbook(src)
+    titles = [n for n in wb0.sheetnames if not n.startswith("00") and not n.startswith("0_")] or list(wb0.sheetnames)
+    made, failed = [], []
+    for t in titles:
+        label = re.sub(r'[\\/:*?"<>|]+', "_", re.sub(r"^SH-FM-\d+\s*", "", str(wb0[t]["A1"].value or "").strip()))[:40]
+        with tempfile.TemporaryDirectory() as td:
+            wb = openpyxl.load_workbook(src)
+            for other in wb.sheetnames:
+                if other != t:
+                    del wb[other]
+            tmp = Path(td) / f"{t}.xlsx"
+            wb.save(tmp)
+            r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", td, str(tmp)],
+                               capture_output=True, text=True, timeout=180)
+            pdf = Path(td) / f"{t}.pdf"
+            if not pdf.exists():
+                failed.append((t, (r.stderr or r.stdout).strip()[-120:]))
+                continue
+            dest = unique_path(outdir / f"{prefix}{t}_{label}.pdf" if label else outdir / f"{prefix}{t}.pdf")
+            shutil.copy2(pdf, dest)
+            made.append((t, dest))
+    with open(unique_path(outdir / f"{prefix}양식별PDF_목록.csv"), "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f); w.writerow(["시트(양식)", "PDF", "SHA-256", "구분"])
+        for t, d in made:
+            w.writerow([t, d.name, sha(d), "배포용(승인·릴리스본)" if released else "미리보기(미승인, 배포본 아님)"])
+    log("revision_history.csv", [dt.date.today(), src.stem, "", "", f"양식별 PDF {len(made)}개 생성({'배포' if released else '미리보기·미승인'}): {outdir.relative_to(ROOT)}" + (f", 실패 {len(failed)}" if failed else ""), "system", ""])
+    print(f"[SPLITPDF] {src.name}: PDF {len(made)}개 → {outdir.relative_to(ROOT)}" + ("" if released else " (미승인 미리보기, 배포본 아님)"))
+    for t, e in failed:
+        print(f"  ! {t} 변환 실패: {e}")
+    return made
 
 def approval_marker():
     return (cfg("qms_rules.yaml").get("final_operation") or {}).get("approval_marker", "APPROVED.txt")
@@ -2826,4 +2874,5 @@ if __name__ == "__main__":
     elif cmd == "rollbackcheck": rollbackcheck()
     elif cmd == "finalreport": final_report_cmd()
     elif cmd == "integrity": sys.exit(0 if integrity_check() else 1)
+    elif cmd == "splitpdf" and len(sys.argv) > 2: split_pdf(sys.argv[2])
     else: print(__doc__)
