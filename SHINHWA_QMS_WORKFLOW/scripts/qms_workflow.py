@@ -2670,6 +2670,59 @@ def sq_match(plan_csv):
     print("[SQ MATCH] " + ", ".join(f"{t} {tier_c[t]}" for t in tiers) + f" → {cp.relative_to(ROOT)}")
     return cp
 
+def name_find(src, kws, only=(), exclude=()):
+    """파일·폴더 이름에 키워드가 들어 있는 항목을 찾는다(읽기 전용, 내용은 읽지 않음). 영문 키워드(LOT 등)는 앞뒤가 영문자가 아닐 때만 일치(SLOT·PILOT 제외).
+    → 12_OUTPUT/REPORTS/namefind_*.md / .csv"""
+    base = Path(src).expanduser()
+    if not base.exists():
+        sys.exit(f"폴더를 찾을 수 없음: {src}")
+    skip = {"$recycle.bin", "system volume information", "windows", "program files", "program files (x86)", ".git", "node_modules", "__pycache__", "appdata"}
+    def hit(text):
+        for k in kws:
+            if re.fullmatch(r"[A-Za-z0-9 ]+", k):
+                if re.search(rf"(?<![A-Za-z]){re.escape(k)}(?![A-Za-z])", text, re.I):
+                    return k
+            elif k.lower() in text.lower():
+                return k
+        return None
+    rows, total = [], 0
+    by_top, by_kw, by_ext = collections.Counter(), collections.Counter(), collections.Counter()
+    print(f"[NAME FIND] 조사 시작: {base} / 키워드: {', '.join(kws)}  (이름만 확인, 중단: Ctrl+C)", flush=True)
+    for dp, dns, fns in os.walk(base):
+        dns[:] = [d for d in dns if d.lower() not in skip and not d.startswith("$") and (Path(dp) / d).resolve() != ROOT.resolve()]
+        prune_scope(base, dp, dns, fns, only, exclude)
+        rel_dirs = Path(dp).relative_to(base).parts
+        for fn in fns:
+            total += 1
+            if total % 20000 == 0:
+                print(f"  ... {total:,}개 확인함", flush=True)
+            if fn.startswith("~$"):
+                continue
+            k_file, k_dir = hit(fn), hit(" / ".join(rel_dirs))
+            if not (k_file or k_dir):
+                continue
+            ext = Path(fn).suffix.lower() or "(없음)"
+            top = rel_dirs[0] if rel_dirs else "(루트 직하)"
+            by_top[top] += 1; by_kw[k_file or k_dir] += 1; by_ext[ext] += 1
+            rows.append([top, "파일명" if k_file else "폴더명", k_file or k_dir, ext, str(Path(*rel_dirs, fn)) if rel_dirs else fn])
+    L = ["# 이름 검색 결과 (읽기 전용)", f"- 생성: {now()}", f"- 대상: {base}" + (f" / 포함 폴더: {', '.join(only)}" if only else "") + (f" / 제외 폴더: {', '.join(exclude)}" if exclude else ""),
+         f"- 키워드: {', '.join(kws)} (파일명 또는 폴더명에 포함)", f"- 확인한 파일 {total:,}개 / 일치 {len(rows):,}개", "",
+         "## 최상위 폴더별 일치", ""] + [f"- {k}: {v}" for k, v in by_top.most_common(30)]
+    L += ["", "## 키워드별", ""] + [f"- {k}: {v}" for k, v in by_kw.most_common()]
+    L += ["", "## 확장자별", ""] + [f"- {k}: {v}" for k, v in by_ext.most_common(12)]
+    fn_rows = [r for r in rows if r[1] == "파일명"]
+    L += ["", f"## 파일명에 키워드가 있는 예시 (최대 80, 전체 {len(fn_rows)}개)", ""] + [f"- {r[4]}" for r in fn_rows[:80]]
+    L += ["", "※ 이름만 비교한 결과입니다. 실제 LOT 추적 기록인지는 담당자가 열어서 확인해야 합니다. 아무것도 이동·복사·삭제하지 않았습니다."]
+    (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
+    stamp = f"{dt.datetime.now():%Y%m%d_%H%M%S}"
+    mdp = unique_path(OUT_DIR / "REPORTS" / f"namefind_{stamp}.md")
+    mdp.write_text("\n".join(L) + "\n", encoding="utf-8")
+    cp = unique_path(OUT_DIR / "REPORTS" / f"namefind_{stamp}.csv")
+    with open(cp, "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh); w.writerow(["최상위 폴더", "일치 위치", "키워드", "확장자", "경로"]); w.writerows(rows[:5000])
+    print(f"[NAME FIND] 파일 {total:,}개 확인 / 일치 {len(rows):,}개 (파일명 {len(fn_rows)}) → {mdp.relative_to(ROOT)}")
+    return mdp
+
 def make_light_package():
     """PC 에서 드라이브 조사·정리·복사(drivescan/organizeplan/inputsync)만 쓸 수 있는 가벼운 ZIP 을 만든다.
     경로가 짧고(최대 약 60자) 파일이 적어, 전체 저장소 ZIP 이 풀리지 않는 PC 에서도 풀린다. → LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip"""
@@ -2739,6 +2792,7 @@ if __name__ == "__main__":
     elif cmd == "makelight": make_light_package()
     elif cmd == "sqmatch" and len(sys.argv) > 2: sq_match(sys.argv[2])
     elif cmd == "drivescan" and len(sys.argv) > 2: drive_scan(sys.argv[2], opt_list("--only"), opt_list("--exclude"))
+    elif cmd == "namefind" and len(sys.argv) > 3: name_find(sys.argv[2], [k for k in sys.argv[3].split(",") if k.strip()], opt_list("--only"), opt_list("--exclude"))
     elif cmd == "dupscan" and len(sys.argv) > 2: dup_scan(sys.argv[2], opt_list("--only"))
     elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))
     elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv, only=opt_list("--only"), exclude=opt_list("--exclude"))
