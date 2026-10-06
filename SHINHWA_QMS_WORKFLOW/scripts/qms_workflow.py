@@ -12,6 +12,7 @@
   python3 scripts/qms_workflow.py fmregister # 양식 워크북의 신규 FM 번호를 FM Master 새 파일에 등록(원본 유지, openpyxl 필요)
   python3 scripts/qms_workflow.py fulloperation   # 전체 운영(QMS 사이클→통합 점검→조치사항→대시보드→주간 보고, 승인 직전까지)
   python3 scripts/qms_workflow.py inputsync <로컬폴더> [--apply]   # 현장 파일을 모듈별로 11_INPUT 에 복사(기본 미리보기, 원본 읽기만)
+  python3 scripts/qms_workflow.py makelight   # PC 용 가벼운 ZIP(LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip) 생성
   python3 scripts/qms_workflow.py drivescan <폴더>   # 분류 키워드 조정용 현황 조사(읽기 전용, 이름만 집계)
   python3 scripts/qms_workflow.py foldertree <루트>                       # 정리용 표준 폴더 구조 생성
   python3 scripts/qms_workflow.py organizeplan <원본폴더> <루트> [--apply]  # 파일을 표준 구조로 복사 계획(기본 미리보기, 원본 유지)
@@ -2330,6 +2331,44 @@ def organize_plan(src, dest_root, apply=False):
         print("  원본 폴더는 그대로입니다. 복사본을 확인한 뒤 원본 정리는 사람이 직접 하세요.")
     return out
 
+def make_light_package():
+    """PC 에서 드라이브 조사·정리·복사(drivescan/organizeplan/inputsync)만 쓸 수 있는 가벼운 ZIP 을 만든다.
+    경로가 짧고(최대 약 60자) 파일이 적어, 전체 저장소 ZIP 이 풀리지 않는 PC 에서도 풀린다. → LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip"""
+    out_dir = ROOT / "LIGHT_PACKAGE"
+    out_dir.mkdir(exist_ok=True)
+    zp = unique_path(out_dir / "SHINHWA_QMS_LIGHT.zip") if False else out_dir / "SHINHWA_QMS_LIGHT.zip"
+    root = "SHINHWA_QMS_LIGHT"
+    readme = (
+        "SHINHWA QMS LIGHT — 로컬 드라이브 조사·정리·복사 도구 (읽기 전용 위주)\r\n\r\n"
+        "1) Python 3.10 이상 설치 (설치 화면에서 Add python.exe to PATH 체크)\r\n"
+        "2) 이 폴더에서 명령 프롬프트(cmd)를 열고:\r\n"
+        "     python -m pip install -r requirements.txt\r\n"
+        "     set PYTHONUTF8=1\r\n"
+        "3) 드라이브 조사(내용은 읽지 않고 이름만 집계, 아무것도 바꾸지 않음):\r\n"
+        "     python scripts\\qms_workflow.py drivescan E:/\r\n"
+        "   결과: 12_OUTPUT\\REPORTS\\drivescan_*.md\r\n"
+        "4) 정리 미리보기 / 복사(원본은 그대로 두고 복사만):\r\n"
+        "     python scripts\\qms_workflow.py foldertree E:/SHINHWA\r\n"
+        "     python scripts\\qms_workflow.py organizeplan E:/정리할폴더 E:/SHINHWA\r\n"
+        "     python scripts\\qms_workflow.py organizeplan E:/정리할폴더 E:/SHINHWA --apply\r\n"
+        "5) 경로는 E:/ 처럼 슬래시(/)로 쓰세요. \"E:\\\" 처럼 끝에 역슬래시를 붙이면 오류가 납니다.\r\n")
+    keep = [("scripts/qms_workflow.py", ROOT / "scripts" / "qms_workflow.py"), ("requirements.txt", ROOT / "requirements.txt")]
+    keep += [(f"00_CONFIG/{f.name}", f) for f in sorted((ROOT / "00_CONFIG").glob("*.yaml"))]
+    dirs = ["01_ORIGINAL/MASTER_REF", "02_REVIEW", "03_EDIT", "04_APPROVAL/승인대기", "04_APPROVAL/검토완료", "04_APPROVAL/승인완료", "05_FINAL", "06_HISTORY",
+            "11_INPUT/LOT", "11_INPUT/SAFETY", "11_INPUT/EQUIPMENT", "11_INPUT/TRAINING", "11_INPUT/PRODUCTION", "11_INPUT/INVENTORY", "11_INPUT/QUALITY", "12_OUTPUT/REPORTS"]
+    dirs = [d for d in dirs if all(ord(c) < 128 for c in d)]   # 이름은 영문만(압축 호환)
+    with zipfile.ZipFile(zp, "w", zipfile.ZIP_DEFLATED) as z:
+        for arc, f in keep:
+            z.write(f, f"{root}/{arc}")
+        for d in dirs:
+            z.writestr(f"{root}/{d}/", "")
+        for fn, hdr in (("workflow_log.csv", "timestamp,action,status,message"), ("error_log.csv", "timestamp,file,error_type,detail"), ("revision_history.csv", "timestamp,document_no,revision,action,source,target,note")):
+            z.writestr(f"{root}/99_LOG/{fn}", "\ufeff" + hdr + "\r\n")
+        z.writestr(f"{root}/README.txt", "\ufeff" + readme)
+    n = len(zipfile.ZipFile(zp).namelist())
+    print(f"[LIGHT] {zp.relative_to(ROOT)} ({zp.stat().st_size // 1024} KB, 항목 {n}개, 가장 긴 경로 {max(len(x) for x in zipfile.ZipFile(zp).namelist())}자)")
+    return zp
+
 def full_operation():
     """전체 운영: QMS 사이클(승인 직전까지) → 통합 점검 → 조치사항 → 대시보드 → 주간 보고. 승인/배포는 하지 않는다."""
     fullcycle()
@@ -2358,6 +2397,7 @@ if __name__ == "__main__":
     elif cmd == "fulloperation": full_operation()
     elif cmd == "mcphealth": mcp_health_check()
     elif cmd == "foldertree" and len(sys.argv) > 2: folder_tree(sys.argv[2])
+    elif cmd == "makelight": make_light_package()
     elif cmd == "drivescan" and len(sys.argv) > 2: drive_scan(sys.argv[2])
     elif cmd == "organizeplan" and len(sys.argv) > 3: organize_plan(sys.argv[2], sys.argv[3], apply="--apply" in sys.argv)
     elif cmd == "inputsync" and len(sys.argv) > 2: input_sync(sys.argv[2], apply="--apply" in sys.argv)

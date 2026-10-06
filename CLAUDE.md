@@ -175,3 +175,4 @@ Claude Code는 다음 원칙을 최우선으로 따른다.
 - 분류 우선순위: QMS 문서(`SH-`/키워드) > SQ > 단일 모듈 키워드 > 한온시스템 > 그 외·여러 모듈은 `99_미분류_확인필요`(사람이 분류).
 - 사용하는 PC 에서 실행한다(클라우드 세션은 PC 드라이브에 접근 불가).
 - (키워드 조정) `drivescan <폴더>` 는 파일·폴더 이름만 집계해 분류 결과와 미분류 키워드 후보를 보고서로 만든다(읽기 전용). 분류는 가까운 상위 폴더 이름 → 파일명 → 상위 폴더 전체 순으로 한 모듈만 맞을 때 확정하고, 여러 모듈에 걸리면 미분류로 남긴다. 키워드는 `00_CONFIG/integrated_rules.yaml` 의 `input_sync.keywords` 이며, 모듈은 사용자 확인 후 추가한다(`/drive-scan`).
+- (PC 배포용 가벼운 ZIP) 저장소 전체 ZIP 이 풀리지 않는 PC(경로 길이 260자 한계 등)를 위해 `makelight` 가 `SHINHWA_QMS_WORKFLOW/LIGHT_PACKAGE/SHINHWA_QMS_LIGHT.zip`(약 54KB, 최대 경로 54자)을 만든다. 이 ZIP 은 `drivescan`/`organizeplan`/`inputsync`/`foldertree`/`scan` 만 쓸 수 있고 승인·배포 흐름 명령은 쓸 수 없다. 코드·설정을 고친 뒤에는 `makelight` 로 다시 만든다.
