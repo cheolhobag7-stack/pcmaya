@@ -106,3 +106,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 재스캔 전 해당 기록은 보류로 관리 반영(사용자 확인); 보류 표시 방법·사용 제한 범위·기존 파일 처리 확인 필요",system,
 2026-10-06,SH-QP-018 / SH-FM-[번호 미정],Rev.03(DRAFT),Rev.03(DRAFT),"보류 표시는 인계대장 비고란에 기록 반영(사용자 확인): QP-018 초안 7.4, 인계대장 초안 작성 안내(보류·보류 해제 기재). 보류 중 사용 제한 범위·기존 파일 처리 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 보류 기록은 추적성 시험·고객 제공에 사용하지 않음 반영(사용자 확인); 긴급 추적 시 종이 원본 활용·기존 파일 처리 확인 필요",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 긴급 추적 시 종이 원본 활용 허용 반영(사용자 확인); 긴급 범위·판단자·승인·기록 방법, 기존 파일 처리 확인 필요",system,
