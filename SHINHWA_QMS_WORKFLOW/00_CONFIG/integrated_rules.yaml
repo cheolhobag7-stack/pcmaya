@@ -89,6 +89,10 @@ drive_layout:
   sq_keywords: ["SQ"]
   customer_keywords: ["한온", "HANON"]
   # 2026-10-06 사용자 확인: 다른 규칙으로 분류되지 않은(미분류) 파일에만 적용하는 폴더 이름 → 분류
+  name_overrides:        # 파일명에 들어 있으면(미분류일 때만, 폴더 지정보다 우선) — 2026-10-06 사용자 확인
+    "전체계획": production
+    "전체 계획": production
+    "forecast": production
   folder_overrides:
     "자격인증": training
     "CLAIM": quality
