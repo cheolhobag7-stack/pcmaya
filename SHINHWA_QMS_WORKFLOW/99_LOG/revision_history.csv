@@ -112,3 +112,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-06,SH-QP-018 / SH-FM-[번호 미정],Rev.03(DRAFT),Rev.03(DRAFT),"긴급 추적 원본 활용 승인은 인계대장 비고에 일자·서명 기록 반영(사용자 확인): QP-018 초안 7.4, 인계대장 초안 작성 안내. 기존 파일 처리·백업 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 재스캔 파일은 새 이름으로 저장(덮어쓰기 금지) 반영(사용자 확인); 이름 규칙·불일치 기존 파일 처리·백업 확인 필요",system,
 2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 재스캔 파일명=기존 파일명 뒤 재스캔 순번 반영(사용자 확인); 순번 표기 형식·불일치 기존 파일 처리 확인 필요",system,
+2026-10-06,SH-QP-018,Rev.03(DRAFT),Rev.03(DRAFT),"7.4 재스캔 순번 형식 _재스캔1, _재스캔2 확정(사용자 확인); 불일치 기존 파일 처리·백업 확인 필요",system,
