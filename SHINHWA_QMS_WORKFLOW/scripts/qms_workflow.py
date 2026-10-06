@@ -1907,6 +1907,7 @@ def module_check(key):
     cfg_key, folder = OPS_MODULES[key]
     mod_cfg = cfg("integrated_rules.yaml")["integrated_modules"][cfg_key]
     required, aliases = mod_cfg["required_fields"], mod_cfg.get("field_aliases") or {}
+    exemptions = mod_cfg.get("field_exemptions") or []     # 파일명에 name_contains 가 있으면 exempt 항목은 필수에서 제외
     src = IN_DIR / folder
     src.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "REPORTS").mkdir(parents=True, exist_ok=True)
@@ -1928,7 +1929,9 @@ def module_check(key):
                 elif re.sub(r"\s+", "", a.lower()) in heads:
                     return True
             return False
-        miss = [x for x in required if re.sub(r"\s+", "", x.lower()) not in compact and not ok_alias(x)]
+        fname = re.sub(r"\s+", "", p.name.lower())
+        exempt = {x for e in exemptions if any(re.sub(r"\s+", "", k.lower()) in fname for k in e.get("name_contains", [])) for x in e.get("exempt", [])}
+        miss = [x for x in required if x not in exempt and re.sub(r"\s+", "", x.lower()) not in compact and not ok_alias(x)]
         rows.append([str(p.relative_to(ROOT)), key, "PASS" if not miss else "HOLD", "; ".join(miss)])
     if not rows:
         rows.append([f"11_INPUT/{folder}", key, "NO_DATA", "입력 데이터 없음"])
