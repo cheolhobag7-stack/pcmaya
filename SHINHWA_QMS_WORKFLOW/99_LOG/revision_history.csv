@@ -309,3 +309,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SQ 비슷한 이름 5쌍,,,"비교 보고 02_REVIEW/SQ_비슷한이름5쌍_비교_20261007.md 작성(제안만, 결정·Master 미변경)",claude,
 2026-10-07,SH-FM-164,,,"외주품 검사기준서를 SH-FM-160 대표로 통합(164 통합(사용 안 함), 번호 삭제 없음). FM Master 통합17·SQ_중복검토_결정.csv 갱신",claude,
 2026-10-07,SH-FM-135·136·137·146,,,"현지어 번역본 135→145·136→원본 부적합처리기준(번호 미확정)·137→168, 146→145 통합(사용 안 함, 번호 삭제 없음). FM Master 통합18·SQ_중복검토_결정.csv 갱신",claude,
+2026-10-07,SH-FM-136,,,"현지어 번역본 대표를 SH-FM-162 로 확정(통합 사용 안 함). FM Master 통합19·결정 CSV 갱신",claude,
