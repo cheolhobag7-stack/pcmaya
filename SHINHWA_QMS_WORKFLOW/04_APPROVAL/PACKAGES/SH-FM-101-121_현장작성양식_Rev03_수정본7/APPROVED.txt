@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-07T09:22:19
+document=SH-FM-101-121_현장작성양식_Rev03_수정본7.xlsx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일
