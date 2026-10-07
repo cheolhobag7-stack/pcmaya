@@ -1623,11 +1623,30 @@ def split_pdf(path):
                 if other != t:
                     del wb[other]
             ws = wb[t]  # 임시 사본에만 적용: 가로 한 쪽 폭에 맞춰 열이 쪽 밖으로 잘리지 않게 함
-            ws.page_setup.orientation = "landscape"
+            # 시트에 이미 '한 페이지 맞춤(폭 1·높이 1) + 방향'이 지정돼 있으면 그대로 존중한다(양식 설계 의도).
+            # 없으면 가로 한 쪽 폭에 맞춘다.
+            pre_fit = bool(ws.sheet_properties.pageSetUpPr and ws.sheet_properties.pageSetUpPr.fitToPage
+                           and ws.page_setup.fitToHeight == 1 and ws.page_setup.orientation)
+            if not pre_fit:
+                ws.page_setup.orientation = "landscape"
+                ws.page_setup.fitToWidth = 1
+                ws.page_setup.fitToHeight = 0
+                ws.sheet_properties.pageSetUpPr = openpyxl.worksheet.properties.PageSetupProperties(fitToPage=True)
             ws.page_setup.paperSize = ws.PAPERSIZE_A4
-            ws.sheet_properties.pageSetUpPr = openpyxl.worksheet.properties.PageSetupProperties(fitToPage=True)
-            ws.page_setup.fitToWidth = 1
-            ws.page_setup.fitToHeight = 0
+            # 병합된 머리글 칸의 글이 줄바꿈으로 잘리지 않도록 임시 사본에서만 행 높이를 늘린다
+            import math
+            for mr in list(ws.merged_cells.ranges):
+                cell = ws.cell(mr.min_row, mr.min_col)
+                if mr.min_row != mr.max_row or not isinstance(cell.value, str) or not cell.alignment.wrap_text:
+                    continue
+                wsum = sum((ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width or 8.43)
+                           for c in range(mr.min_col, mr.max_col + 1))
+                sz = cell.font.sz or 11
+                vis = sum(2 if ord(ch) > 127 else 1 for ch in cell.value) * (sz / 11.0)
+                need = math.ceil(vis / max(wsum, 1)) * sz * 1.45 + 4
+                cur = ws.row_dimensions[mr.min_row].height or 15
+                if cur < need:
+                    ws.row_dimensions[mr.min_row].height = need
             # 작성칸(빈 행)에 테두리가 없으면 인쇄 시 보이지 않으므로 임시 사본에만 얇은 테두리를 그린다
             hdr = next((r for r in range(3, min(ws.max_row, 12) + 1)
                         if sum(1 for c in ws[r] if c.value not in (None, "")) >= 3), None)
