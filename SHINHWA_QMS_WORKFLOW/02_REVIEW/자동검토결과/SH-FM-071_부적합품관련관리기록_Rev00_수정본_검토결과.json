@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-071_부적합품관련관리기록_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 03:29:02",
+  "sha256": "870c43ddca961f4a4d0ded3d105a95de04fe47b51394537fe9197fd6c7982be3",
+  "units": [],
+  "issues": [
+    {
+      "category": "확인필요",
+      "message": "SH 접두어 미적용 참조 확인: QP-014",
+      "suggestion": "SH- 접두어 적용 여부 확인 [확인 필요]"
+    }
+  ]
+}

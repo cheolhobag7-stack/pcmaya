@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-363_기록인계대장_Rev00_수정본6.xlsx",
+  "checked": "2026-10-07 03:30:57",
+  "sha256": "976cee5a3855bd1231355af7a0faaf9ab1d7aaf28b1c2ecdbd7c3418ee42fddf",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-FM-363_기록인계대장_Rev00_수정본5_배포본_20261007.pdf",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}
