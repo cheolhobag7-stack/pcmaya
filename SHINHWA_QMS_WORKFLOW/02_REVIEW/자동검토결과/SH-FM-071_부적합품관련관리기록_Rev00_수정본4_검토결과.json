@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-071_부적합품관련관리기록_Rev00_수정본4.xlsx",
+  "checked": "2026-10-07 13:37:05",
+  "sha256": "8496ef3822f6bb1fd8273ff6fe45f70f3e12e018102b00ce430bdbe1f07a9e4f",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-FM-071_부적합품관련관리기록_Rev00_수정본N.xlsx",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}

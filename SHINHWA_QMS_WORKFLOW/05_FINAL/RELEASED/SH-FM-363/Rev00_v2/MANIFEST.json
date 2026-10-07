@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-363",
+  "revision": "Rev00",
+  "released_at": "2026-10-07 13:55:40",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-363_기록인계대장_Rev00_수정본10.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-363_기록인계대장_Rev00_수정본10.xlsx",
+      "sha256": "580b124e2ccca183f5902b3435409a257a11e110bb88a0efb4ff1bd5d4a21e4e",
+      "size": 7034
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-363_기록인계대장_Rev00_수정본10.pdf",
+      "sha256": "eaafd147e94e93a0e5892b215645b26928600b77da4f912dbffeb9f870119c70",
+      "size": 81413
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-363_기록인계대장_Rev00_수정본10_배포본_20261007.pdf",
+      "sha256": "eaafd147e94e93a0e5892b215645b26928600b77da4f912dbffeb9f870119c70",
+      "size": 81413
+    }
+  ]
+}

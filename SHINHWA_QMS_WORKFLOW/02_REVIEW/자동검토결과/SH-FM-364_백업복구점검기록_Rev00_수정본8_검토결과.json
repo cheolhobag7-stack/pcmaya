@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-364_백업복구점검기록_Rev00_수정본8.xlsx",
+  "checked": "2026-10-07 13:37:42",
+  "sha256": "c2360ee395d3d6389ec36d1bebaeb2132ced9499b0d2f6f1183f8deb478acdfe",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-FM-364_백업복구점검기록_Rev00_수정본N.xlsx",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}

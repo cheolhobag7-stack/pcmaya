@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-07T14:27:48
+document=SH-FM-071_부적합품관련관리기록_Rev00_수정본4.xlsx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일
