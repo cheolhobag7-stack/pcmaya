@@ -227,3 +227,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-FM-364,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-364_백업복구점검기록_Rev00_수정본2_수정필요사항_20261007020848.md",system,
 2026-10-07,SH-QP-018·SH-FM-363·364,03,03,"신규 양식 SH-FM-363(기록 인계대장)·364(백업 복구 점검 기록) Rev.00 제정일 2026-09-01, 백업 별도 장비 사내서버, 알림 메일 sinhwa_ht@sinhwaht.co.kr 반영: QP-018 수정본8 및 양식 수정본2 (recheck HOLD/FAIL(결재란 검토 항목 1건))",claude,
 2026-10-07,SH-QP-018,03,03,"7.4.9 복구 점검 담당자 김주태 이사·대체자 이광재 부장 반영: 수정본9 recheck HOLD(승인 전만)",claude,
+2026-10-07,SH-FM-363·364·SH-QP-018,00,00,"363·364 결재란 검토 칸 추가(수정본3 HOLD), QP-018 7.4.8 분리된 사내서버 명시(수정본10 HOLD), FM Master 통합11 에 363·364 등록",claude,
