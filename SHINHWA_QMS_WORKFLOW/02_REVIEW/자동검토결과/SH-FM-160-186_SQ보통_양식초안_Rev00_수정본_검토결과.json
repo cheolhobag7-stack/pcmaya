@@ -1,0 +1,52 @@
+{
+  "file": "SH-FM-160-186_SQ보통_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:44:25",
+  "sha256": "f621d3ced5b62305f812c10fca758f8085ff1030dcd7b764a5120ab92ae37efa",
+  "units": [
+    "SH-FM-160",
+    "SH-FM-161",
+    "SH-FM-162",
+    "SH-FM-163",
+    "SH-FM-164",
+    "SH-FM-165",
+    "SH-FM-166",
+    "SH-FM-168",
+    "SH-FM-171",
+    "SH-FM-172",
+    "SH-FM-174",
+    "SH-FM-175",
+    "SH-FM-176",
+    "SH-FM-177",
+    "SH-FM-178",
+    "SH-FM-179",
+    "SH-FM-180",
+    "SH-FM-181",
+    "SH-FM-182",
+    "SH-FM-183",
+    "SH-FM-184",
+    "SH-FM-185",
+    "SH-FM-186"
+  ],
+  "issues": [
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-167 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-169 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-170 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-173 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    }
+  ]
+}

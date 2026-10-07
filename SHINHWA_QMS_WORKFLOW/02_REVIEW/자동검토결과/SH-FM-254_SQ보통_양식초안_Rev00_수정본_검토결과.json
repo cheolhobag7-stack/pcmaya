@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-254_SQ보통_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:59:21",
+  "sha256": "ffa144a6d901e7e3e16153d5f316692d8b56a63b7fc938294e104960e3be43fc",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '양식초안' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}

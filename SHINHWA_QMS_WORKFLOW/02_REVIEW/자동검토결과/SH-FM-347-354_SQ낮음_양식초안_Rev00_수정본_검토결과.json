@@ -1,0 +1,22 @@
+{
+  "file": "SH-FM-347-354_SQ낮음_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 06:01:19",
+  "sha256": "7b8e0a70d5c6236e797a495db69d2d4d9ae52f1e8807b343862eb52cd400dc7c",
+  "units": [
+    "SH-FM-347",
+    "SH-FM-348",
+    "SH-FM-349",
+    "SH-FM-350",
+    "SH-FM-351",
+    "SH-FM-352",
+    "SH-FM-353",
+    "SH-FM-354"
+  ],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "[SH-FM-350] LOT 추적 목표시간 1시간 미명시",
+      "suggestion": "목표시간 1시간 명시"
+    }
+  ]
+}

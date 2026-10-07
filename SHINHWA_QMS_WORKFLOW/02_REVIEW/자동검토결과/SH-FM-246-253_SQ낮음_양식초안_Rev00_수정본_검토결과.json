@@ -1,0 +1,21 @@
+{
+  "file": "SH-FM-246-253_SQ낮음_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:44:55",
+  "sha256": "a445ac7374a6b77b293603a2d7c600d428b17fc2a3156d918ff9bdc0d449b5fc",
+  "units": [
+    "SH-FM-246",
+    "SH-FM-247",
+    "SH-FM-249",
+    "SH-FM-250",
+    "SH-FM-251",
+    "SH-FM-252",
+    "SH-FM-253"
+  ],
+  "issues": [
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-248 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    }
+  ]
+}

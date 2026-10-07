@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-145_SQ높음_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:57:17",
+  "sha256": "7e717011506c469bad90acb57009ad0504e5756daa2b2a71f0e1052e2fd4b3d1",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '양식초안' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}

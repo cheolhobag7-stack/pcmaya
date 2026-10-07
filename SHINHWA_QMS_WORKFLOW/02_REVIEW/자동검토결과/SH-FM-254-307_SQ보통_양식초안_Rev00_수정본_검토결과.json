@@ -1,0 +1,115 @@
+{
+  "file": "SH-FM-254-307_SQ보통_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:45:28",
+  "sha256": "c94e0c7237ed178c1fdd5b9c94dbafe7c4e1471e79fef981938ad3c965f11df0",
+  "units": [
+    "SH-FM-254",
+    "SH-FM-256",
+    "SH-FM-259",
+    "SH-FM-260",
+    "SH-FM-261",
+    "SH-FM-263",
+    "SH-FM-266",
+    "SH-FM-267",
+    "SH-FM-268",
+    "SH-FM-270",
+    "SH-FM-271",
+    "SH-FM-272",
+    "SH-FM-274",
+    "SH-FM-275",
+    "SH-FM-276",
+    "SH-FM-281",
+    "SH-FM-282",
+    "SH-FM-283",
+    "SH-FM-284",
+    "SH-FM-285",
+    "SH-FM-286",
+    "SH-FM-287",
+    "SH-FM-288",
+    "SH-FM-289",
+    "SH-FM-290",
+    "SH-FM-291",
+    "SH-FM-293",
+    "SH-FM-294",
+    "SH-FM-295",
+    "SH-FM-296",
+    "SH-FM-297",
+    "SH-FM-298",
+    "SH-FM-299",
+    "SH-FM-300",
+    "SH-FM-301",
+    "SH-FM-302",
+    "SH-FM-303",
+    "SH-FM-304",
+    "SH-FM-305",
+    "SH-FM-306",
+    "SH-FM-307"
+  ],
+  "issues": [
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-255 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-257 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-258 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-262 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-264 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-265 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-269 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-273 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-277 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-278 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-279 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-280 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-292 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    }
+  ]
+}

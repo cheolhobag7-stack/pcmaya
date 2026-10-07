@@ -1,0 +1,42 @@
+{
+  "file": "SH-FM-337-356_SQ낮음_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:46:17",
+  "sha256": "260ed9aab55a91b5c5fef405c41722dec74d2b82495497b3fe173d0d92e98d90",
+  "units": [
+    "SH-FM-337",
+    "SH-FM-338",
+    "SH-FM-339",
+    "SH-FM-340",
+    "SH-FM-341",
+    "SH-FM-342",
+    "SH-FM-343",
+    "SH-FM-344",
+    "SH-FM-345",
+    "SH-FM-347",
+    "SH-FM-348",
+    "SH-FM-349",
+    "SH-FM-350",
+    "SH-FM-351",
+    "SH-FM-352",
+    "SH-FM-353",
+    "SH-FM-354",
+    "SH-FM-356"
+  ],
+  "issues": [
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-346 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-355 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "내용보완",
+      "message": "[SH-FM-350] LOT 추적 목표시간 1시간 미명시",
+      "suggestion": "목표시간 1시간 명시"
+    }
+  ]
+}

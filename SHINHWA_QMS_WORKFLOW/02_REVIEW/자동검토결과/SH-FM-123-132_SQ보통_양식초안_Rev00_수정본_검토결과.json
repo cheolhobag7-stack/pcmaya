@@ -1,0 +1,27 @@
+{
+  "file": "SH-FM-123-132_SQ보통_양식초안_Rev00_수정본.xlsx",
+  "checked": "2026-10-07 05:43:47",
+  "sha256": "10d153b1fabf7bc1515f00e6c0350eebede8fd1e6415ed95d4649a48ce863c74",
+  "units": [
+    "SH-FM-123",
+    "SH-FM-124",
+    "SH-FM-125",
+    "SH-FM-127",
+    "SH-FM-128",
+    "SH-FM-130",
+    "SH-FM-131",
+    "SH-FM-132"
+  ],
+  "issues": [
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-126 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    },
+    {
+      "category": "문서번호",
+      "message": "파일명 범위의 FM-129 양식 시트가 없음",
+      "suggestion": "시트 추가 또는 파일명 범위 정정 [확인 필요]"
+    }
+  ]
+}
