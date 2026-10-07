@@ -1625,9 +1625,14 @@ def split_pdf(path):
             ws = wb[t]  # 임시 사본에만 적용: 가로 한 쪽 폭에 맞춰 열이 쪽 밖으로 잘리지 않게 함
             # 시트에 이미 '한 페이지 맞춤(폭 1·높이 1) + 방향'이 지정돼 있으면 그대로 존중한다(양식 설계 의도).
             # 없으면 가로 한 쪽 폭에 맞춘다.
+            # (엑셀로 다시 저장하면 기본값 1·세로는 파일에 적히지 않아 None 으로 읽히므로 None 도 1·세로로 본다)
             pre_fit = bool(ws.sheet_properties.pageSetUpPr and ws.sheet_properties.pageSetUpPr.fitToPage
-                           and ws.page_setup.fitToHeight == 1 and ws.page_setup.orientation)
-            if not pre_fit:
+                           and ws.page_setup.fitToHeight in (None, 1) and ws.page_setup.fitToWidth in (None, 1))
+            if pre_fit:
+                ws.page_setup.orientation = ws.page_setup.orientation or "portrait"
+                ws.page_setup.fitToWidth = 1
+                ws.page_setup.fitToHeight = 1
+            else:
                 ws.page_setup.orientation = "landscape"
                 ws.page_setup.fitToWidth = 1
                 ws.page_setup.fitToHeight = 0
