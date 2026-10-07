@@ -282,3 +282,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 3건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본11_수정필요사항_20261007142853.md",system,
 2026-10-07,문서관리대장·FM Master,,,"보존기간 5년 재개정(QP-018·FM-101~121·363·364)·신규 FM-071 승인·배포 반영: 대장 수정본7·FM Master 통합15. 승인일 2026-09-01 사용자 지시, 서명본·수령 증빙 미확인",claude,
 2026-10-07,최종마무리,,,"최종 마무리 보고 작성(02_REVIEW/최종마무리보고_20261007.md), CLAUDE.md 미결 목록 최신화",claude,
+2026-10-07,정리,,,"승인대기 수정본9_v2·승인완료 QP-018 수정본11·13 을 06_HISTORY/이전버전/정리_20261007 로 이동(삭제 없음), crosscheck 배포본 중복 판정 보정",claude,

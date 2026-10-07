@@ -870,7 +870,7 @@ def crosscheck():
     rev_rows = []
     for no, v in sorted(by.items()):
         revs_ = [x[0] for x in v]
-        dupr = sorted({r for r in revs_ if r >= 0 and revs_.count(r) > 1 and len({re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", Path(x[1]).stem) for x in v if x[0] == r}) > 1})
+        dupr = sorted({r for r in revs_ if r >= 0 and revs_.count(r) > 1 and len({re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", re.sub(r"_배포본(_\d{8})?$", "", Path(x[1]).stem)) for x in v if x[0] == r}) > 1})
         note = ([f"동일 Rev 중복 파일: Rev.{', Rev.'.join(f'{d:02d}' for d in dupr)}"] if dupr else []) + (["Rev 누락 파일 존재"] if -1 in revs_ else [])
         stt = "HOLD" if note else "PASS"
         rev_rows.append((no, stt))
