@@ -1,0 +1,13 @@
+{
+  "file": "SH-QP-018_식별및추적성관리절차서_Rev03_수정본12.docx",
+  "checked": "2026-10-07 12:16:27",
+  "sha256": "b51fcd974de38ec93a34365fd7314de887fcf6723f380da018ddd703bf96c966",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "개정일 미표기 또는 날짜 형식 오류 (YYYY-MM-DD)",
+      "suggestion": "개정일 기재 [확인 필요]"
+    }
+  ]
+}
