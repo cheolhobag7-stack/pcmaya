@@ -310,3 +310,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-FM-164,,,"외주품 검사기준서를 SH-FM-160 대표로 통합(164 통합(사용 안 함), 번호 삭제 없음). FM Master 통합17·SQ_중복검토_결정.csv 갱신",claude,
 2026-10-07,SH-FM-135·136·137·146,,,"현지어 번역본 135→145·136→원본 부적합처리기준(번호 미확정)·137→168, 146→145 통합(사용 안 함, 번호 삭제 없음). FM Master 통합18·SQ_중복검토_결정.csv 갱신",claude,
 2026-10-07,SH-FM-136,,,"현지어 번역본 대표를 SH-FM-162 로 확정(통합 사용 안 함). FM Master 통합19·결정 CSV 갱신",claude,
+2026-10-07,SH-FM-137,,,"SH-FM-168 통합 확정(연계 WI 차이 확인 완료, 사용자 지시). Master 통합19 상태 그대로",claude,
