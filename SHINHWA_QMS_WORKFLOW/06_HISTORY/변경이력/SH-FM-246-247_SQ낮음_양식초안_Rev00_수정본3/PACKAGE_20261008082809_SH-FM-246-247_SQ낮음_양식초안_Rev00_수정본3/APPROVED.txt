@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-08T08:28:01
+document=SH-FM-246-247_SQ낮음_양식초안_Rev00_수정본3.xlsx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

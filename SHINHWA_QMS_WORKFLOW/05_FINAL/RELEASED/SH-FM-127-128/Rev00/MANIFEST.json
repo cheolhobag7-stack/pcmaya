@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-127-128",
+  "revision": "Rev00",
+  "released_at": "2026-10-08 08:21:59",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-127-128_SQ보통_양식초안_Rev00_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "전 양식 승인 표기"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-127-128_SQ보통_양식초안_Rev00_수정본3.xlsx",
+      "sha256": "cf6623782c97df40770d711ddffb17d6f4b196e52445b5eae6fafcbb17239df3",
+      "size": 10444
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-127-128_SQ보통_양식초안_Rev00_수정본3.pdf",
+      "sha256": "0a5333b0622590540a93b6af3d54c4529954521963d43457a92b4ecc4ae80fa4",
+      "size": 106170
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-127-128_SQ보통_양식초안_Rev00_수정본3_배포본_20261008.pdf",
+      "sha256": "0a5333b0622590540a93b6af3d54c4529954521963d43457a92b4ecc4ae80fa4",
+      "size": 106170
+    }
+  ]
+}

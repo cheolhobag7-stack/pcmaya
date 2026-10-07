@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-293-307",
+  "revision": "Rev00",
+  "released_at": "2026-10-08 08:32:00",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-293-307_SQ보통_양식초안_Rev00_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "전 양식 승인 표기"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-293-307_SQ보통_양식초안_Rev00_수정본3.xlsx",
+      "sha256": "813cdea287897a9c5a37b9c7224f8eb5354a1eff7424cff76e9f04c7cc9a3828",
+      "size": 40680
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-293-307_SQ보통_양식초안_Rev00_수정본3.pdf",
+      "sha256": "2e59838f7528b2aab517a6471790a07b62ffd2dee9ae4e8170fe2f97dfa7ebbc",
+      "size": 302004
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-293-307_SQ보통_양식초안_Rev00_수정본3_배포본_20261008.pdf",
+      "sha256": "2e59838f7528b2aab517a6471790a07b62ffd2dee9ae4e8170fe2f97dfa7ebbc",
+      "size": 302004
+    }
+  ]
+}

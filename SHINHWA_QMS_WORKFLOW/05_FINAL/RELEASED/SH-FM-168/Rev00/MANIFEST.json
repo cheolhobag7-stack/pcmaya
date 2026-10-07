@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-168",
+  "revision": "Rev00",
+  "released_at": "2026-10-08 08:24:41",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-168_SQ보통_양식초안_Rev00_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-168_SQ보통_양식초안_Rev00_수정본3.xlsx",
+      "sha256": "24eaee3f1b0c6483e0e7e85dd7f5ac3d25b75dbfd6eda7d6c5a6f49fdcff4f7f",
+      "size": 8822
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-168_SQ보통_양식초안_Rev00_수정본3.pdf",
+      "sha256": "71a897511bd39cfbd5cd97c962e0cd7b039e9a353a1ba0745b4d53a513e45f24",
+      "size": 93923
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-168_SQ보통_양식초안_Rev00_수정본3_배포본_20261008.pdf",
+      "sha256": "71a897511bd39cfbd5cd97c962e0cd7b039e9a353a1ba0745b4d53a513e45f24",
+      "size": 93923
+    }
+  ]
+}
