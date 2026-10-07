@@ -1619,9 +1619,12 @@ def split_pdf(path):
         label = re.sub(r'[\\/:*?"<>|]+', "_", re.sub(r"^SH-FM-\d+\s*", "", str(wb0[t]["A1"].value or "").strip()))[:40]
         with tempfile.TemporaryDirectory() as td:
             wb = openpyxl.load_workbook(src)
+            # 다른 시트를 지우면 시트 간 수식(예: ='01_현장양식목록'!B7)이 #NAME? 이 되므로 숨기기만 한다(숨긴 시트는 PDF 에 나오지 않음)
+            wb.active = wb.sheetnames.index(t)
             for other in wb.sheetnames:
                 if other != t:
-                    del wb[other]
+                    wb[other].sheet_state = "hidden"
+            wb[t].sheet_state = "visible"
             ws = wb[t]  # 임시 사본에만 적용: 가로 한 쪽 폭에 맞춰 열이 쪽 밖으로 잘리지 않게 함
             # 시트에 이미 '한 페이지 맞춤(폭 1·높이 1) + 방향'이 지정돼 있으면 그대로 존중한다(양식 설계 의도).
             # 없으면 가로 한 쪽 폭에 맞춘다.
