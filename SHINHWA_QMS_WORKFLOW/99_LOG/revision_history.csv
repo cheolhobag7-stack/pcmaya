@@ -219,3 +219,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-FM-122_현장양식목록_작성계획_Rev00_수정본3,,,양식별 PDF 4개 생성(배포): 05_FINAL\배포본\양식별PDF\SH-FM-122_현장양식목록_작성계획_Rev00_수정본3,system,
 2026-10-07,SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본2,,,양식별 PDF 9개 생성(배포): 05_FINAL\배포본\양식별PDF\SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본2,system,
 2026-10-07,FM-066-096·FM-122,00,00,"공식양식 수정본2·SH-FM-122 수정본3 승인·배포 반영: 문서관리대장 수정본4(02_개정이력 9~11행, 06 반영이력; 수정본3 에서 머리줄 위 7행에 잘못 들어간 현장작성양식 행을 9행으로 정정), FM Master SQ중복통합10(066~096 명칭 근거). 승인일 2026-09-24·이사=사용자 진술, 03_배포대장 미기입",claude,
+2026-10-07,crosscheck,,,"crosscheck 의 Rev 누락 검사에서 splitpdf 시트별 PDF 폴더(양식별PDF·PDF_미리보기) 제외: HOLD 31 오탐 해소(PASS 36/HOLD 1). 남은 HOLD 1건 FM-122 는 수정본 복수 사본의 동일 Rev 중복 안내",claude,

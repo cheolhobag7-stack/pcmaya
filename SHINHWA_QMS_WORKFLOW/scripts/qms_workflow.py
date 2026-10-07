@@ -856,6 +856,8 @@ def crosscheck():
     for q in sorted(stage_files(("orig", "edit", "appr", "final"))):
         if MASTER in q.parts or q.suffix.lower() not in (TEXT_EXT | {".pdf"}) or D["rev"] in q.parents or D["edit"] / "수정중" in q.parents:
             continue
+        if "양식별PDF" in q.parts or "PDF_미리보기" in q.parts:   # splitpdf 시트별 PDF 산출물(파일명에 Rev 없음)
+            continue
         m = re.search(num["doc_pattern"], q.name)
         r = re.search(num["revision_pattern"], q.name)
         if m and not re.search(r"-\d{2,3}-\d{2,3}$", m.group(0)):
