@@ -254,3 +254,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본14_수정필요사항_20261007034802.md",system,
 2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본14_수정필요사항_20261007034830.md",system,
 2026-10-07,SH-QP-018·통합문서·qms_rules.yaml,03,03,"보존기간 통일: 매뉴얼 원칙 유지, SH-QP-018 및 양식 5년. QP-018 수정본15(승인 전)·통합문서 수정본4·qms_rules LOT 보존 5년 패턴·duplicates 배포본 PDF 오탐 수정",claude,
+2026-10-07,SH-FM-071,Rev00,Rev00,"엑셀 복구 메시지 대응: 수정본3(firstSheet·바닥글 코드 정리) 작성·recheck HOLD. 원인 미확정",claude,
