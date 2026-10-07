@@ -302,3 +302,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-FM-347-354_SQ낮음_양식초안_Rev00_수정본,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-347-354_SQ낮음_양식초안_Rev00_수정본_수정필요사항_20261007060119.md",system,
 2026-10-07,SH-FM-356,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-356_SQ낮음_양식초안_Rev00_수정본_수정필요사항_20261007060120.md",system,
 2026-10-07,SQ 신규 양식 178종,Rev00,Rev00,"공통 값(보존 5년·보관 품질팀 서버·결재 직책만·제정개정일 2026-09-01·A4 1쪽) 적용, 구간별 37개 워크북 recheck HOLD 승인대기 준비. 항목·기준은 담당부서 확정 필요",claude,
+2026-10-07,SQ 양식,,,"담당부서 작성용 확정 필요 칸 목록(278칸·37개 워크북) 작성: 07_AUDIT/고객심사/SQ_확정필요_칸목록_20261007.xlsx",claude,
