@@ -245,3 +245,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본12_수정필요사항_20261007121627.md",system,
 2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 2건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본11_수정필요사항_20261007122240.md",system,
 2026-10-07,SH-QP-018,,03,승인 후 최종 발행,,승인완료
+2026-10-07,SH-QP-018·SH-FM-363·364,03/-,03/00,"승인·배포 완료(PC finalize) 반영: 문서관리대장 수정본6(개정이력 3행·배포대장 363·364)·FM Master 통합13. 승인일 2026-09-01 사용자 지시, 서명본·수령 증빙 미확인",claude,
