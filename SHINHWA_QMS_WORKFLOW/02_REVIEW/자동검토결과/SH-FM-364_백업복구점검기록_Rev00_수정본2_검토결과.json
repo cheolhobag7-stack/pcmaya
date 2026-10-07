@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-364_백업복구점검기록_Rev00_수정본2.xlsx",
+  "checked": "2026-10-07 02:08:48",
+  "sha256": "ecec28ba78723a3b175efc2053bd18b669681a51a2f25b7213fd7ded157babb2",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "결재란 항목 누락: 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    }
+  ]
+}
