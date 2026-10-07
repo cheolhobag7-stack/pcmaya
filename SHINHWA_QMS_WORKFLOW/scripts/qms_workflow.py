@@ -1619,12 +1619,22 @@ def split_pdf(path):
         label = re.sub(r'[\\/:*?"<>|]+', "_", re.sub(r"^SH-FM-\d+\s*", "", str(wb0[t]["A1"].value or "").strip()))[:40]
         with tempfile.TemporaryDirectory() as td:
             wb = openpyxl.load_workbook(src)
-            # 다른 시트를 지우면 시트 간 수식(예: ='01_현장양식목록'!B7)이 #NAME? 이 되므로 숨기기만 한다(숨긴 시트는 PDF 에 나오지 않음)
-            wb.active = wb.sheetnames.index(t)
+            # 다른 시트를 지우면 시트 간 수식(예: ='01_현장양식목록'!B7)이 #NAME? 이 되므로, 지우기 전에
+            # 대상 시트의 단순 시트 참조 수식을 참조 값으로 바꿔 둔다(임시 사본에서만. 숨기기는 LibreOffice 가 PDF 에 포함해 쓰지 않음)
+            def _resolve(book, sheet, coord, depth=0):
+                v = book[sheet][coord].value
+                m_ = re.fullmatch(r"=\s*'?([^'!]+)'?!\$?([A-Z]+)\$?(\d+)", v) if isinstance(v, str) else None
+                if m_ and depth < 5:
+                    return _resolve(book, m_.group(1), m_.group(2) + m_.group(3), depth + 1)
+                return v
+            for row_ in wb[t].iter_rows():
+                for c_ in row_:
+                    m_ = re.fullmatch(r"=\s*'?([^'!]+)'?!\$?([A-Z]+)\$?(\d+)", c_.value) if isinstance(c_.value, str) else None
+                    if m_ and m_.group(1) in wb.sheetnames:
+                        c_.value = _resolve(wb, m_.group(1), m_.group(2) + m_.group(3))
             for other in wb.sheetnames:
                 if other != t:
-                    wb[other].sheet_state = "hidden"
-            wb[t].sheet_state = "visible"
+                    del wb[other]
             ws = wb[t]  # 임시 사본에만 적용: 가로 한 쪽 폭에 맞춰 열이 쪽 밖으로 잘리지 않게 함
             # 시트에 이미 '한 페이지 맞춤(폭 1·높이 1) + 방향'이 지정돼 있으면 그대로 존중한다(양식 설계 의도).
             # 없으면 가로 한 쪽 폭에 맞춘다.
