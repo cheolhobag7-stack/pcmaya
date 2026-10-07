@@ -251,3 +251,6 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-07,SH-FM-363,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-363_기록인계대장_Rev00_수정본6_수정필요사항_20261007033057.md",system,
 2026-10-07,SH-FM-364,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-364_백업복구점검기록_Rev00_수정본6_수정필요사항_20261007033058.md",system,
 2026-10-07,SH-FM-071·SH-FM-101-121·SH-FM-363·364,,,"SH-FM-071 초안 완성(명칭 부적합품 관련 관리기록, 보존 5년, Rev.00, 2026-09-01) / 사용자 지시 모든 FM 보존기간 5년: 101-121 수정본8·363 수정본6·364 수정본6 작성(승인 전 상태, recheck HOLD/FAIL(재릴리스 중복 안내))",claude,
+2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본14_수정필요사항_20261007034802.md",system,
+2026-10-07,SH-QP-018,03,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-QP-018_식별및추적성관리절차서_Rev03_수정본14_수정필요사항_20261007034830.md",system,
+2026-10-07,SH-QP-018·통합문서·qms_rules.yaml,03,03,"보존기간 통일: 매뉴얼 원칙 유지, SH-QP-018 및 양식 5년. QP-018 수정본15(승인 전)·통합문서 수정본4·qms_rules LOT 보존 5년 패턴·duplicates 배포본 PDF 오탐 수정",claude,

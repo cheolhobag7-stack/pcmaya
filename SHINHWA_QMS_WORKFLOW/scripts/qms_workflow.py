@@ -313,9 +313,10 @@ def duplicates(docpat, p: Path, docno, rev):
             continue   # 보고서·수정후보는 문서가 아님
         m = re.search(docpat, q.name)
         r = re.search(cfg("document_number_rules.yaml")["revision_pattern"], q.name)
-        stem_name = re.sub(r"(_DRAFT|_수정본\d*|_수정후보.*|_v\d+)+$", "", q.stem)
+        base = lambda st: re.sub(r"(_DRAFT|_수정본\d*|_수정후보.*|_v\d+)+$", "", re.sub(r"_배포본(_\d{8})?$", "", st))   # 릴리스 배포본 PDF 는 같은 문서의 사본
+        stem_name = base(q.stem)
         if m and norm(m.group(0)) == me and (r.group(1) if r else None) == rev \
-                and stem_name != re.sub(r"(_DRAFT|_수정본\d*|_v\d+)+$", "", p.stem):
+                and stem_name != base(p.stem):
             others.add(q.name)
     return sorted(others)
 

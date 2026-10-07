@@ -50,7 +50,7 @@ standards_check:
 retention:
   required_for: [QP, WI, FM]
   allow_blank_for: [FM]          # 양식(FM) 단계에서는 보존기간 공란/미표기 허용 (허용값 외 구체값을 적으면 오류)
-  allowed: ["1년", "3년", "5년", "10년", "영구"]   # LOT 추적성 기록은 3년
+  allowed: ["1년", "3년", "5년", "10년", "영구"]   # LOT 추적성 기록은 5년(2026-10-07 사용자 결정: 모든 문서 보존 5년)
 
 # 결재 상태 검사: 본문에 아래 라벨이 모두 있어야 승인대기로 이동
 approval_labels: [작성, 검토, 승인]
@@ -77,9 +77,9 @@ core_tools:                             # 본문에 언급되면 연계 문서�
 core_tool_docs: {}                      # 확정 전: 예) PFMEA: SH-QP-xx  (비워 두면 임의 생성하지 않음)
 lot_traceability:
   keyword: "LOT 추적"
-  retention_patterns: ["3년", "3 년", "36개월", "36 개월"]
+  retention_patterns: ["5년", "5 년", "60개월", "60 개월"]
   target_patterns: ["1시간", "1 시간", "60분", "60 분"]
-  # 본문에 LOT 추적 언급 시 보존기간(3년)과 목표시간(1시간)을 명시해야 함
+  # 본문에 LOT 추적 언급 시 보존기간(5년)과 목표시간(1시간)을 명시해야 함
 obsolete_docs: []                       # 폐기된 문서번호 목록 (06_HISTORY/폐기문서 폴더 파일명도 자동 반영)
 
 # 폐기/참조금지 문서 (범위 표기 가능: FM-030~039). 참조 시 오류 처리, 시스템 어디에 있어도 FINAL 금지.

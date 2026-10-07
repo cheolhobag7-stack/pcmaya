@@ -1,0 +1,13 @@
+{
+  "file": "SH-QP-018_식별및추적성관리절차서_Rev03_수정본14.docx",
+  "checked": "2026-10-07 03:48:30",
+  "sha256": "aee606f0ba437a5cdb470828561d9ecde0e68df636ac2578663dd780d94efef7",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-QP-018_식별및추적성관리절차서_Rev03_수정본13_배포본_20261007.pdf",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}
