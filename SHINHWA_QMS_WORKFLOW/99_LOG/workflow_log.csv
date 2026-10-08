@@ -747,3 +747,4 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-08 12:14:41,SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-08 12:14:41,SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-08 12:14:51,SH-QP-002,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-08 14:30:00,SQ 증빙 매핑·담당자 확인 요청,,증빙 매핑,회신 대기,claude,"보유 5·보완 필요 189·미비 17·판단 보류 29 / 인쇄물 직접 전달(2026-10-08), 회신 기한 2026-10-15 / 진행 현황 99_산출물/SQ_증빙매핑_진행현황_20261008.md"
