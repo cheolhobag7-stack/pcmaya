@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-08T12:01:22
+document=SH-FM-045_APQP개발일정계획서_Rev00_수정본2.xlsx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일
