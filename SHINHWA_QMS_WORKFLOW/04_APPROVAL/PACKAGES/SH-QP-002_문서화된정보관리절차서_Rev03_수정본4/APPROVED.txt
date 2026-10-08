@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-08T12:14:41
+document=SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일
