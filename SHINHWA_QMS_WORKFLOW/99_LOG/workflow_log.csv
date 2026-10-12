@@ -1311,3 +1311,4 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-12 16:44:39,SH-FM-367_용접부자재관리대장_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-12 16:44:39,SH-FM-367_용접부자재관리대장_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-12 16:44:51,SH-FM-367,,04_APPROVAL/승인완료,(보류),system,FINAL Gate FAIL: 배포 불가
+2026-10-12 16:52:51,SH-FM-367,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
