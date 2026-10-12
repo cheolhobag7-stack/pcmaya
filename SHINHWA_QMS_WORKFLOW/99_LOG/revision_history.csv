@@ -463,3 +463,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-12,SH-QP-002,03,03,승인 후 최종 발행,,승인완료
 2026-10-12,SH-QP-002 §4.1 범위 정정 승인·배포 반영,SH-QP-002,Rev03,"사용자 PC 승인·배포(수정본8, integrity 321 FAIL 0). 대장 수정본18 반영","","반영"
 2026-10-12,최종 마무리 보고 v2,,,"02_REVIEW/최종마무리보고_20261012_v2.md 작성(Gate PASS·integrity 321 FAIL 0·승인대기 0, 사람이 할 일 정리)","","보고"
+2026-10-12,마무리 결정(A 유지),,,"Rev.03·2026-09-01 소급 기준 유지로 마무리(전체 재개정 안 함). 후속은 사용자 입력 대기","","결정"
