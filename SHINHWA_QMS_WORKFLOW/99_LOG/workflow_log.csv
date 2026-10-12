@@ -1223,3 +1223,5 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-12 14:02:32,SH-FM-366_공급자정기평가표_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-12 14:02:32,SH-FM-366_공급자정기평가표_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-12 14:02:44,SH-FM-366,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 05:07:21,SH-QP-002,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 05:07:27,SH-QP-002_문서화된정보관리절차서_Rev03_수정본7,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-002_문서화된정보관리절차서_Rev03_수정본7,system,승인 패키지 생성
