@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-367",
+  "revision": "Rev00",
+  "released_at": "2026-10-13 07:33:44",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-367_용접부자재관리대장_Rev00_수정본4.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-367_용접부자재관리대장_Rev00_수정본4.xlsx",
+      "sha256": "bc0ec6aa8c6e428b5ec482a08f553c61dca16c64c0fd3a3a61e2b5fb48a85266",
+      "size": 96870
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-367_용접부자재관리대장_Rev00_수정본4.pdf",
+      "sha256": "17f0ef34671463ab1df9bdceb5022cece8a0e356a680b93e4f023cc11e6e8c0f",
+      "size": 339100
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-367_용접부자재관리대장_Rev00_수정본4_배포본_20261013.pdf",
+      "sha256": "17f0ef34671463ab1df9bdceb5022cece8a0e356a680b93e4f023cc11e6e8c0f",
+      "size": 339100
+    }
+  ]
+}
