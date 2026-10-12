@@ -377,3 +377,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-12,SH-QM-001,03,,"AUTO_DRAFT 생성(수정 필요 2건, 미확정): SH-QM-001_품질경영매뉴얼_Rev03_수정본_수정필요사항_20261012004202.md",system,
 2026-10-12,SH-QM-001,,03,"QM 단독 문서 승인대기 준비: 통합문서 수정본12의 QM 발췌에 문서상태·개정일 행 추가, PFMEA-Control Plan 하이픈 표기를 가운뎃점으로 정정(상호참조 오탐 방지). recheck HOLD(승인 전만). 승인·배포는 PC 일괄승인_docx.py","","승인대기"
 2026-10-12,SH-QM-001,,03,승인 후 최종 발행,,승인완료
+2026-10-12,문서관리대장 수정본11,,,"SH-QM-001 단독 배포 반영(02·03·06 행 추가), 결재란 품질책임자 김주태·선행품질팀 팀장 정정. FM Master 변경 없음","","반영"
