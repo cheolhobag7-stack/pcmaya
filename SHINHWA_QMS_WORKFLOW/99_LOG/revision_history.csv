@@ -485,3 +485,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-12,SH-FM-367 Master 등록(배포 전 G4),SH-FM-367,Rev00,"사용자 PC finalize 가 G4(대장/Master 등재 FAIL: FM-367)로 보류됨 → FM Master 통합26 에 367 행(승인대기) 추가. 사용자 PC 에서 finalize 재실행 필요","","조치"
 2026-10-12,SH-FM-367,,00,승인 후 최종 발행,,승인완료
 2026-10-12,SH-FM-367 승인·배포 반영,SH-FM-367,Rev00,"RELEASED/SH-FM-367/Rev00 (integrity 351 FAIL 0). 대장 수정본20·FM Master 통합27(367 유효)","","반영"
+2026-10-12,SH-FM-367 주관부서 구매자재팀,SH-FM-367,Rev00,"사용자 지시. 문서 표기 정정은 같은 Rev.00 재개정 수정본3(recheck PASS, 승인대기, 개정이력 Rev.00(재개정) 추가). Master 통합28·대장 수정본21(관리부서·배포처 반영)","","반영"
