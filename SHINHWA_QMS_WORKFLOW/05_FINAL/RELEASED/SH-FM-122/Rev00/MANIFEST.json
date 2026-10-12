@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-122",
+  "revision": "Rev00",
+  "released_at": "2026-10-12 10:40:05",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-122_현장양식목록_작성계획_Rev00_수정본5.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-122_현장양식목록_작성계획_Rev00_수정본5.xlsx",
+      "sha256": "8614ddcd0d08014493d33ed445e10a00e900b4e0357122ac9d0a8a389c7c1c97",
+      "size": 27797
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-122_현장양식목록_작성계획_Rev00_수정본5.pdf",
+      "sha256": "aa0bae41d374c0b5ba9d7c96bc6417bdcd58fa7319c187b0160d95677dae41d0",
+      "size": 512093
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-122_현장양식목록_작성계획_Rev00_수정본5_배포본_20261012.pdf",
+      "sha256": "aa0bae41d374c0b5ba9d7c96bc6417bdcd58fa7319c187b0160d95677dae41d0",
+      "size": 512093
+    }
+  ]
+}
