@@ -482,3 +482,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-12,SQ 생산기술 148·149 담당자,SH-FM-148·149,,"사용자 지시: 황지환 차장. 배정대응표 정정본2·증빙대응표 v3 반영","","반영"
 2026-10-12,SQ 요청서 반영 도구 sqapply,scripts/sqapply.py,,"담당자 작성 요청서를 SQ 양식 워크북에 반영(미리보기/--apply, 새 _수정본N+1 저장). 합성 요청서로 시험(저장소 외부 출력), 실제 담당자 양식은 사용자 업로드 대기","","도구"
 2026-10-12,SH-FM-367 용접 부자재 관리대장 제정(승인대기),SH-FM-367,Rev00,"사용자 지시: 번호 SH-FM-367 부여. 현장 파일 Rev.07(수식 1900·검증·표 유지) 기반 Rev.00 양식, 제정·개정일 2026-10-06(용접 양식 기준 가정, 확인 필요), 보존 5년, 주관부서 미지정, 결재 직책만. recheck PASS(승인 전)","","초안"
+2026-10-12,SH-FM-367 Master 등록(배포 전 G4),SH-FM-367,Rev00,"사용자 PC finalize 가 G4(대장/Master 등재 FAIL: FM-367)로 보류됨 → FM Master 통합26 에 367 행(승인대기) 추가. 사용자 PC 에서 finalize 재실행 필요","","조치"
