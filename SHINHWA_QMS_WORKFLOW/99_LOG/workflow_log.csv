@@ -747,3 +747,8 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-08 12:14:41,SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-08 12:14:41,SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-08 12:14:51,SH-QP-002,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 00:42:02,SH-QM-001,,수정완료,02_REVIEW/상호참조오류,system,"2건 문제, 수정후보 SH-QM-001_품질경영매뉴얼_Rev03_수정본_수정필요사항_20261012004202.md"
+2026-10-12 00:42:29,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 00:42:34,SH-QM-001_품질경영매뉴얼_Rev03_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001_품질경영매뉴얼_Rev03_수정본2,system,승인 패키지 생성
+2026-10-12 00:43:36,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 00:43:41,SH-QM-001_품질경영매뉴얼_Rev03_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001_품질경영매뉴얼_Rev03_수정본3,system,승인 패키지 생성
