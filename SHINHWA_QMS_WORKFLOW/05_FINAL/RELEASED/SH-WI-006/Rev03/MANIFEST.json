@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-006",
+  "revision": "Rev03",
+  "released_at": "2026-10-12 12:26:32",
+  "source": "04_APPROVAL\\승인완료\\SH-WI-006_계측기사용및일상점검표준_Rev03_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-006_계측기사용및일상점검표준_Rev03_수정본2.docx",
+      "sha256": "53b75317ea64b9d6c547b2df3458f9440485b2472b2a53f60dc52a35453426ba",
+      "size": 102968
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-006_계측기사용및일상점검표준_Rev03_수정본2.pdf",
+      "sha256": "55091dfddad842bee3f75da28bfa2bb4b5ca2614fce0cc02b102156897b9d344",
+      "size": 189523
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-006_계측기사용및일상점검표준_Rev03_수정본2_배포본_20261012.pdf",
+      "sha256": "55091dfddad842bee3f75da28bfa2bb4b5ca2614fce0cc02b102156897b9d344",
+      "size": 189523
+    }
+  ]
+}

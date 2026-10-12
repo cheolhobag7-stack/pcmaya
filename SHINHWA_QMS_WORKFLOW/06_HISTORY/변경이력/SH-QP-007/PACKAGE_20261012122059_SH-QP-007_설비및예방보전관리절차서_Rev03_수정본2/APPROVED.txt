@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-12T12:20:48
+document=SH-QP-007_설비및예방보전관리절차서_Rev03_수정본2.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

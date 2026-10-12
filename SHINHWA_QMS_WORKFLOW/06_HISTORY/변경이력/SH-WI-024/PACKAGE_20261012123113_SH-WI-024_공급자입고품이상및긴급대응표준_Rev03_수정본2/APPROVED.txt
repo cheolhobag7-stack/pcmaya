@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-12T12:31:03
+document=SH-WI-024_공급자입고품이상및긴급대응표준_Rev03_수정본2.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일
