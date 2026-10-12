@@ -1330,3 +1330,6 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-13 07:33:59,SH-FM-368,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
 2026-10-12 23:03:57,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
 2026-10-12 23:04:04,SH-QM-001_품질경영매뉴얼_Rev03_수정본5,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001_품질경영매뉴얼_Rev03_수정본5,system,승인 패키지 생성
+2026-10-12 23:06:49,SH-QM-001_품질경영매뉴얼_Rev03,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QM-001_품질경영매뉴얼_Rev03,system,수정본 SH-QM-001_품질경영매뉴얼_Rev03_수정본6.docx 로 대체된 이전 승인대기본 이동
+2026-10-12 23:06:49,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 23:06:55,SH-QM-001_품질경영매뉴얼_Rev03_수정본6,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001_품질경영매뉴얼_Rev03_수정본6,system,승인 패키지 생성
