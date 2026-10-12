@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-12T14:45:50
+document=SH-FM-235_SQ보통_양식초안_Rev00_수정본2.xlsx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

@@ -1249,3 +1249,57 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-12 05:41:06,SH-FM-235_SQ보통_양식초안_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-235_SQ보통_양식초안_Rev00_수정본,system,승인 패키지 생성
 2026-10-12 05:41:09,SH-FM-312,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
 2026-10-12 05:41:15,SH-FM-312_SQ낮음_양식초안_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-312_SQ낮음_양식초안_Rev00_수정본,system,승인 패키지 생성
+2026-10-12 14:42:22,SH-FM-144_SQ높음_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-144_SQ높음_양식초안_Rev00,system,수정본 SH-FM-144_SQ높음_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:42:22,SH-FM-144,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:42:27,SH-FM-144_SQ높음_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-144_SQ높음_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:42:31,SH-FM-147-148_SQ높음_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-147-148_SQ높음_양식초안_Rev00,system,수정본 SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:42:31,SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:42:36,SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:42:40,SH-FM-169-170_SQ보통_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-169-170_SQ보통_양식초안_Rev00,system,수정본 SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:42:40,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:42:45,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:42:50,SH-FM-187-189_SQ높음_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-187-189_SQ높음_양식초안_Rev00,system,수정본 SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:42:50,SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:42:57,SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:43:00,SH-FM-192_SQ높음_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-192_SQ높음_양식초안_Rev00,system,수정본 SH-FM-192_SQ높음_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:43:00,SH-FM-192,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:43:06,SH-FM-192_SQ높음_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-192_SQ높음_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:43:09,SH-FM-222-223_SQ보통_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-222-223_SQ보통_양식초안_Rev00,system,수정본 SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:43:09,SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:43:14,SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:43:17,SH-FM-230_SQ보통_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-230_SQ보통_양식초안_Rev00,system,수정본 SH-FM-230_SQ보통_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:43:17,SH-FM-230,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:43:23,SH-FM-230_SQ보통_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-230_SQ보통_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:43:26,SH-FM-235_SQ보통_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-235_SQ보통_양식초안_Rev00,system,수정본 SH-FM-235_SQ보통_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:43:26,SH-FM-235,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:43:31,SH-FM-235_SQ보통_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-235_SQ보통_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:43:34,SH-FM-312_SQ낮음_양식초안_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-312_SQ낮음_양식초안_Rev00,system,수정본 SH-FM-312_SQ낮음_양식초안_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:43:34,SH-FM-312,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:43:40,SH-FM-312_SQ낮음_양식초안_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-312_SQ낮음_양식초안_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:43:40,SH-FM-144_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:43:40,SH-FM-144_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:43:52,SH-FM-144,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:43:58,SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:43:58,SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:44:10,SH-FM-147-148_SQ높음_양식초안_Rev00_수정본2,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:44:16,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:44:16,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:44:28,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본2,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:44:33,SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:44:33,SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:44:49,SH-FM-187-189_SQ높음_양식초안_Rev00_수정본2,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:44:56,SH-FM-192_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:44:56,SH-FM-192_SQ높음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:45:08,SH-FM-192,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:45:14,SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:45:14,SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:45:26,SH-FM-222-223_SQ보통_양식초안_Rev00_수정본2,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:45:31,SH-FM-230_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:45:31,SH-FM-230_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:45:43,SH-FM-230,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:45:49,SH-FM-235_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:45:50,SH-FM-235_SQ보통_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:46:01,SH-FM-235,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:46:08,SH-FM-312_SQ낮음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:46:08,SH-FM-312_SQ낮음_양식초안_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:46:20,SH-FM-312,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
