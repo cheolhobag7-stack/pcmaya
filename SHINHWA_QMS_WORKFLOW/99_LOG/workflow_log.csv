@@ -782,3 +782,106 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-12 10:39:50,SH-FM-122_현장양식목록_작성계획_Rev00_수정본5.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-12 10:39:50,SH-FM-122_현장양식목록_작성계획_Rev00_수정본5.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-12 10:40:00,SH-FM-122,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 02:27:07,SH-QP-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:27:12,SH-QP-001_경영검토절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-001_경영검토절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:27:15,SH-QP-003,,수정완료,02_REVIEW/내용보완필요,system,"1건 문제, 수정후보 SH-QP-003_기록관리절차서_Rev03_수정본_수정필요사항_20261012022715.md"
+2026-10-12 02:27:18,SH-QP-004,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:27:23,SH-QP-004_리스크및기회관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-004_리스크및기회관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:27:27,SH-QP-005,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:27:32,SH-QP-005_내부심사절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-005_내부심사절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:27:35,SH-QP-006,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:27:40,SH-QP-006_교육훈련및역량관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-006_교육훈련및역량관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:27:43,SH-QP-007,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:27:48,SH-QP-007_설비및예방보전관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-007_설비및예방보전관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:27:51,SH-QP-008,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:27:57,SH-QP-008_모니터링및측정자원관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-008_모니터링및측정자원관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:00,SH-QP-009,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:07,SH-QP-009_고객요구사항및계약검토절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-009_고객요구사항및계약검토절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:10,SH-QP-010,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:15,SH-QP-010_APQP및PPAP관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-010_APQP및PPAP관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:18,SH-QP-011,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:23,SH-QP-011_구매및협력사관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-011_구매및협력사관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:26,SH-QP-012,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:31,SH-QP-012_생산및공정관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-012_생산및공정관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:34,SH-QP-013,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:39,SH-QP-013_검사및시험관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-013_검사및시험관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:42,SH-QP-014,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:47,SH-QP-014_부적합품및재작업관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-014_부적합품및재작업관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:50,SH-QP-015,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:28:55,SH-QP-015_변경관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-015_변경관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:28:58,SH-QP-016,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:03,SH-QP-016_시정조치및문제해결절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-016_시정조치및문제해결절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:07,SH-QP-017,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:12,SH-QP-017_고객불만및보증관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-017_고객불만및보증관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:15,SH-QP-019,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:20,SH-QP-019_보관·포장및출하관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-019_보관·포장및출하관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:22,SH-QP-020,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:28,SH-QP-020_비상계획및공급연속성절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-020_비상계획및공급연속성절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:31,SH-QP-021,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:36,SH-QP-021_품질목표및KPI관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-021_품질목표및KPI관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:38,SH-QP-022,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:43,SH-QP-022_제품안전관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-022_제품안전관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:46,SH-QP-023,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:29:52,SH-QP-023_통계적공정관리(SPC)절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-023_통계적공정관리(SPC)절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:29:55,SH-QP-024,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:00,SH-QP-024_품질비용및지속적개선절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-024_품질비용및지속적개선절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:03,SH-QP-025,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:08,SH-QP-025_고객별요구사항(CSR)관리절차서_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-025_고객별요구사항(CSR)관리절차서_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:11,SH-WI-003,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:17,SH-WI-003_부적합품식별·격리및재작업표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-003_부적합품식별·격리및재작업표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:20,SH-WI-004,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:25,SH-WI-004_설비일상점검및이상대응표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-004_설비일상점검및이상대응표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:28,SH-WI-005,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:33,SH-WI-005_제품식별·LOT추적및출하표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-005_제품식별·LOT추적및출하표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:36,SH-WI-006,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:41,SH-WI-006_계측기사용및일상점검표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-006_계측기사용및일상점검표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:43,SH-WI-007,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:48,SH-WI-007_검사구및GaugeR&R수행표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-007_검사구및GaugeR&R수행표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:51,SH-WI-008,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:30:56,SH-WI-008_금형·치공구교환및관리표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-008_금형·치공구교환및관리표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:30:59,SH-WI-009,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:04,SH-WI-009_자재입고·보관·불출관리표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-009_자재입고·보관·불출관리표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:07,SH-WI-010,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:13,SH-WI-010_포장·라벨및출하검증표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-010_포장·라벨및출하검증표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:15,SH-WI-011,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:20,SH-WI-011_공정조건설정및변경관리표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-011_공정조건설정및변경관리표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:23,SH-WI-012,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:29,SH-WI-012_오류방지(Poka-Yoke)점검표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-012_오류방지(Poka-Yoke)점검표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:32,SH-WI-013,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:36,SH-WI-013_라인클리어런스및품번전환표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-013_라인클리어런스및품번전환표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:39,SH-WI-014,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:45,SH-WI-014_선별검사및특별검사표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-014_선별검사및특별검사표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:48,SH-WI-015,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:31:52,SH-WI-015_작업자표준작업및교대인수인계표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-015_작업자표준작업및교대인수인계표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:31:55,SH-WI-016,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:00,SH-WI-016_예방보전및설비점검작업표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-016_예방보전및설비점검작업표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:03,SH-WI-017,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:09,SH-WI-017_청정도및이물관리작업표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-017_청정도및이물관리작업표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:13,SH-WI-018,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:18,SH-WI-018_재작업및수리작업표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-018_재작업및수리작업표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:20,SH-WI-019,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:26,SH-WI-019_제품안전특성작업관리표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-019_제품안전특성작업관리표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:29,SH-WI-020,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:34,SH-WI-020_비상상황생산복구작업표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-020_비상상황생산복구작업표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:37,SH-WI-021,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:42,SH-WI-021_공정감사및LayeredProcessAudit실행표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-021_공정감사및LayeredProcessAudit실행표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:45,SH-WI-022,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:49,SH-WI-022_변경초기유동및강화검사작업표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-022_변경초기유동및강화검사작업표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:32:53,SH-WI-023,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:32:58,SH-WI-023_고객불만긴급봉쇄및현장대응표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-023_고객불만긴급봉쇄및현장대응표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:01,SH-WI-024,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:06,SH-WI-024_공급자입고품이상및긴급대응표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-024_공급자입고품이상및긴급대응표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:09,SH-WI-025,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:14,SH-WI-025_품질이상정지·보고·재가동표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-025_품질이상정지·보고·재가동표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:17,SH-WI-026,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:21,SH-WI-026_고객특별상태및품질주의관리표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-026_고객특별상태및품질주의관리표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:24,SH-WI-027,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:29,SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:33,SH-WI-028,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:38,SH-WI-028_장기재고및유효기간관리표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-028_장기재고및유효기간관리표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:41,SH-WI-029,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:46,SH-WI-029_공급자변경품및초도품확인표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-029_공급자변경품및초도품확인표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:33:49,SH-WI-030,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:33:54,SH-WI-030_고객감사·인증심사현장대응표준_Rev03_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-030_고객감사·인증심사현장대응표준_Rev03_수정본,system,승인 패키지 생성
+2026-10-12 02:34:22,SH-QP-003,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-12 02:34:27,SH-QP-003_기록관리절차서_Rev03_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-003_기록관리절차서_Rev03_수정본2,system,승인 패키지 생성
