@@ -492,3 +492,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-12,SH-FM-367 재개정·368 승인·배포 반영,SH-FM-367·368,Rev00,"RELEASED 367 Rev00_v2(수정본4)·368 Rev00(수정본2), integrity 354 FAIL 0. 대장 수정본22·Master 통합30","","반영"
 2026-10-12,SH-QM-001,Rev03,수정본5,목차 쪽수 정정(릴리스 PDF 기준 24줄),승인대기,조직도(5.3) 확인 대기
 2026-10-12,SH-QM-001,Rev03,수정본6,조직도 5.3 선행품질팀 독립 부서 표기(통합문서 수정본16 포함; 박미광 사원=선행품질팀),승인대기,
+2026-10-13,SH-QM-001,03,03,승인 후 최종 발행,,승인완료
