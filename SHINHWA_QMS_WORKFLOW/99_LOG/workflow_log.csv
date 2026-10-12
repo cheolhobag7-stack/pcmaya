@@ -1211,3 +1211,15 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-12 04:58:10,SH-FM-365_공급자신규평가표_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-365_공급자신규평가표_Rev00_수정본,system,승인 패키지 생성
 2026-10-12 04:58:13,SH-FM-366,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
 2026-10-12 04:58:19,SH-FM-366_공급자정기평가표_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-366_공급자정기평가표_Rev00_수정본,system,승인 패키지 생성
+2026-10-12 14:01:59,SH-FM-365_공급자신규평가표_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-365_공급자신규평가표_Rev00,system,수정본 SH-FM-365_공급자신규평가표_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:01:59,SH-FM-365,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:02:04,SH-FM-365_공급자신규평가표_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-365_공급자신규평가표_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:02:07,SH-FM-366_공급자정기평가표_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-FM-366_공급자정기평가표_Rev00,system,수정본 SH-FM-366_공급자정기평가표_Rev00_수정본2.xlsx 로 대체된 이전 승인대기본 이동
+2026-10-12 14:02:07,SH-FM-366,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-12 14:02:12,SH-FM-366_공급자정기평가표_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-366_공급자정기평가표_Rev00_수정본2,system,승인 패키지 생성
+2026-10-12 14:02:15,SH-FM-365_공급자신규평가표_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:02:15,SH-FM-365_공급자신규평가표_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:02:27,SH-FM-365,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-12 14:02:32,SH-FM-366_공급자정기평가표_Rev00_수정본2.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-12 14:02:32,SH-FM-366_공급자정기평가표_Rev00_수정본2.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-12 14:02:44,SH-FM-366,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
