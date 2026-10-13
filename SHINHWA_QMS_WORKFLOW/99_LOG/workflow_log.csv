@@ -1339,3 +1339,11 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-13 08:08:28,SH-QM-001_품질경영매뉴얼_Rev03_수정본7.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-13 08:08:28,SH-QM-001_품질경영매뉴얼_Rev03_수정본7.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-13 08:08:44,SH-QM-001,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-13 04:18:40,SH-QM-001,,수정완료,02_REVIEW/내용보완필요,system,"5건 문제, 수정후보 SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본_수정필요사항_20261013041840.md"
+2026-10-13 04:18:44,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-10-13 04:18:52,SH-QM-001_품질경영매뉴얼_Rev03_수정본8,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001_품질경영매뉴얼_Rev03_수정본8,system,승인 패키지 생성
+2026-10-13 04:19:15,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-13 04:19:22,SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본2,system,승인 패키지 생성
+2026-10-13 04:24:57,SH-QM-001-A01_조직도및담당자별업무분장_Rev00,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QM-001-A01_조직도및담당자별업무분장_Rev00,system,수정본 SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본3.docx 로 대체된 이전 승인대기본 이동
+2026-10-13 04:24:57,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
+2026-10-13 04:25:05,SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본3,system,승인 패키지 생성
