@@ -501,3 +501,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-13,SH-QM-001,00,03,승인 후 최종 발행,,승인완료
 2026-10-13,SH-QM-001,Rev03,수정본9,배포 반영: 대장 수정본25(02_개정이력·03_배포대장·06),재개정(5.3 조직체계),반영완료,
 2026-10-13,SH-QM-001-A01,Rev00,수정본5,문서번호 규칙에 -A01 형식 허용(document_number_rules.yaml·ledger 정규식)·재승인 대기(첫 배포는 SH-QM-001 로 오인식돼 06_HISTORY 로 이동),승인대기,
+2026-10-13,SH-QM-001-A01,,00,승인 후 최종 발행,,승인완료
