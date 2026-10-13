@@ -2,9 +2,9 @@
 # doc_pattern: 파일명/본문에서 문서번호를 찾는 정규식 (SH- 는 비교 시 자동 제거)
 prefix: "SH"
 initial_revision: "Rev.00"
-doc_pattern: '(?:SH-)?(?:QM|QP|WI|FM)-\d{2,3}(?:-\d{2,3}){0,2}|(?:APQP|PPAP|PFMEA|CP|SPC|MSA)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*'
+doc_pattern: '(?:SH-)?(?:QM|QP|WI|FM)-\d{2,3}(?:-\d{2,3}){0,2}(?:-A\d{2})?|(?:APQP|PPAP|PFMEA|CP|SPC|MSA)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*'
 by_type:
-  QM: '^SH-QM-\d{2,3}$'
+  QM: '^SH-QM-\d{2,3}(-A\d{2})?$'
   QP: '^SH-QP-\d{2,3}(-\d{2,3})?$'
   WI: '^SH-WI-\d{2,3}(-\d{2,3}){0,2}$'
   FM: '^SH-FM-\d{2,3}(-\d{2,3}){0,2}$'

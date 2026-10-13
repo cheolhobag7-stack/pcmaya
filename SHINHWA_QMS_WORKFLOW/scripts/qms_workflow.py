@@ -887,8 +887,8 @@ def crosscheck():
     print(f"[CROSSCHECK] PASS {cnt['PASS']} / HOLD {cnt['HOLD']} / FAIL {cnt['FAIL']} → {out.relative_to(ROOT)}")
     return rows
 
-LEDGER_RX2 = re.compile(r"^(SH-(QM|QP|WI|FM)-\d{3})\s+(.+?)\s+(Rev\.\d{2})\b")   # 간이 대장 형식: 문서번호 문서명 Rev ...
-LEDGER_RX = re.compile(r"^(\d+)\s+(QM|QP|WI|FM)\s+(SH-(?:QM|QP|WI|FM)-\d{3})\s+(.+?)\s+(Rev\.\d{2})\s+(\d{5})\s+(\d{5})")
+LEDGER_RX2 = re.compile(r"^(SH-(QM|QP|WI|FM)-\d{3}(?:-A\d{2})?)\s+(.+?)\s+(Rev\.\d{2})\b")   # 간이 대장 형식: 문서번호 문서명 Rev ...
+LEDGER_RX = re.compile(r"^(\d+)\s+(QM|QP|WI|FM)\s+(SH-(?:QM|QP|WI|FM)-\d{3}(?:-A\d{2})?)\s+(.+?)\s+(Rev\.\d{2})\s+(\d{5})\s+(\d{5})")
 
 def master_files(keyword):
     """관리자료 폴더(01_ORIGINAL/MASTER_REF)와 00_CONFIG 에서 검색 ('샘플' 파일은 제외)."""
