@@ -524,3 +524,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-14,SH-QP-018,03,03,승인 후 최종 발행,,승인완료
 2026-10-14,대장 갱신,,,인쇄패키지 변경분 6건 승인·배포 반영: 대장 수정본29(02_개정이력 6행·03_배포대장 6행·06 반영이력)·FM Master 통합31(045/365/366/368 주의·다음 조치),Claude,
 2026-10-14,점검표,,,남은 확인사항 인쇄용 점검표 작성(02_REVIEW/남은확인사항_인쇄용점검표_20261014.xlsx; QP-018 문구·FM-368 확인·FM-367 부자재 코드·담당자·배포처·서명/구본회수; 수기 기재 후 결정 내용만 전달),Claude,
+2026-10-14,마무리 보고,,,최종마무리보고_20261014.md 작성(Gate PASS·ledger 57·crosscheck 37·integrity 357 FAIL 0·승인대기 0),Claude,
