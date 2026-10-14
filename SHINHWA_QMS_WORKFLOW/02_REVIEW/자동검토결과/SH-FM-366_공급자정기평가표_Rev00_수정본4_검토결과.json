@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-366_공급자정기평가표_Rev00_수정본4.xlsx",
+  "checked": "2026-10-14 03:58:42",
+  "sha256": "89bba12fb4771e762f68df2d138eb73ce7955bac57078ee5d9f6a15ae87d36e5",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '공급자정기평가표' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "file": "SH-FM-365_공급자신규평가표_Rev00_수정본3.xlsx",
+  "checked": "2026-10-14 03:57:23",
+  "sha256": "c2de1bf28b590f69d39fc64c43391ea46fd949b6d9bf338a44c78463ec25911b",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '공급자신규평가표' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    },
+    {
+      "category": "내용보완",
+      "message": "LOT 추적 목표시간 1시간 미명시",
+      "suggestion": "목표시간 1시간 명시"
+    }
+  ]
+}
