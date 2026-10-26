@@ -106,9 +106,20 @@ for n, good in results:
     print(" ", "배포 완료" if good else "!! 확인 필요", n)
 
 if do_git:
-    for cmd in (["git", "add", "-A"], ["git", "commit", "-m", "승인·배포(finalize) Word 문서 처리"],
-                ["git", "pull", "--no-rebase", "origin", "claude/shinhwa-qms-workflow-54alyc"],
-                ["git", "push", "origin", "claude/shinhwa-qms-workflow-54alyc"]):
+    # 현재 작업 중인 브랜치로 pull/push 한다(브랜치 이름을 고정하지 않음)
+    br = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=BASE,
+                        capture_output=True, text=True, encoding="utf-8",
+                        errors="replace").stdout.strip()
+    if not br or br == "HEAD":
+        sys.exit("현재 브랜치를 알 수 없어(분리된 HEAD) git 처리를 건너뜁니다. 직접 commit/push 하세요.")
+    print("git 브랜치:", br)
+    for cmd in (["git", "add", "-A"],
+                ["git", "commit", "-m", "승인·배포(finalize) 일괄 처리"],
+                ["git", "pull", "--no-rebase", "origin", br],
+                ["git", "push", "origin", br]):
         print(">>", " ".join(cmd))
-        print(subprocess.run(cmd, cwd=BASE, capture_output=True, text=True,
-                             encoding="utf-8", errors="replace").stdout)
+        r = subprocess.run(cmd, cwd=BASE, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
+        print((r.stdout or "") + (r.stderr or ""))
+        if r.returncode and cmd[1] != "commit":   # commit 은 변경 없음일 때 실패해도 계속
+            sys.exit(f"!! {' '.join(cmd)} 실패 — 위 메시지를 확인하고 직접 처리하세요.")
