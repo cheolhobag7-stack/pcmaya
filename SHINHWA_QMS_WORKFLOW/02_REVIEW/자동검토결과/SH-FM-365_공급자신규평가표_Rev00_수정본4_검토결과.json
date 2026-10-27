@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-365_공급자신규평가표_Rev00_수정본4.xlsx",
+  "checked": "2026-10-14 03:58:37",
+  "sha256": "313fde9c5948e346f84e1bfd714b5aba322750c7a01bfef32a679c535b96ee1f",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '공급자신규평가표' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}

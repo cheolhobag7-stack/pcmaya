@@ -1,8 +1,8 @@
 {
   "document_no": "SH-QP-002",
   "revision": "Rev03",
-  "released_at": "2026-10-08 12:14:55",
-  "source": "04_APPROVAL\\승인완료\\SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx",
+  "released_at": "2026-10-12 14:09:24",
+  "source": "04_APPROVAL\\승인완료\\SH-QP-002_문서화된정보관리절차서_Rev03_수정본8.docx",
   "gates": [
     {
       "gate": "G1 문서번호 일치",
@@ -48,21 +48,21 @@
   "files": [
     {
       "role": "문서",
-      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.docx",
-      "sha256": "abf9760f968895cda66a017fb9c4ffc80b8730ce6208f8ce47c1657f0bd708d6",
-      "size": 106167
+      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본8.docx",
+      "sha256": "3b2a546de28e30d4f8f72433de4a09d626d45e012ea86d13df734331f41b5d4e",
+      "size": 106183
     },
     {
       "role": "PDF",
-      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본4.pdf",
-      "sha256": "68ae2d3c1dbf931b1a23eb6ad11c30c0853f10e150f1bb7c4b5ee06cc3f58a23",
-      "size": 312004
+      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본8.pdf",
+      "sha256": "21c2e9691ca0fdd1d4754c5711df1def4f7b966cf18ab34664a7021845fa228c",
+      "size": 312377
     },
     {
       "role": "배포본",
-      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본4_배포본_20261008.pdf",
-      "sha256": "68ae2d3c1dbf931b1a23eb6ad11c30c0853f10e150f1bb7c4b5ee06cc3f58a23",
-      "size": 312004
+      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본8_배포본_20261012.pdf",
+      "sha256": "21c2e9691ca0fdd1d4754c5711df1def4f7b966cf18ab34664a7021845fa228c",
+      "size": 312377
     }
   ]
 }

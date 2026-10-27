@@ -1,0 +1,33 @@
+{
+  "file": "SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본.docx",
+  "checked": "2026-10-13 04:18:40",
+  "sha256": "02c2509b4637176983f0e9e98dd2f86d36bfafc232cb62e9ce5b813dc512e344",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '조직도및담당자별업무분장' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    },
+    {
+      "category": "내용보완",
+      "message": "필수 항목 '품질방침' 누락",
+      "suggestion": "'품질방침' 항목 작성"
+    },
+    {
+      "category": "내용보완",
+      "message": "ISO9001 5.2 품질방침: 품질방침 중 하나 필요",
+      "suggestion": "해당 요구사항 반영"
+    },
+    {
+      "category": "내용보완",
+      "message": "IATF16949 4.3.2 고객 특정 요구사항: 고객 특정 요구사항/CSR 중 하나 필요",
+      "suggestion": "해당 요구사항 반영"
+    },
+    {
+      "category": "내용보완",
+      "message": "IATF 고객 특정 요구사항(CSR) 언급 없음",
+      "suggestion": "한온시스템 CSR 반영"
+    }
+  ]
+}

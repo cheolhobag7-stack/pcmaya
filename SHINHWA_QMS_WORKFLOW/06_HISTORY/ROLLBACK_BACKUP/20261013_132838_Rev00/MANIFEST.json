@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QM-001",
+  "revision": "Rev00",
+  "released_at": "2026-10-13 13:28:14",
+  "source": "04_APPROVAL\\승인완료\\SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본4.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본4.docx",
+      "sha256": "810abbb644794924531ae1993dcb6085c5c35b40344ee0f427ae526022561dd0",
+      "size": 305309
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본4.pdf",
+      "sha256": "70d15ca1f206e933dd5cc9edb22b95d3da9c6ae991947ebe3f42aa279956f58f",
+      "size": 594741
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본4_배포본_20261013.pdf",
+      "sha256": "70d15ca1f206e933dd5cc9edb22b95d3da9c6ae991947ebe3f42aa279956f58f",
+      "size": 594741
+    }
+  ]
+}

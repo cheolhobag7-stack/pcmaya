@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-002",
+  "revision": "Rev03",
+  "released_at": "2026-10-12 10:22:36",
+  "source": "04_APPROVAL\\승인완료\\SH-QP-002_문서화된정보관리절차서_Rev03_수정본6.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본6.docx",
+      "sha256": "1f4ef713e01d3b7cad5288c04e720412fc76fa305ee88f31642e8a45943a096f",
+      "size": 106186
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본6.pdf",
+      "sha256": "1c3683b5b587536e71b8553eee89fd551e49eebfb2aa25b53cc78732643ffdd3",
+      "size": 312377
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-002_문서화된정보관리절차서_Rev03_수정본6_배포본_20261012.pdf",
+      "sha256": "1c3683b5b587536e71b8553eee89fd551e49eebfb2aa25b53cc78732643ffdd3",
+      "size": 312377
+    }
+  ]
+}

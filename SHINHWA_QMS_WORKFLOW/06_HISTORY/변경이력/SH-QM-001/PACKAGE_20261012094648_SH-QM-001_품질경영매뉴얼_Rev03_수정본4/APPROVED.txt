@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-12T09:46:37
+document=SH-QM-001_품질경영매뉴얼_Rev03_수정본4.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-12T12:31:19
+document=SH-WI-025_품질이상정지·보고·재가동표준_Rev03_수정본2.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

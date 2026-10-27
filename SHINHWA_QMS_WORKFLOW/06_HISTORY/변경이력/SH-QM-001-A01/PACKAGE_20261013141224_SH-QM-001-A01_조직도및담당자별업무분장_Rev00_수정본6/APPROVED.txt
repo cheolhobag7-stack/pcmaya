@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-13T14:12:08
+document=SH-QM-001-A01_조직도및담당자별업무분장_Rev00_수정본6.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

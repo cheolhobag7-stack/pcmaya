@@ -1,0 +1,18 @@
+{
+  "file": "SH-QM-001_품질경영매뉴얼_Rev03_수정본.docx",
+  "checked": "2026-10-12 00:42:02",
+  "sha256": "a4c0c8e502918b9e1136059a371feb8cfb15206bfe22195a3cf49f1af6eae360",
+  "units": [],
+  "issues": [
+    {
+      "category": "상호참조",
+      "message": "참조 문서 PFMEA-Control 가 시스템에 존재하지 않음",
+      "suggestion": "참조 문서번호 확인 또는 해당 문서 등록"
+    },
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-QM-001_품질경영매뉴얼_Rev03_수정본10_발췌.docx, SH-QM-001_품질경영매뉴얼_Rev03_수정본11_발췌.docx, SH-QM-001_품질경영매뉴얼_Rev03_수정본9_발췌.docx",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}
