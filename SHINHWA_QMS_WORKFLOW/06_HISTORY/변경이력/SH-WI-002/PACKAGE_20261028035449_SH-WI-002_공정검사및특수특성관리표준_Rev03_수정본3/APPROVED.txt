@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-28T03:53:37
+document=SH-WI-002_공정검사및특수특성관리표준_Rev03_수정본3.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

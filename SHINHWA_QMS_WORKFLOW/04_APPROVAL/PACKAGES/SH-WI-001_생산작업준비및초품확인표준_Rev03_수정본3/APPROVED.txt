@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-28T03:53:36
+document=SH-WI-001_생산작업준비및초품확인표준_Rev03_수정본3.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

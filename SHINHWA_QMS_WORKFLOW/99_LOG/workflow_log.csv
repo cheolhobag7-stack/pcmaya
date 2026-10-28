@@ -1488,3 +1488,15 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-28 02:22:43,SH-WI-011_공정조건설정및변경관리표준_Rev03_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-011_공정조건설정및변경관리표준_Rev03_수정본3,system,승인 패키지 생성
 2026-10-28 02:22:49,SH-WI-027,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
 2026-10-28 02:22:59,SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본3,system,승인 패키지 생성
+2026-10-28 03:53:36,SH-WI-001_생산작업준비및초품확인표준_Rev03_수정본3.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-28 03:53:36,SH-WI-001_생산작업준비및초품확인표준_Rev03_수정본3.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-28 03:53:37,SH-WI-002_공정검사및특수특성관리표준_Rev03_수정본3.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-28 03:53:37,SH-WI-002_공정검사및특수특성관리표준_Rev03_수정본3.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-28 03:53:37,SH-WI-011_공정조건설정및변경관리표준_Rev03_수정본3.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-28 03:53:37,SH-WI-011_공정조건설정및변경관리표준_Rev03_수정본3.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-28 03:53:37,SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본3.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-10-28 03:53:37,SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본3.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-10-28 03:54:18,SH-WI-001,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-28 03:54:49,SH-WI-002,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-28 03:55:21,SH-WI-011,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-10-28 03:56:03,SH-WI-027,03,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
