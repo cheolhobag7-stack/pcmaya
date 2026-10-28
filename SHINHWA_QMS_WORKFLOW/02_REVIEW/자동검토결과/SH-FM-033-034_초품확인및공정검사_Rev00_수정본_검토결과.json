@@ -1,0 +1,21 @@
+{
+  "file": "SH-FM-033-034_초품확인및공정검사_Rev00_수정본.xlsx",
+  "checked": "2026-10-28 02:11:11",
+  "sha256": "3395b9b70a9bac74d1f7a2edddde87e634280bdf49de5d049fa93f70952b7660",
+  "units": [
+    "SH-FM-033",
+    "SH-FM-034"
+  ],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "[SH-FM-033] 결재란 항목 누락: 작성, 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    },
+    {
+      "category": "내용보완",
+      "message": "[SH-FM-034] 결재란 항목 누락: 작성, 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    }
+  ]
+}
