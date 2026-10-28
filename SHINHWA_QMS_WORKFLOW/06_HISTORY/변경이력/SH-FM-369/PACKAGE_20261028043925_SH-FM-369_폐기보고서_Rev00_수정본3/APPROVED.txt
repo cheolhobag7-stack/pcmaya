@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-10-28T04:38:44
+document=SH-FM-369_폐기보고서_Rev00_수정본3.xlsx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일
