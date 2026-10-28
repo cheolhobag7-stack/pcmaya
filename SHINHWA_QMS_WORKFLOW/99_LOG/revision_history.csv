@@ -573,3 +573,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-28,SH-FM-122 Rev00 수정본6(SH-FM-369 행 추가),,,"사용자 지시: 수정본5에 369 행만 추가. recheck PASS 승인대기, 승인·배포 전",claude,
 2026-10-28,SH-FM-122,00,00,승인 후 최종 발행,,승인완료
 2026-10-28,SH-FM-122 Rev00 수정본6 승인·배포 / 문서관리대장 수정본38,,,"사용자 승인(2026-10-28). SH-FM-369 행 추가만 반영",claude,
+2026-10-28,통합문서 Rev03 수정본21 (STEP4 선택 반영),,,"4.4·5.1.3·부록 A·B 만 ChatGPT STEP4 반영. 관리본 전환 전(수정본20 유지)",claude,
