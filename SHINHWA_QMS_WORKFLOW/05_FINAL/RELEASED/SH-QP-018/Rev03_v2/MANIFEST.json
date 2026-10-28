@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-018",
+  "revision": "Rev03",
+  "released_at": "2026-10-28 23:51:48",
+  "source": "04_APPROVAL/승인완료/SH-QP-018_식별및추적성관리절차서_Rev03_수정본22.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-018_식별및추적성관리절차서_Rev03_수정본22.docx",
+      "sha256": "443a683535f21ac106a12c6334acbe7a1e921fdfec4dcf0ac7e361c0181161d2",
+      "size": 35756
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-018_식별및추적성관리절차서_Rev03_수정본22.pdf",
+      "sha256": "88ae3b06aa8d23141b6470fc664bfffa7503eecd1832fc3c651ed9cb60cfdeb0",
+      "size": 203062
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-018_식별및추적성관리절차서_Rev03_수정본22_배포본_20261028.pdf",
+      "sha256": "88ae3b06aa8d23141b6470fc664bfffa7503eecd1832fc3c651ed9cb60cfdeb0",
+      "size": 203062
+    }
+  ]
+}
