@@ -1,0 +1,18 @@
+{
+  "file": "SH-FM-369_폐기보고서_Rev00_수정본.xlsx",
+  "checked": "2026-10-28 04:14:21",
+  "sha256": "464533312b4ed91bb8459d25e1f2c3fd7a40403c392d3eeca3c3b9ca2a37dc1f",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "LOT 추적 기록 보존기간 3년 미명시",
+      "suggestion": "보존기간 3년 명시"
+    },
+    {
+      "category": "내용보완",
+      "message": "LOT 추적 목표시간 1시간 미명시",
+      "suggestion": "목표시간 1시간 명시"
+    }
+  ]
+}
