@@ -1,0 +1,13 @@
+{
+  "file": "SH-WI-027_검사성적서및품질기록작성표준_Rev03_수정본3.docx",
+  "checked": "2026-10-28 02:21:05",
+  "sha256": "b76568daaafde15fd8d3373bdcc4d24060d1fbb202f9af552c1b1c142ed2cb9a",
+  "units": [],
+  "issues": [
+    {
+      "category": "상호참조",
+      "message": "폐기/참조금지 문서 FM-033 를 참조함",
+      "suggestion": "대체 문서로 교체 (대체 문서번호 [확인 필요])"
+    }
+  ]
+}

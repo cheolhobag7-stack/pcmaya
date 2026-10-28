@@ -83,7 +83,8 @@ lot_traceability:
 obsolete_docs: []                       # 폐기된 문서번호 목록 (06_HISTORY/폐기문서 폴더 파일명도 자동 반영)
 
 # 폐기/참조금지 문서 (범위 표기 가능: FM-030~039). 참조 시 오류 처리, 시스템 어디에 있어도 FINAL 금지.
-prohibited_references: ["FM-030~039"]
+# 2026-10-28 사용자 지시로 SH-FM-033·034 정식 등록(제정일 2026-09-01) → 두 번호는 참조금지에서 제외
+prohibited_references: ["FM-030~032", "FM-035~039"]
 # 폐기/참조금지 번호 참조를 허용하는 예외 문서 (구형 번호를 대조하는 계획표 등)
 prohibited_reference_exceptions: ["SH-FM-122"]
 final_release_rules:

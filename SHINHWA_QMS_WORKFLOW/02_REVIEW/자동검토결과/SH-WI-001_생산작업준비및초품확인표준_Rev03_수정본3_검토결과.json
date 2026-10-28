@@ -1,0 +1,13 @@
+{
+  "file": "SH-WI-001_생산작업준비및초품확인표준_Rev03_수정본3.docx",
+  "checked": "2026-10-28 02:20:47",
+  "sha256": "61f7fde9ae81d0f6b40aafbc65f98a233911ec601070b0e1e0c7eee3753694a5",
+  "units": [],
+  "issues": [
+    {
+      "category": "상호참조",
+      "message": "폐기/참조금지 문서 FM-033 를 참조함",
+      "suggestion": "대체 문서로 교체 (대체 문서번호 [확인 필요])"
+    }
+  ]
+}
