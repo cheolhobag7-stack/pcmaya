@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-052_초기유동관리계획서_Rev00_수정본.xlsx",
+  "checked": "2026-10-29 07:33:43",
+  "sha256": "ac08301f2876b538b9aa2f216d76cfc43966a947945e0dddc382b60b538afcbd",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "결재란 항목 누락: 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    }
+  ]
+}
