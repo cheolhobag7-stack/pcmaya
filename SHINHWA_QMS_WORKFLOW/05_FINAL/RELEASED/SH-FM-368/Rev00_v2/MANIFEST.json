@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-368",
+  "revision": "Rev00",
+  "released_at": "2026-10-30 02:03:46",
+  "source": "04_APPROVAL/승인완료/SH-FM-368_사내자재코드표_Rev00_수정본8.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-368_사내자재코드표_Rev00_수정본8.xlsx",
+      "sha256": "581e234887392c5ebaadbc86b83405129b5bd03938452a216a0319f94db82bb8",
+      "size": 26223
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-368_사내자재코드표_Rev00_수정본8.pdf",
+      "sha256": "3f9e086d11fe35d8495e0e4e62f879678c777e04cd7f0614aa76d403a6b325b0",
+      "size": 152480
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-368_사내자재코드표_Rev00_수정본8_배포본_20261030.pdf",
+      "sha256": "3f9e086d11fe35d8495e0e4e62f879678c777e04cd7f0614aa76d403a6b325b0",
+      "size": 152480
+    }
+  ]
+}
