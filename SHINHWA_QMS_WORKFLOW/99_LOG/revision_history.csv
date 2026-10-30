@@ -542,3 +542,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-30,SH-FM-368,00,00,승인 후 최종 발행,,승인완료
 2026-10-30,SH-FM-368_사내자재코드표_Rev00_수정본7,00,00,"분류 17건 계정 회신 반영(원자재 2·제품 15, 03_기타품목참고) recheck HOLD 승인 전",Claude," "
 2026-10-30,SH-FM-368,00,00,승인 후 최종 발행,,승인완료
+2026-10-30,SH-FM-368_사내자재코드표_Rev00_수정본9,00,00,"원자재 2건(ETC000000288·289) 기타참고→자재표 이동(자재 85→87·기타 78→76) recheck HOLD 승인 전(승인대기 파일명 수정본9_v2)",Claude," "
