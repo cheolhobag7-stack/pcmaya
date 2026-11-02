@@ -551,3 +551,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-11-02,FM-122,00,00,원본↔수정본 DIFF 생성 +98/-94: SH-FM-122_현장양식목록_작성계획_Rev00_수정본6__vs__SH-FM-122_현장양식목록_작성계획_Rev00.md,system,
 2026-11-02,SH-FM-144,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-144_SQ높음_양식초안_Rev00_수정본3_수정필요사항_20261102055731.md",system,
 2026-11-02,SH-FM-145,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-145_SQ높음_양식초안_Rev00_수정본4_수정필요사항_20261102055737.md",system,
+2026-11-02,SH-FM-168,00,,"AUTO_DRAFT 생성(수정 필요 1건, 미확정): SH-FM-168_SQ보통_양식초안_Rev00_수정본4_수정필요사항_20261102060023.md",system,

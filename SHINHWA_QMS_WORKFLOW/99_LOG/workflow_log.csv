@@ -1551,3 +1551,7 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-11-02 05:58:49,SH-FM-152-159_SQ높음_양식초안_Rev00_수정본4,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
 2026-11-02 05:59:22,SH-FM-152-159_SQ높음_양식초안_Rev00_수정본4,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-152-159_SQ높음_양식초안_Rev00_수정본4,system,승인 패키지 생성
 2026-11-02 05:59:49,SH-FM-160-166_SQ보통_양식초안_Rev00_수정본4,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-02 06:00:18,SH-FM-160-166_SQ보통_양식초안_Rev00_수정본4,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-160-166_SQ보통_양식초안_Rev00_수정본4,system,승인 패키지 생성
+2026-11-02 06:00:23,SH-FM-168,,수정완료,02_REVIEW/내용보완필요,system,"1건 문제, 수정후보 SH-FM-168_SQ보통_양식초안_Rev00_수정본4_수정필요사항_20261102060023.md"
+2026-11-02 06:00:30,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본3,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-02 06:00:39,SH-FM-169-170_SQ보통_양식초안_Rev00_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-169-170_SQ보통_양식초안_Rev00_수정본3,system,승인 패키지 생성
