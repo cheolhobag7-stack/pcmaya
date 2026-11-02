@@ -373,6 +373,8 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
         pass   # 양식(시트) 단위는 파일명 문서명 대신 시트 자체를 검토
     elif not title:
         add("내용보완", "파일명에서 문서명을 찾을 수 없음 (형식: 문서번호_문서명_Rev.NN)", f"문서명 {UNCONFIRMED}")
+    elif re.fullmatch(r"SQ(?:높음|보통|낮음)_양식(?:초안|틀)?", title):
+        pass   # SQ 우선순위별 묶음 이름(실제 양식명은 시트 제목) - 파일명 문서명 대조 대상 아님
     elif title not in text:
         add("내용보완", f"본문에 문서명 '{title}' 없음", "본문 제목과 파일명 문서명 일치 필요")
 
