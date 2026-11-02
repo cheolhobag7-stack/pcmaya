@@ -423,7 +423,10 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
     reg, obs = registry(num["doc_pattern"]), obsolete_set(num["doc_pattern"])
     refs = {norm(x) for x in re.findall(num["doc_pattern"], text)} - {norm(docno)}
     exempt = norm(docno or "") in {norm(x) for x in qms.get("prohibited_reference_exceptions", [])}
+    legacy = {norm(x) for x in qms.get("legacy_references", [])}
     for ref in sorted(refs):
+        if ref in legacy:
+            continue   # 구 문서번호 표기 설명(예: SH-QM-01 → SH-QM-001 전환)
         if ref in obs and exempt:
             continue   # 예외 문서(예: 구형 번호 대조 계획표)는 폐기/참조금지 번호 참조를 허용
         if ref in obs:
