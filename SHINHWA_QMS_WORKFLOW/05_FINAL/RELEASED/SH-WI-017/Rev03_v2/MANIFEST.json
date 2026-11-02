@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-017",
+  "revision": "Rev03",
+  "released_at": "2026-11-02 08:01:58",
+  "source": "04_APPROVAL/승인완료/SH-WI-017_청정도및이물관리작업표준_Rev03_수정본3.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-017_청정도및이물관리작업표준_Rev03_수정본3.docx",
+      "sha256": "6c06e151ad479547faccbfd7f63af1d88cbbc33305ff067080c3bbb4a20deb4a",
+      "size": 104297
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-017_청정도및이물관리작업표준_Rev03_수정본3.pdf",
+      "sha256": "6e9a099c810d716807576b96ca36b82ca47004af276af5ff97c2b9a5766e0875",
+      "size": 94525
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-017_청정도및이물관리작업표준_Rev03_수정본3_배포본_20261102.pdf",
+      "sha256": "6e9a099c810d716807576b96ca36b82ca47004af276af5ff97c2b9a5766e0875",
+      "size": 94525
+    }
+  ]
+}

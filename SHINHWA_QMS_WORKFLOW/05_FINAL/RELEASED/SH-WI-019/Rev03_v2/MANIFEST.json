@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-019",
+  "revision": "Rev03",
+  "released_at": "2026-11-02 08:02:52",
+  "source": "04_APPROVAL/승인완료/SH-WI-019_제품안전특성작업관리표준_Rev03_수정본3.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-019_제품안전특성작업관리표준_Rev03_수정본3.docx",
+      "sha256": "51821e5f11c4f63dc7e751a3d5d7429f5db7d703c95e1a0b7c561650f104985a",
+      "size": 103802
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-019_제품안전특성작업관리표준_Rev03_수정본3.pdf",
+      "sha256": "f7dd47c605c910f3a6e6f7f86a8e9c0c5739e7dbae52a0532084d57c091fde25",
+      "size": 89866
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-019_제품안전특성작업관리표준_Rev03_수정본3_배포본_20261102.pdf",
+      "sha256": "f7dd47c605c910f3a6e6f7f86a8e9c0c5739e7dbae52a0532084d57c091fde25",
+      "size": 89866
+    }
+  ]
+}

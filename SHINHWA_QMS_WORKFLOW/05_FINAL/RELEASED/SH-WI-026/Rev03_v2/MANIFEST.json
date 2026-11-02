@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-026",
+  "revision": "Rev03",
+  "released_at": "2026-11-02 08:06:06",
+  "source": "04_APPROVAL/승인완료/SH-WI-026_고객특별상태및품질주의관리표준_Rev03_수정본3.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-026_고객특별상태및품질주의관리표준_Rev03_수정본3.docx",
+      "sha256": "3b7e21cbd6dd8ed64ea9423362e39e55e8637b2788526dde486b891e1247fb5b",
+      "size": 103450
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-026_고객특별상태및품질주의관리표준_Rev03_수정본3.pdf",
+      "sha256": "98f83a02ba79521b9efe78727911b3fcd0546caa85fa53a1953cea51a7620165",
+      "size": 85110
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-026_고객특별상태및품질주의관리표준_Rev03_수정본3_배포본_20261102.pdf",
+      "sha256": "98f83a02ba79521b9efe78727911b3fcd0546caa85fa53a1953cea51a7620165",
+      "size": 85110
+    }
+  ]
+}

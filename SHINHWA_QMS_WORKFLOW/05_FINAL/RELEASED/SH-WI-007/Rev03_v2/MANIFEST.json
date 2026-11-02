@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-007",
+  "revision": "Rev03",
+  "released_at": "2026-11-02 07:57:26",
+  "source": "04_APPROVAL/승인완료/SH-WI-007_검사구및GaugeR&R수행표준_Rev03_수정본3.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-007_검사구및GaugeR&R수행표준_Rev03_수정본3.docx",
+      "sha256": "c264bc7901e85b6a205fcf3ed1105314a309e5ac0b55eba9c566cb695a2b6277",
+      "size": 104151
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-007_검사구및GaugeR&R수행표준_Rev03_수정본3.pdf",
+      "sha256": "f3a7f986063e43b6b24b6f763c7aee8bf79b0a81ec5c4b79d61e7c332e99de87",
+      "size": 94815
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-007_검사구및GaugeR&R수행표준_Rev03_수정본3_배포본_20261102.pdf",
+      "sha256": "f3a7f986063e43b6b24b6f763c7aee8bf79b0a81ec5c4b79d61e7c332e99de87",
+      "size": 94815
+    }
+  ]
+}

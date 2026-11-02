@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-004",
+  "revision": "Rev03",
+  "released_at": "2026-11-02 07:56:00",
+  "source": "04_APPROVAL/승인완료/SH-WI-004_설비일상점검및이상대응표준_Rev03_수정본3.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-004_설비일상점검및이상대응표준_Rev03_수정본3.docx",
+      "sha256": "a3fc24951a7c00326eeb135d6528a509b8394fe29d5072557f34d8ed24df9a51",
+      "size": 104107
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-004_설비일상점검및이상대응표준_Rev03_수정본3.pdf",
+      "sha256": "2956c1e3790ee8cd186b4f7fc7e9e5d1854d996984aae1356a9df430a4799bf3",
+      "size": 93615
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-004_설비일상점검및이상대응표준_Rev03_수정본3_배포본_20261102.pdf",
+      "sha256": "2956c1e3790ee8cd186b4f7fc7e9e5d1854d996984aae1356a9df430a4799bf3",
+      "size": 93615
+    }
+  ]
+}
