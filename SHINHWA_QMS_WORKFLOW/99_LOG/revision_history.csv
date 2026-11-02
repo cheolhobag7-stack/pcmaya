@@ -548,3 +548,4 @@ date,document_no,old_revision,new_revision,change_description,author,approver
 2026-10-30,SH-FM-367,Rev.00,Rev.00(재개정),자재코드 안내 문구 정리(SH-WEL 코드 유지 SH-FM-368 확인),Claude(사용자 지시),이사(전제 2026-09-01)
 2026-11-02,FM-066-069,00,00,원본↔수정본 DIFF 생성 +10/-46: SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3__vs__SH-FM-066-069_078-080_094_096_공식양식_Rev00.md,system,
 2026-11-02,FM-101-121,00,03,원본↔수정본 DIFF 생성 +96/-96: SH-FM-101-121_현장작성양식_Rev03_수정본12__vs__SH-FM-101-121_현장작성양식_Rev00.md,system,
+2026-11-02,FM-122,00,00,원본↔수정본 DIFF 생성 +98/-94: SH-FM-122_현장양식목록_작성계획_Rev00_수정본6__vs__SH-FM-122_현장양식목록_작성계획_Rev00.md,system,
