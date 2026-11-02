@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-066-069",
+  "revision": "Rev00",
+  "released_at": "2026-11-02 06:50:04",
+  "source": "04_APPROVAL/승인완료/SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "전 양식 승인 표기"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "PASS",
+      "note": "AP-01, AP-02, AP-03, AP-04"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3.xlsx",
+      "sha256": "e70ef731d4e60ceaad257e6b94d0a19f5d6539d37e3dcd129e59f7032dbcb427",
+      "size": 25534
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3.pdf",
+      "sha256": "3a93bb4323278da6d74e410c12befb97caa02e7950be4a089e014cbf90c49e79",
+      "size": 60082
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3_배포본_20261102.pdf",
+      "sha256": "3a93bb4323278da6d74e410c12befb97caa02e7950be4a089e014cbf90c49e79",
+      "size": 60082
+    }
+  ]
+}
