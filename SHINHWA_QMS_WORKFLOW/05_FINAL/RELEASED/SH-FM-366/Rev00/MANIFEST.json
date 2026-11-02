@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-366",
+  "revision": "Rev00",
+  "released_at": "2026-11-02 22:48:50",
+  "source": "04_APPROVAL/승인완료/SH-FM-366_공급자정기평가표_Rev00_수정본8.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-366_공급자정기평가표_Rev00_수정본8.xlsx",
+      "sha256": "63fbc51302f76b77040fb521860a3aae6f787970640bc6ec8716a9fdac614bad",
+      "size": 14556
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-366_공급자정기평가표_Rev00_수정본8.pdf",
+      "sha256": "5a9bd46f3fb3082047f09b915b0cd91e9f99746700c35ebe458d46a6f5d64504",
+      "size": 66632
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-366_공급자정기평가표_Rev00_수정본8_배포본_20261102.pdf",
+      "sha256": "5a9bd46f3fb3082047f09b915b0cd91e9f99746700c35ebe458d46a6f5d64504",
+      "size": 66632
+    }
+  ]
+}
