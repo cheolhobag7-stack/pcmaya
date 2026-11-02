@@ -1536,3 +1536,4 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-11-02 05:55:39,SH-FM-127-128_SQ보통_양식초안_Rev00_수정본4,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-127-128_SQ보통_양식초안_Rev00_수정본4,system,승인 패키지 생성
 2026-11-02 05:55:51,SH-FM-130-132_SQ보통_양식초안_Rev00_수정본4,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
 2026-11-02 05:56:04,SH-FM-130-132_SQ보통_양식초안_Rev00_수정본4,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-130-132_SQ보통_양식초안_Rev00_수정본4,system,승인 패키지 생성
+2026-11-02 05:56:23,SH-FM-133-137_SQ낮음_양식초안_Rev00_수정본4,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
