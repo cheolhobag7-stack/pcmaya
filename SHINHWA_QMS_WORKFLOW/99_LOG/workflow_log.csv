@@ -1523,3 +1523,6 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-11-02 05:50:24,SH-FM-045,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
 2026-11-02 05:50:33,SH-FM-045_APQP개발일정계획서_Rev00_수정본5,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-045_APQP개발일정계획서_Rev00_수정본5,system,승인 패키지 생성
 2026-11-02 05:51:08,SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-02 05:51:44,SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-066-069_078-080_094_096_공식양식_Rev00_수정본3,system,승인 패키지 생성
+2026-11-02 05:51:50,SH-FM-071,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-02 05:52:00,SH-FM-071_부적합품관련관리기록_Rev00_수정본5,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-071_부적합품관련관리기록_Rev00_수정본5,system,승인 패키지 생성
