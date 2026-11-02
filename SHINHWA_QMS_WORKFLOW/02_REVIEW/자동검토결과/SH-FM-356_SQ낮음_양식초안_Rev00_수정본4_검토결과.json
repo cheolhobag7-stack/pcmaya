@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-356_SQ낮음_양식초안_Rev00_수정본4.xlsx",
+  "checked": "2026-11-02 06:20:43",
+  "sha256": "ef13dd056d33d4e2e8e635c9be7d8c0d82ccdf047559dc90fb5c80bf8ccc6f01",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '양식초안' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}
