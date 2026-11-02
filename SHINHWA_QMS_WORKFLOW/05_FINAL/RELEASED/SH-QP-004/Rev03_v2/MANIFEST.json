@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-004",
+  "revision": "Rev03",
+  "released_at": "2026-11-02 07:44:25",
+  "source": "04_APPROVAL/승인완료/SH-QP-004_리스크및기회관리절차서_Rev03_수정본3.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-004_리스크및기회관리절차서_Rev03_수정본3.docx",
+      "sha256": "94dff21a13c635c710f0f93f2e66905459b2ebfe52487415e4e394e29293dcf1",
+      "size": 105054
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-004_리스크및기회관리절차서_Rev03_수정본3.pdf",
+      "sha256": "a2824d63e34966dee0bd1a333ea3b50652b727f44ad48a82f9baa0b3dbcefcf4",
+      "size": 112143
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-004_리스크및기회관리절차서_Rev03_수정본3_배포본_20261102.pdf",
+      "sha256": "a2824d63e34966dee0bd1a333ea3b50652b727f44ad48a82f9baa0b3dbcefcf4",
+      "size": 112143
+    }
+  ]
+}
