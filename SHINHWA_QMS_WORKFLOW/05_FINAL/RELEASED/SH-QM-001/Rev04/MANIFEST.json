@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QM-001",
+  "revision": "Rev04",
+  "released_at": "2026-11-03 05:27:30",
+  "source": "04_APPROVAL/승인완료/SH-QM-001_품질경영매뉴얼_Rev04_수정본20.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QM-001_품질경영매뉴얼_Rev04_수정본20.docx",
+      "sha256": "837a92b557a45a4b8c536f609909126f1a3848c0deda568dde10ff8a34313ecc",
+      "size": 233848
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QM-001_품질경영매뉴얼_Rev04_수정본20.pdf",
+      "sha256": "c1362e10224af1a0da69559066b200ddb126c579705fb0042b5154b7ffec06cd",
+      "size": 1239461
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QM-001_품질경영매뉴얼_Rev04_수정본20_배포본_20261103.pdf",
+      "sha256": "c1362e10224af1a0da69559066b200ddb126c579705fb0042b5154b7ffec06cd",
+      "size": 1239461
+    }
+  ]
+}
