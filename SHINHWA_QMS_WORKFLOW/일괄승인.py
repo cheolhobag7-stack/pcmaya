@@ -1,4 +1,4 @@
-import os, re, subprocess, sys, pathlib
+import os, re, subprocess, sys, pathlib, zipfile
 import openpyxl
 
 BASE = pathlib.Path(r"C:\q\SHINHWA_QMS_WORKFLOW")
@@ -25,6 +25,42 @@ def run(*a):
     out = (r.stdout or "") + (r.stderr or "")
     print(out)
     return out
+
+
+_ENCODERS = (
+    lambda t: t,
+    lambda t: "".join(f"&#{ord(c)};" if ord(c) > 127 else c for c in t),
+    lambda t: "".join(f"&#x{ord(c):x};" if ord(c) > 127 else c for c in t),
+    lambda t: "".join(f"&#x{ord(c):X};" if ord(c) > 127 else c for c in t),
+)
+
+
+def mark_approved_zip(src, dst):
+    """xlsx 압축 파일 안의 문자열만 바꿔 저장한다(사진·도형 등 다른 부분은 그대로 복사).
+    openpyxl 로 저장하면 사진이 빠질 수 있어 이 방식을 먼저 쓴다. 바꾼 횟수를 돌려준다."""
+    n = 0
+    with zipfile.ZipFile(src) as zi, zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zo:
+        for item in zi.infolist():
+            data = zi.read(item.filename)
+            if item.filename.startswith("xl/") and item.filename.endswith(".xml") \
+                    and "/media/" not in item.filename:
+                text = data.decode("utf-8")
+                for o in OLD:
+                    # 글자가 그대로이거나 &#숫자; 로 저장된 두 경우 모두 처리
+                    for enc in _ENCODERS:
+                        k = text.count(enc(o))
+                        if k:
+                            text = text.replace(enc(o), enc("문서상태: 승인완료"))
+                            n += k
+                data = text.encode("utf-8")
+            zo.writestr(item, data)
+    return n
+
+
+def count_old(p):
+    wb = openpyxl.load_workbook(p)
+    return sum(1 for ws in wb for row in ws.iter_rows() for c in row
+               if isinstance(c.value, str) for o in OLD if o in c.value)
 
 
 def next_name(p):
@@ -66,19 +102,24 @@ print("\n승인일 2026-09-01, 승인자:", APPROVER)
 if input("위 문서를 '승인완료'로 표기하고 승인·배포합니다. 진행하려면 '승인' 을 입력: ").strip() != "승인":
     sys.exit("취소했습니다.")
 
-# 1) 승인완료 표기 후 새 이름으로 저장
+# 1) 승인완료 표기 후 새 이름으로 저장 (사진·도형 보존을 위해 압축 파일 안에서 직접 바꾼다)
 for p, new in plan:
-    wb = openpyxl.load_workbook(p)
-    n = 0
-    for ws in wb:
-        for row in ws.iter_rows():
-            for c in row:
-                if isinstance(c.value, str):
-                    for o in OLD:
-                        if o in c.value:
-                            c.value = c.value.replace(o, "문서상태: 승인완료")
-                            n += 1
-    wb.save(EDIT / new)
+    expected = count_old(p)
+    n = mark_approved_zip(p, EDIT / new)
+    if n != expected:
+        # 셀 값으로 읽은 횟수와 다르면 안전하게 기존 방식으로 저장(사진이 빠질 수 있음)
+        print(f"!! {new}: 압축 안 치환 {n}곳 ≠ 셀 {expected}곳 → openpyxl 방식으로 저장(사진 확인 필요)")
+        wb = openpyxl.load_workbook(p)
+        n = 0
+        for ws in wb:
+            for row in ws.iter_rows():
+                for c in row:
+                    if isinstance(c.value, str):
+                        for o in OLD:
+                            if o in c.value:
+                                c.value = c.value.replace(o, "문서상태: 승인완료")
+                                n += 1
+        wb.save(EDIT / new)
     print(f"{new}: 문서상태 {n}곳 변경")
 
 # 2) 재검증
@@ -110,10 +151,20 @@ for n, good in results:
 print("건너뜀:", len(skipped), "개")
 
 if do_git:
+    # 현재 작업 중인 브랜치로 pull/push 한다(브랜치 이름을 고정하지 않음)
+    br = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=BASE,
+                        capture_output=True, text=True, encoding="utf-8",
+                        errors="replace").stdout.strip()
+    if not br or br == "HEAD":
+        sys.exit("현재 브랜치를 알 수 없어(분리된 HEAD) git 처리를 건너뜁니다. 직접 commit/push 하세요.")
+    print("git 브랜치:", br)
     for cmd in (["git", "add", "-A"],
                 ["git", "commit", "-m", "승인·배포(finalize) 일괄 처리"],
-                ["git", "pull", "--no-rebase", "origin", "claude/shinhwa-qms-workflow-54alyc"],
-                ["git", "push", "origin", "claude/shinhwa-qms-workflow-54alyc"]):
+                ["git", "pull", "--no-rebase", "origin", br],
+                ["git", "push", "origin", br]):
         print(">>", " ".join(cmd))
-        print(subprocess.run(cmd, cwd=BASE, capture_output=True, text=True,
-                             encoding="utf-8", errors="replace").stdout)
+        r = subprocess.run(cmd, cwd=BASE, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
+        print((r.stdout or "") + (r.stderr or ""))
+        if r.returncode and cmd[1] != "commit":   # commit 은 변경 없음일 때 실패해도 계속
+            sys.exit(f"!! {' '.join(cmd)} 실패 — 위 메시지를 확인하고 직접 처리하세요.")
