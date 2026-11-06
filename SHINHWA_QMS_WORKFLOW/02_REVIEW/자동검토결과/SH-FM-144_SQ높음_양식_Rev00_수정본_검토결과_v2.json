@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-144_SQ높음_양식_Rev00_수정본.xlsx",
+  "checked": "2026-11-06 05:33:53",
+  "sha256": "e52a91ddb5556b9230a931e53d6f93477a5abdfe0eb17ab86e225ba85411786f",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-FM-144_SQ높음_양식초안_Rev00_수정본2.pdf, SH-FM-144_SQ높음_양식초안_Rev00_수정본2.xlsx, SH-FM-144_SQ높음_양식초안_Rev00_수정본2_배포본_20261012.pdf",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}
