@@ -1,0 +1,13 @@
+{
+  "file": "SH-WI-011_공정조건설정및변경관리표준_Rev04_수정본.docx",
+  "checked": "2026-11-06 02:17:33",
+  "sha256": "cf1bbea12f3e3df1994c37e234aef9a1552b9a074bcad7fe2420741e0fb7bc5e",
+  "units": [],
+  "issues": [
+    {
+      "category": "상호참조",
+      "message": "폐기/참조금지 문서 FM-033 를 참조함",
+      "suggestion": "대체 문서로 교체 (대체 문서번호 [확인 필요])"
+    }
+  ]
+}

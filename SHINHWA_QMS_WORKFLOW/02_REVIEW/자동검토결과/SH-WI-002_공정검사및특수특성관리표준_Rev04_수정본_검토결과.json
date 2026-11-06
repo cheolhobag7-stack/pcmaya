@@ -1,0 +1,13 @@
+{
+  "file": "SH-WI-002_공정검사및특수특성관리표준_Rev04_수정본.docx",
+  "checked": "2026-11-06 02:15:21",
+  "sha256": "a6805f4010c5a18b113bbaa8dbdeac2baa4ea04e4441d8e4728611c10f6487a3",
+  "units": [],
+  "issues": [
+    {
+      "category": "상호참조",
+      "message": "폐기/참조금지 문서 FM-034 를 참조함",
+      "suggestion": "대체 문서로 교체 (대체 문서번호 [확인 필요])"
+    }
+  ]
+}
