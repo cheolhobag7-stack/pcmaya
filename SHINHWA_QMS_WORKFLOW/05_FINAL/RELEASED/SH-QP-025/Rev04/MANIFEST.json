@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-025",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 10:32:11",
+  "source": "04_APPROVAL\\승인완료\\SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2.docx",
+      "sha256": "1eabd7c8d281eb092f8d607585938472689fb60fb65ab1fbb5348bfc4c0b85ca",
+      "size": 107006
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2.pdf",
+      "sha256": "3c6c450525da98af4163e5acf09beaab65de8b80e92bf9096359c7a9abdfa683",
+      "size": 224052
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "3c6c450525da98af4163e5acf09beaab65de8b80e92bf9096359c7a9abdfa683",
+      "size": 224052
+    }
+  ]
+}

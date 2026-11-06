@@ -1524,3 +1524,159 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-11-06 01:04:31,SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본,system,승인 패키지 생성
 2026-11-06 01:05:25,SH-QP-018,,수정완료,04_APPROVAL/승인대기,system,검사통과 (승인 전: 배포 불가)
 2026-11-06 01:05:36,SH-QP-018_식별및추적성관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-018_식별및추적성관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:13:58,SH-QM-001_품질경영매뉴얼_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QM-001_품질경영매뉴얼_Rev04,system,수정본 SH-QM-001_품질경영매뉴얼_Rev04_수정본4.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:13:58,SH-QM-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:14:06,SH-QM-001_품질경영매뉴얼_Rev04_수정본4,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QM-001_품질경영매뉴얼_Rev04_수정본4,system,승인 패키지 생성
+2026-11-06 10:14:09,SH-QM-001_품질경영매뉴얼_Rev04_수정본4.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:14:09,SH-QM-001_품질경영매뉴얼_Rev04_수정본4.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:14:29,SH-QM-001,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:15:50,SH-QP-001_경영검토절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-001_경영검토절차서_Rev04,system,수정본 SH-QP-001_경영검토절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:15:50,SH-QP-001,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:15:58,SH-QP-001_경영검토절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-001_경영검토절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:16:02,SH-QP-002_문서화된정보관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-002_문서화된정보관리절차서_Rev04,system,수정본 SH-QP-002_문서화된정보관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:16:02,SH-QP-002,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:16:10,SH-QP-002_문서화된정보관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-002_문서화된정보관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:16:15,SH-QP-003_기록관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-003_기록관리절차서_Rev04,system,수정본 SH-QP-003_기록관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:16:15,SH-QP-003,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:16:23,SH-QP-003_기록관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-003_기록관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:16:28,SH-QP-004_리스크및기회관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-004_리스크및기회관리절차서_Rev04,system,수정본 SH-QP-004_리스크및기회관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:16:28,SH-QP-004,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:16:36,SH-QP-004_리스크및기회관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-004_리스크및기회관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:16:41,SH-QP-005_내부심사절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-005_내부심사절차서_Rev04,system,수정본 SH-QP-005_내부심사절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:16:41,SH-QP-005,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:16:48,SH-QP-005_내부심사절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-005_내부심사절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:16:53,SH-QP-006_교육훈련및역량관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-006_교육훈련및역량관리절차서_Rev04,system,수정본 SH-QP-006_교육훈련및역량관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:16:53,SH-QP-006,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:17:01,SH-QP-006_교육훈련및역량관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-006_교육훈련및역량관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:17:06,SH-QP-007_설비및예방보전관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-007_설비및예방보전관리절차서_Rev04,system,수정본 SH-QP-007_설비및예방보전관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:17:06,SH-QP-007,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:17:13,SH-QP-007_설비및예방보전관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-007_설비및예방보전관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:17:18,SH-QP-008_모니터링및측정자원관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-008_모니터링및측정자원관리절차서_Rev04,system,수정본 SH-QP-008_모니터링및측정자원관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:17:18,SH-QP-008,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:17:26,SH-QP-008_모니터링및측정자원관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-008_모니터링및측정자원관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:17:30,SH-QP-009_고객요구사항및계약검토절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-009_고객요구사항및계약검토절차서_Rev04,system,수정본 SH-QP-009_고객요구사항및계약검토절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:17:30,SH-QP-009,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:17:38,SH-QP-009_고객요구사항및계약검토절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-009_고객요구사항및계약검토절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:17:43,SH-QP-010_APQP및PPAP관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-010_APQP및PPAP관리절차서_Rev04,system,수정본 SH-QP-010_APQP및PPAP관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:17:43,SH-QP-010,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:17:51,SH-QP-010_APQP및PPAP관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-010_APQP및PPAP관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:17:55,SH-QP-011_구매및협력사관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-011_구매및협력사관리절차서_Rev04,system,수정본 SH-QP-011_구매및협력사관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:17:55,SH-QP-011,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:18:03,SH-QP-011_구매및협력사관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-011_구매및협력사관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:18:08,SH-QP-012_생산및공정관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-012_생산및공정관리절차서_Rev04,system,수정본 SH-QP-012_생산및공정관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:18:08,SH-QP-012,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:18:16,SH-QP-012_생산및공정관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-012_생산및공정관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:18:21,SH-QP-013_검사및시험관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-013_검사및시험관리절차서_Rev04,system,수정본 SH-QP-013_검사및시험관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:18:21,SH-QP-013,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:18:28,SH-QP-013_검사및시험관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-013_검사및시험관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:18:33,SH-QP-014_부적합품및재작업관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-014_부적합품및재작업관리절차서_Rev04,system,수정본 SH-QP-014_부적합품및재작업관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:18:33,SH-QP-014,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:18:41,SH-QP-014_부적합품및재작업관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-014_부적합품및재작업관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:18:46,SH-QP-015_변경관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-015_변경관리절차서_Rev04,system,수정본 SH-QP-015_변경관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:18:46,SH-QP-015,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:18:53,SH-QP-015_변경관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-015_변경관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:18:58,SH-QP-016_시정조치및문제해결절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-016_시정조치및문제해결절차서_Rev04,system,수정본 SH-QP-016_시정조치및문제해결절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:18:58,SH-QP-016,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:19:06,SH-QP-016_시정조치및문제해결절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-016_시정조치및문제해결절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:19:10,SH-QP-017_고객불만및보증관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-017_고객불만및보증관리절차서_Rev04,system,수정본 SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:19:10,SH-QP-017,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:19:18,SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:19:23,SH-QP-018_식별및추적성관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-018_식별및추적성관리절차서_Rev04,system,수정본 SH-QP-018_식별및추적성관리절차서_Rev04_수정본3.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:19:23,SH-QP-018,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:19:31,SH-QP-018_식별및추적성관리절차서_Rev04_수정본3,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-018_식별및추적성관리절차서_Rev04_수정본3,system,승인 패키지 생성
+2026-11-06 10:19:35,SH-QP-019_보관·포장및출하관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-019_보관·포장및출하관리절차서_Rev04,system,수정본 SH-QP-019_보관·포장및출하관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:19:35,SH-QP-019,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:19:43,SH-QP-019_보관·포장및출하관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-019_보관·포장및출하관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:19:48,SH-QP-020_비상계획및공급연속성절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-020_비상계획및공급연속성절차서_Rev04,system,수정본 SH-QP-020_비상계획및공급연속성절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:19:48,SH-QP-020,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:19:56,SH-QP-020_비상계획및공급연속성절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-020_비상계획및공급연속성절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:20:01,SH-QP-021_품질목표및KPI관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-021_품질목표및KPI관리절차서_Rev04,system,수정본 SH-QP-021_품질목표및KPI관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:20:01,SH-QP-021,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:20:08,SH-QP-021_품질목표및KPI관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-021_품질목표및KPI관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:20:13,SH-QP-022_제품안전관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-022_제품안전관리절차서_Rev04,system,수정본 SH-QP-022_제품안전관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:20:13,SH-QP-022,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:20:21,SH-QP-022_제품안전관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-022_제품안전관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:20:26,SH-QP-023_통계적공정관리(SPC)절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-023_통계적공정관리(SPC)절차서_Rev04,system,수정본 SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:20:26,SH-QP-023,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:20:34,SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:20:38,SH-QP-024_품질비용및지속적개선절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-024_품질비용및지속적개선절차서_Rev04,system,수정본 SH-QP-024_품질비용및지속적개선절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:20:38,SH-QP-024,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:20:46,SH-QP-024_품질비용및지속적개선절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-024_품질비용및지속적개선절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:20:51,SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04,,04_APPROVAL/승인대기,06_HISTORY/이전버전/SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04,system,수정본 SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2.docx 로 대체된 이전 승인대기본 이동
+2026-11-06 10:20:51,SH-QP-025,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-06 10:20:59,SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2,system,승인 패키지 생성
+2026-11-06 10:21:01,SH-QP-001_경영검토절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:21:02,SH-QP-001_경영검토절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:21:19,SH-QP-001,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:21:29,SH-QP-002_문서화된정보관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:21:29,SH-QP-002_문서화된정보관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:21:47,SH-QP-002,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:21:55,SH-QP-003_기록관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:21:55,SH-QP-003_기록관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:22:14,SH-QP-003,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:22:22,SH-QP-004_리스크및기회관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:22:22,SH-QP-004_리스크및기회관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:22:40,SH-QP-004,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:22:48,SH-QP-005_내부심사절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:22:48,SH-QP-005_내부심사절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:23:06,SH-QP-005,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:23:14,SH-QP-006_교육훈련및역량관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:23:14,SH-QP-006_교육훈련및역량관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:23:32,SH-QP-006,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:23:40,SH-QP-007_설비및예방보전관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:23:40,SH-QP-007_설비및예방보전관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:23:58,SH-QP-007,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:24:07,SH-QP-008_모니터링및측정자원관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:24:07,SH-QP-008_모니터링및측정자원관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:24:24,SH-QP-008,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:24:33,SH-QP-009_고객요구사항및계약검토절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:24:33,SH-QP-009_고객요구사항및계약검토절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:24:51,SH-QP-009,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:24:59,SH-QP-010_APQP및PPAP관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:24:59,SH-QP-010_APQP및PPAP관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:25:17,SH-QP-010,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:25:25,SH-QP-011_구매및협력사관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:25:26,SH-QP-011_구매및협력사관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:25:43,SH-QP-011,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:25:52,SH-QP-012_생산및공정관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:25:52,SH-QP-012_생산및공정관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:26:09,SH-QP-012,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:26:18,SH-QP-013_검사및시험관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:26:18,SH-QP-013_검사및시험관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:26:36,SH-QP-013,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:26:44,SH-QP-014_부적합품및재작업관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:26:44,SH-QP-014_부적합품및재작업관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:27:02,SH-QP-014,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:27:10,SH-QP-015_변경관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:27:10,SH-QP-015_변경관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:27:28,SH-QP-015,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:27:37,SH-QP-016_시정조치및문제해결절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:27:37,SH-QP-016_시정조치및문제해결절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:27:56,SH-QP-016,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:28:05,SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:28:05,SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:28:23,SH-QP-017,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:28:32,SH-QP-018_식별및추적성관리절차서_Rev04_수정본3.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:28:32,SH-QP-018_식별및추적성관리절차서_Rev04_수정본3.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:28:50,SH-QP-018,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:28:58,SH-QP-019_보관·포장및출하관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:28:58,SH-QP-019_보관·포장및출하관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:29:17,SH-QP-019,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:29:25,SH-QP-020_비상계획및공급연속성절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:29:25,SH-QP-020_비상계획및공급연속성절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:29:47,SH-QP-020,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:29:56,SH-QP-021_품질목표및KPI관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:29:56,SH-QP-021_품질목표및KPI관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:30:15,SH-QP-021,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:30:24,SH-QP-022_제품안전관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:30:24,SH-QP-022_제품안전관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:30:43,SH-QP-022,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:30:52,SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:30:52,SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:31:10,SH-QP-023,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:31:18,SH-QP-024_품질비용및지속적개선절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:31:19,SH-QP-024_품질비용및지속적개선절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:31:37,SH-QP-024,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-06 10:31:45,SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2.docx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-06 10:31:45,SH-QP-025_고객별요구사항(CSR)관리절차서_Rev04_수정본2.docx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-06 10:32:03,SH-QP-025,04,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성

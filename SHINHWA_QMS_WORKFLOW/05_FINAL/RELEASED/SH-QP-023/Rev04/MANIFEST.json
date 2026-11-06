@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-023",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 10:31:18",
+  "source": "04_APPROVAL\\승인완료\\SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2.docx",
+      "sha256": "b8240078b6fef9d95957fcd0666571b31347e41a63f61488f7e495783702068a",
+      "size": 106339
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2.pdf",
+      "sha256": "f227c4b15692780026e6ce0156b8ea66f6aab5ab3ab9b51081bf6dd83a20506a",
+      "size": 208193
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-023_통계적공정관리(SPC)절차서_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "f227c4b15692780026e6ce0156b8ea66f6aab5ab3ab9b51081bf6dd83a20506a",
+      "size": 208193
+    }
+  ]
+}

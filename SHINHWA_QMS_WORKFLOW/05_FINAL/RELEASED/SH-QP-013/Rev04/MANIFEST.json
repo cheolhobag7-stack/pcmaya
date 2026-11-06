@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-013",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 10:26:44",
+  "source": "04_APPROVAL\\승인완료\\SH-QP-013_검사및시험관리절차서_Rev04_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-013_검사및시험관리절차서_Rev04_수정본2.docx",
+      "sha256": "aa415a967dfd902933071c3dae26eb00eeacd1ca7973169f8a96568fa117e249",
+      "size": 107350
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-013_검사및시험관리절차서_Rev04_수정본2.pdf",
+      "sha256": "c2f44726d3b475f8554ec749745bbb91a244d3bcb3fc6ebcabe6859871e3eed0",
+      "size": 240639
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-013_검사및시험관리절차서_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "c2f44726d3b475f8554ec749745bbb91a244d3bcb3fc6ebcabe6859871e3eed0",
+      "size": 240639
+    }
+  ]
+}

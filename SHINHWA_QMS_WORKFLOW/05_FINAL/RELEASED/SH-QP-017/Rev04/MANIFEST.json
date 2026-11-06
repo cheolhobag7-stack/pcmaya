@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-QP-017",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 10:28:31",
+  "source": "04_APPROVAL\\승인완료\\SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2.docx",
+      "sha256": "aa70b8c74289a238e7393a1806acc058bb16c767ffb4866f45b3a0dd7bf4750a",
+      "size": 106501
+    },
+    {
+      "role": "PDF",
+      "name": "SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2.pdf",
+      "sha256": "96212e7376748e9189f67a8161aa52d1df1b025260e30c748b37ec77e089f9b2",
+      "size": 217537
+    },
+    {
+      "role": "배포본",
+      "name": "SH-QP-017_고객불만및보증관리절차서_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "96212e7376748e9189f67a8161aa52d1df1b025260e30c748b37ec77e089f9b2",
+      "size": 217537
+    }
+  ]
+}
