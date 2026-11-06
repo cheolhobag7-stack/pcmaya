@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-009",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 12:43:18",
+  "source": "04_APPROVAL\\승인완료\\SH-WI-009_자재입고·보관·불출관리표준_Rev04_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-009_자재입고·보관·불출관리표준_Rev04_수정본2.docx",
+      "sha256": "914ee0c25e533fcc160f7ff1675f7c4f84fa33ad13f7d7ce22a784cb49573c14",
+      "size": 105846
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-009_자재입고·보관·불출관리표준_Rev04_수정본2.pdf",
+      "sha256": "18e783e395d3f3d13851dda82ea959c3a1ed5babb405596181248615796e9094",
+      "size": 201369
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-009_자재입고·보관·불출관리표준_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "18e783e395d3f3d13851dda82ea959c3a1ed5babb405596181248615796e9094",
+      "size": 201369
+    }
+  ]
+}
