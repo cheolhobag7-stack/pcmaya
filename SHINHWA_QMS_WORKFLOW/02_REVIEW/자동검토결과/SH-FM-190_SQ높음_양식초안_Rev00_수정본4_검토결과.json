@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-190_SQ높음_양식초안_Rev00_수정본4.xlsx",
+  "checked": "2026-11-06 05:16:38",
+  "sha256": "52dde230f140720d2a45219ec45eb86e8d98fbceba15d5c9f9f1d96763462aad",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '양식초안' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}

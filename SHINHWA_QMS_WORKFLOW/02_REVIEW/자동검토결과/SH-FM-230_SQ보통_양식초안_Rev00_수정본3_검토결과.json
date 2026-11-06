@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-230_SQ보통_양식초안_Rev00_수정본3.xlsx",
+  "checked": "2026-11-06 05:16:53",
+  "sha256": "bda2a9ea5c549d7636d6ac89776c78ccdafedf852e27bae12aa4b9b58e794b81",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '양식초안' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}
