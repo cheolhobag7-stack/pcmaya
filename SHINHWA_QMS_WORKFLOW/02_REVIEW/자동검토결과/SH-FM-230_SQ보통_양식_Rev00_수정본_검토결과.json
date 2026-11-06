@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-230_SQ보통_양식_Rev00_수정본.xlsx",
+  "checked": "2026-11-06 04:53:44",
+  "sha256": "2556d9e8c53986a58ea25cfe8ecb159df0983612129db212a03fc7f75157dc50",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-FM-230_SQ보통_양식초안_Rev00_수정본.xlsx, SH-FM-230_SQ보통_양식초안_Rev00_수정본2.pdf, SH-FM-230_SQ보통_양식초안_Rev00_수정본2.xlsx, SH-FM-230_SQ보통_양식초안_Rev00_수정본2_배포본_20261012.pdf",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}

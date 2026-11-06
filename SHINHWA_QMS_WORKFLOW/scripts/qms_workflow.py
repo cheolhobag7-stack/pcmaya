@@ -355,7 +355,7 @@ def validate(p: Path, typ: str, final_stage=False, unit=None):
         body = set(re.findall(num["revision_pattern"], text))
         if not body:
             add("개정번호", "본문에 Rev 표기 없음", f"본문에 Rev.{rev} 표기")
-        elif rev not in body:
+        elif rev not in body and not (body <= set((qms.get("revision_exceptions") or {}).get(docno or "", []))):
             add("개정번호", f"파일명 Rev.{rev} 와 본문 Rev.{sorted(body)} 불일치", f"올바른 Rev 확정 필요 {UNCONFIRMED}")
 
     if not text:

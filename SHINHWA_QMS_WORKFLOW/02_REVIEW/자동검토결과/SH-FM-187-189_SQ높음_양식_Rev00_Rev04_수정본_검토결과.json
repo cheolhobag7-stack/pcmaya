@@ -1,0 +1,17 @@
+{
+  "file": "SH-FM-187-189_SQ높음_양식_Rev00_Rev04_수정본.xlsx",
+  "checked": "2026-11-06 04:50:09",
+  "sha256": "8c7c2eb5ece4baceec0f1e1fbc1ae59d388587595b632697f9a97ebe66efd3e5",
+  "units": [
+    "SH-FM-187",
+    "SH-FM-188",
+    "SH-FM-189"
+  ],
+  "issues": [
+    {
+      "category": "개정번호",
+      "message": "[SH-FM-188] 파일명 Rev.00 와 본문 Rev.['04'] 불일치",
+      "suggestion": "올바른 Rev 확정 필요 [확인 필요]"
+    }
+  ]
+}

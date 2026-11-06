@@ -87,6 +87,8 @@ prohibited_references: ["FM-030~032", "FM-035~039"]   # 2026-11-06 사용자 결
 # 폐기/참조금지 번호 참조를 허용하는 예외 문서 (구형 번호를 대조하는 계획표 등)
 prohibited_reference_exceptions: ["SH-FM-122"]
 # 개정이력 등에서 옛 번호를 사실로 언급하는 문장은 해당 문서에 한해 상호참조 '존재하지 않음' 검사에서 제외 (2026-11-06 사용자 결정: SH-QM-001 개정이력 "SH-QM-01 → SH-QM-001 전환 명시" 문구 유지)
+# 한 워크북에 Rev 가 다른 시트가 섞인 경우 해당 문서번호의 본문 Rev 허용 (2026-11-06: SH-FM-187-189 워크북의 SH-FM-189 용접 문서는 Rev.00 유지)
+revision_exceptions: {"SH-FM-189": ["00"]}
 legacy_reference_allowed: {"SH-QM-001": ["SH-QM-01"]}
 final_release_rules:
   require_document_number_match: true

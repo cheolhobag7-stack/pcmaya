@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-190_SQ높음_양식_Rev00_수정본.xlsx",
+  "checked": "2026-11-06 04:50:16",
+  "sha256": "240e878772d780debf7117a81d9b3afbf85ca2b8ff53630e496cc3dde1fa9645",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "동일 문서번호/Rev 중복 문서: SH-FM-190_SQ높음_양식초안_Rev00_수정본2.xlsx, SH-FM-190_SQ높음_양식초안_Rev00_수정본3.pdf, SH-FM-190_SQ높음_양식초안_Rev00_수정본3.xlsx, SH-FM-190_SQ높음_양식초안_Rev00_수정본3_배포본_20261008.pdf",
+      "suggestion": "중복 제거 또는 번호/Rev 정정 (자동 삭제하지 않음)"
+    }
+  ]
+}
