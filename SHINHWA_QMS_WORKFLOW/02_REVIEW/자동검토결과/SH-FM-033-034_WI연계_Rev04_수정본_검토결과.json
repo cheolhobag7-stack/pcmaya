@@ -1,0 +1,21 @@
+{
+  "file": "SH-FM-033-034_WI연계_Rev04_수정본.xlsx",
+  "checked": "2026-11-06 06:12:48",
+  "sha256": "8b1092853f6b654b531c9b4d97882d912dc0966968e939f412fff92f43ae9d31",
+  "units": [
+    "SH-FM-033",
+    "SH-FM-034"
+  ],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "[SH-FM-033] 결재란 항목 누락: 작성, 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    },
+    {
+      "category": "내용보완",
+      "message": "[SH-FM-034] 결재란 항목 누락: 작성, 검토",
+      "suggestion": "결재란(작성/검토/승인) 보완"
+    }
+  ]
+}
