@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-144",
+  "revision": "Rev00",
+  "released_at": "2026-10-12 14:43:58",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-144_SQ높음_양식초안_Rev00_수정본2.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-144_SQ높음_양식초안_Rev00_수정본2.xlsx",
+      "sha256": "03af8634f4c85001266d37a5ccc5c24e1c2249927145ceaae02318aaf08e86ef",
+      "size": 8993
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-144_SQ높음_양식초안_Rev00_수정본2.pdf",
+      "sha256": "2a1bb6d01bfcb343e1b430a555ca8ba2412c752b57fb8d20c694bba121bb3a16",
+      "size": 101532
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-144_SQ높음_양식초안_Rev00_수정본2_배포본_20261012.pdf",
+      "sha256": "2a1bb6d01bfcb343e1b430a555ca8ba2412c752b57fb8d20c694bba121bb3a16",
+      "size": 101532
+    }
+  ]
+}

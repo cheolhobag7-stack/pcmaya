@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-249-253",
+  "revision": "Rev00",
+  "released_at": "2026-10-08 08:28:35",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-249-253_SQ낮음_양식초안_Rev00_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "전 양식 승인 표기"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-249-253_SQ낮음_양식초안_Rev00_수정본3.xlsx",
+      "sha256": "a07ae5b16be15bce82c0692cc615948957e2519e6e565d6a1deb68b68b0192c9",
+      "size": 16776
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-249-253_SQ낮음_양식초안_Rev00_수정본3.pdf",
+      "sha256": "43028ab596e7180f5ea5dd7f1e844fbf36ac5af9cc7acd84dff72504510721ac",
+      "size": 148128
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-249-253_SQ낮음_양식초안_Rev00_수정본3_배포본_20261008.pdf",
+      "sha256": "43028ab596e7180f5ea5dd7f1e844fbf36ac5af9cc7acd84dff72504510721ac",
+      "size": 148128
+    }
+  ]
+}

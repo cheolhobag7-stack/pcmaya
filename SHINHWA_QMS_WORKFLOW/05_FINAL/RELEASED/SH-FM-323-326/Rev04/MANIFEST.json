@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-323-326",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 16:06:24",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-323-326_SQ낮음_양식_Rev04_수정본2.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "전 양식 승인 표기"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-323-326_SQ낮음_양식_Rev04_수정본2.xlsx",
+      "sha256": "b20feedab2e67dfb30a2204105d2570b07c3dd6b72f55b14e281c9f3949988d9",
+      "size": 58627
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-323-326_SQ낮음_양식_Rev04_수정본2.pdf",
+      "sha256": "52210f182f197ef1064d2e949b9fb63671eadc753bf6cb2fa9b104a007148a21",
+      "size": 136947
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-323-326_SQ낮음_양식_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "52210f182f197ef1064d2e949b9fb63671eadc753bf6cb2fa9b104a007148a21",
+      "size": 136947
+    }
+  ]
+}

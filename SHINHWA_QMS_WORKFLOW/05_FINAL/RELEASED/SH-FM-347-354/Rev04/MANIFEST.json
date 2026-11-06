@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-347-354",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 16:11:51",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-347-354_SQ낮음_양식_Rev04_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "전 양식 승인 표기"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-347-354_SQ낮음_양식_Rev04_수정본3.xlsx",
+      "sha256": "bfc31287837ea31cd211799f20eb8c4ed3822741630cf27d43749f38afe3e9f3",
+      "size": 75679
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-347-354_SQ낮음_양식_Rev04_수정본3.pdf",
+      "sha256": "0ae48e9076b868c67035d6458e119b7ab599a0e717e95765ea7feb51174c4e20",
+      "size": 205894
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-347-354_SQ낮음_양식_Rev04_수정본3_배포본_20261106.pdf",
+      "sha256": "0ae48e9076b868c67035d6458e119b7ab599a0e717e95765ea7feb51174c4e20",
+      "size": 205894
+    }
+  ]
+}

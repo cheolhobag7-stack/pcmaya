@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-254",
+  "revision": "Rev00",
+  "released_at": "2026-10-08 08:28:47",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-254_SQ보통_양식초안_Rev00_수정본3.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-254_SQ보통_양식초안_Rev00_수정본3.xlsx",
+      "sha256": "b710c8adaeb2910b037b8a9a812aac1f514d39d56ca781cab42ed729a6ec7310",
+      "size": 8204
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-254_SQ보통_양식초안_Rev00_수정본3.pdf",
+      "sha256": "8904de23a30e502c786f850dbfd4b0e700ecd2cc278571ed0667ab7d32fbe217",
+      "size": 88923
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-254_SQ보통_양식초안_Rev00_수정본3_배포본_20261008.pdf",
+      "sha256": "8904de23a30e502c786f850dbfd4b0e700ecd2cc278571ed0667ab7d32fbe217",
+      "size": 88923
+    }
+  ]
+}
