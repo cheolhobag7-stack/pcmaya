@@ -1,0 +1,4 @@
+APPROVED
+approved_at=2026-11-06T12:40:33
+document=SH-WI-004_설비일상점검및이상대응표준_Rev04_수정본2.docx
+note=사용자가 sign 명령으로 승인 완료를 확인한 후 생성된 표시파일

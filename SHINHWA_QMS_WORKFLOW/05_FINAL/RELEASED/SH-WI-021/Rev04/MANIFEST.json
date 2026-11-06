@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-WI-021",
+  "revision": "Rev04",
+  "released_at": "2026-11-06 12:49:02",
+  "source": "04_APPROVAL\\승인완료\\SH-WI-021_공정감사및LayeredProcessAudit실행표준_Rev04_수정본2.docx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-WI-021_공정감사및LayeredProcessAudit실행표준_Rev04_수정본2.docx",
+      "sha256": "1834359b20498cc3511a681417e71c40e214fa7f0691856150f58fd83a62ebc5",
+      "size": 106669
+    },
+    {
+      "role": "PDF",
+      "name": "SH-WI-021_공정감사및LayeredProcessAudit실행표준_Rev04_수정본2.pdf",
+      "sha256": "9fa8ab2fdb25211bfa771804ba0aa46bd60582e2d67fce1bc0a77344e48b0455",
+      "size": 217098
+    },
+    {
+      "role": "배포본",
+      "name": "SH-WI-021_공정감사및LayeredProcessAudit실행표준_Rev04_수정본2_배포본_20261106.pdf",
+      "sha256": "9fa8ab2fdb25211bfa771804ba0aa46bd60582e2d67fce1bc0a77344e48b0455",
+      "size": 217098
+    }
+  ]
+}
