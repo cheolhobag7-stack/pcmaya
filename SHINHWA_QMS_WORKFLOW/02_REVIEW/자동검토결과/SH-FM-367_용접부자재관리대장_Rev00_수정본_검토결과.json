@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-367_용접부자재관리대장_Rev00_수정본.xlsx",
+  "checked": "2026-11-06 06:13:33",
+  "sha256": "1ba63359ead04d80daf8e996ee800962a629e4f8ee443d2d18012b0eb24f5fb0",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '용접부자재관리대장' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}
