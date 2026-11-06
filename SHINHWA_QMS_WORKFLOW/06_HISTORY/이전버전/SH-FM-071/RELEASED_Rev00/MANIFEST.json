@@ -1,0 +1,68 @@
+{
+  "document_no": "SH-FM-071",
+  "revision": "Rev00",
+  "released_at": "2026-10-07 14:27:56",
+  "source": "04_APPROVAL\\승인완료\\SH-FM-071_부적합품관련관리기록_Rev00_수정본4.xlsx",
+  "gates": [
+    {
+      "gate": "G1 문서번호 일치",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G2 승인상태 자동판정",
+      "result": "PASS",
+      "note": "APPROVED"
+    },
+    {
+      "gate": "G3 검토 이슈 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G4 문서관리대장/FM Master 등재",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G5 중복 Rev/문서 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G6 폐기·참조금지·삭제지시 없음",
+      "result": "PASS",
+      "note": "-"
+    },
+    {
+      "gate": "G7 AP 게이트(AP-01~04)",
+      "result": "N/A",
+      "note": "해당 없음"
+    },
+    {
+      "gate": "G8 사람 승인 단계 완료",
+      "result": "PASS",
+      "note": "승인완료 + APPROVED.txt"
+    }
+  ],
+  "files": [
+    {
+      "role": "문서",
+      "name": "SH-FM-071_부적합품관련관리기록_Rev00_수정본4.xlsx",
+      "sha256": "306c1afe1bd2e68f22b71d074bb6ba9282868d7158cacb63c5f28b2fa4e1de8e",
+      "size": 8453
+    },
+    {
+      "role": "PDF",
+      "name": "SH-FM-071_부적합품관련관리기록_Rev00_수정본4.pdf",
+      "sha256": "2aa793747c0b2a5643d7532835c1ceb3fd2254a59c1b011f0924176a71a5d837",
+      "size": 69890
+    },
+    {
+      "role": "배포본",
+      "name": "SH-FM-071_부적합품관련관리기록_Rev00_수정본4_배포본_20261007.pdf",
+      "sha256": "2aa793747c0b2a5643d7532835c1ceb3fd2254a59c1b011f0924176a71a5d837",
+      "size": 69890
+    }
+  ]
+}
