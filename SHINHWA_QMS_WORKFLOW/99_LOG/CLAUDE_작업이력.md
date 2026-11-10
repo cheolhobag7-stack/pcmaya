@@ -210,3 +210,4 @@ CLAUDE.md 의 18절 이후에 누적된 날짜순 작업 기록(원문 그대로
 - 2026-11-10 releasegate 점검(v35): FAIL 0 / HOLD 6 — 365·366·368 Rev.04 각 G2(개정초안)·G8(사람 승인 전)만 HOLD, ledger PASS 57/FAIL 0, crosscheck PASS 37/FAIL 0.
 - 2026-11-10 CLAUDE.md 미결 사항 갱신(365·366·368 Rev.04 승인대기, releasegate v35 결과 반영, 결정 대기 ① 에서 365·366·368 제외).
 - 2026-11-11 SH-FM-365·366·368 Rev.04 승인·배포 반영(사용자 PC 푸시 e86eeeef, RELEASED/Rev04 수정본2, integrity 363개 FAIL 0): 대장 수정본45(02_개정이력·03_배포대장 각 3행)·FM Master 통합41(Rev.04·개정일 2026-11-02·근거 파일 경로), 승인일은 사용자 확인 전이라 '승인일 확인 필요'로 기록. SQ 인쇄 묶음: 세 문서 PDF·원본을 Rev.04 배포본으로 교체, 합본 645쪽, 승인배포관리 시트·안내·파일목록·zip 갱신. CLAUDE.md 미결 사항 갱신.
+- 2026-11-11 ledger 점검(v125, 대장 수정본45·Master 통합41 기준): PASS 57 / HOLD 0 / FAIL 0.
