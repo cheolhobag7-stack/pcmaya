@@ -1459,3 +1459,14 @@ timestamp,document_no,revision,from_stage,to_stage,user,note
 2026-10-16 10:23:24,SH-FM-207-209_SQ보통_양식초안_Rev00_수정본9.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
 2026-10-16 10:23:25,SH-FM-207-209_SQ보통_양식초안_Rev00_수정본9.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
 2026-10-16 10:23:47,SH-FM-207-209_SQ보통_양식초안_Rev00_수정본9,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-12 05:25:43,SH-FM-369-370,,수정완료,02_REVIEW/문서번호오류,system,"4건 문제, 수정후보 SH-FM-369-370_내부감사계획서_2026_수정본_수정필요사항_20261112052543.md"
+2026-11-12 05:26:12,SH-FM-369,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-12 05:26:20,SH-FM-369_내부심사계획서_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-369_내부심사계획서_Rev00_수정본,system,승인 패키지 생성
+2026-11-12 05:26:25,SH-FM-370,,수정완료,04_APPROVAL/승인대기,system,검사통과 (문서상태 승인완료 표기됨)
+2026-11-12 05:26:33,SH-FM-370_내부감사세부계획서_Rev00_수정본,,04_APPROVAL/승인대기,04_APPROVAL/PACKAGES/SH-FM-370_내부감사세부계획서_Rev00_수정본,system,승인 패키지 생성
+2026-11-12 05:26:40,SH-FM-369_내부심사계획서_Rev00_수정본.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-12 05:26:40,SH-FM-369_내부심사계획서_Rev00_수정본.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-12 05:26:41,SH-FM-370_내부감사세부계획서_Rev00_수정본.xlsx,,04_APPROVAL/승인대기,04_APPROVAL/검토완료,human,검토 완료
+2026-11-12 05:26:41,SH-FM-370_내부감사세부계획서_Rev00_수정본.xlsx,,04_APPROVAL/검토완료,04_APPROVAL/승인완료,human,승인
+2026-11-12 05:27:03,SH-FM-369,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
+2026-11-12 05:27:24,SH-FM-370,00,04_APPROVAL/승인완료,05_FINAL,system,PDF/배포본 생성
