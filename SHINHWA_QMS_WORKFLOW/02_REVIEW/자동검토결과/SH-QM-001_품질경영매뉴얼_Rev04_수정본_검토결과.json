@@ -1,0 +1,23 @@
+{
+  "file": "SH-QM-001_품질경영매뉴얼_Rev04_수정본.docx",
+  "checked": "2026-11-13 04:59:32",
+  "sha256": "05fe15779b385d693a39b5eb21429fd49e488ddaf84f100b1d50cda95cd8c57b",
+  "units": [],
+  "issues": [
+    {
+      "category": "상호참조",
+      "message": "참조 문서 FM-369 가 시스템에 존재하지 않음",
+      "suggestion": "참조 문서번호 확인 또는 해당 문서 등록"
+    },
+    {
+      "category": "상호참조",
+      "message": "참조 문서 PFMEA-Control 가 시스템에 존재하지 않음",
+      "suggestion": "참조 문서번호 확인 또는 해당 문서 등록"
+    },
+    {
+      "category": "상호참조",
+      "message": "참조 문서 QM-01 가 시스템에 존재하지 않음",
+      "suggestion": "참조 문서번호 확인 또는 해당 문서 등록"
+    }
+  ]
+}
