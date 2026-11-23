@@ -1,0 +1,13 @@
+{
+  "file": "SH-FM-370_품질오픈이슈관리대장_Rev00_수정본.xlsx",
+  "checked": "2026-11-23 03:58:52",
+  "sha256": "9c989eae69d7207450f3f6c433471b66a4d10cd8cfed995ddab8abc29c9e4260",
+  "units": [],
+  "issues": [
+    {
+      "category": "내용보완",
+      "message": "본문에 문서명 '품질오픈이슈관리대장' 없음",
+      "suggestion": "본문 제목과 파일명 문서명 일치 필요"
+    }
+  ]
+}
